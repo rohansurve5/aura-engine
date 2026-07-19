@@ -3,7 +3,8 @@
 
 Applies every `db/migrations/*.sql` in filename order exactly once (tracked in a
 `schema_migrations` table), then seeds `score_rules` from
-`db/seed/score_rules_v1.json` with an idempotent upsert.
+`db/seed/score_rules_content_v2.json` with an idempotent upsert. Older rule
+versions (e.g. v1) keep their rows — versions are additive, enabling rollback.
 
     NEON_DATABASE_URL=postgres://... uv run python db/migrate.py
     ...                              uv run python db/migrate.py --seed-only
@@ -25,7 +26,7 @@ from psycopg.types.json import Json
 
 ROOT = Path(__file__).resolve().parent
 MIGRATIONS = ROOT / "migrations"
-SEED = ROOT / "seed" / "score_rules_v1.json"
+SEED = ROOT / "seed" / "score_rules_content_v2.json"
 
 
 def _dsn() -> str:

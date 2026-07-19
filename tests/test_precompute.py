@@ -65,16 +65,88 @@ def test_tara_is_the_nine_fold_cycle():
     assert {tara_of(0, d) for d in range(27)} == set(range(1, 10))
 
 
+USER_FACING_AREAS = {"Love", "Money", "Career", "Mind", "Health", "Mood"}
+
+
 def test_guidance_payload_shape():
     sky = build_daily_sky(date(2026, 7, 18))
     row = guidance_for_nakshatra(5, sky, RULES)      # Ardra — Rohan's natal star
     assert set(row) >= {
         "nakshatra_index", "nakshatra", "tara", "energy", "scores",
-        "lucky", "good_for", "avoid", "opportunity", "warning",
+        "area_lines", "narrative", "why", "lucky", "good_for", "avoid",
+        "opportunity", "warning", "opportunity_detail", "warning_detail",
     }
     assert set(row["lucky"]) == {"color", "number", "direction"}
-    assert set(row["scores"]) == {"Career", "Finances", "Relationships", "Health", "Mind", "Growth"}
+    # The zero-bug fix: score keys ARE the user-facing labels the app renders.
+    assert set(row["scores"]) == USER_FACING_AREAS
+    assert set(row["area_lines"]) == USER_FACING_AREAS
     assert "{area}" not in row["opportunity"] and "{area}" not in row["warning"]
+
+
+def test_all_six_scores_nonzero_across_dates():
+    """The dashboard bug regression: every user-facing area must carry a real
+    score (the v1 payload keyed three of them differently, so they read 0)."""
+    for day in SAMPLE_DATES:
+        sky = build_daily_sky(day)
+        for row in all_guidance(sky, RULES):
+            assert set(row["scores"]) == USER_FACING_AREAS
+            for label in USER_FACING_AREAS:
+                assert row["scores"][label] > 0
+
+
+def test_narrative_is_two_sentences_with_no_slots():
+    for day in SAMPLE_DATES:
+        sky = build_daily_sky(day)
+        for row in all_guidance(sky, RULES):
+            assert "{" not in row["narrative"] and "}" not in row["narrative"]
+            assert row["narrative"].count(".") >= 1  # opener + closer prose
+            assert len(row["narrative"]) > 40
+
+
+def test_headline_copy_is_jargon_free():
+    """Jargon demotion: tara/nakshatra vocabulary may lead only in `why`."""
+    jargon = ("tara", "tarabala", "nakshatra", "janma", "sampat", "vipat",
+              "kshema", "pratyak", "sadhaka", "vadha", "mitra", "paksha")
+    for day in SAMPLE_DATES:
+        sky = build_daily_sky(day)
+        for row in all_guidance(sky, RULES):
+            headline = " ".join(
+                [row["narrative"], row["opportunity"], row["warning"],
+                 row["opportunity_detail"], row["warning_detail"],
+                 *row["area_lines"].values(), *row["good_for"], *row["avoid"]]
+            ).lower()
+            for word in jargon:
+                assert word not in headline, f"{word!r} leaked into headline copy"
+            assert row["why"]  # the credibility line carries the detail instead
+
+
+def test_area_lines_rotate_across_consecutive_days():
+    """Variant rotation: the same (natal, tara) cell must not repeat its line
+    on consecutive dates. Pin the tara by advancing only the date on an
+    otherwise identical sky — adjacent rotation steps, same content cell."""
+    s1 = build_daily_sky(date(2026, 7, 18))
+    s2 = {**s1, "date": "2026-07-19"}
+    r1 = guidance_for_nakshatra(5, s1, RULES)
+    r2 = guidance_for_nakshatra(5, s2, RULES)
+    assert r1["tara"]["number"] == r2["tara"]["number"]
+    assert r1["area_lines"] != r2["area_lines"]
+    assert r1["narrative"] != r2["narrative"]
+
+
+def test_every_content_cell_composes():
+    """All 54 (area × tara) cells and all 9 taras' generators resolve for every
+    natal nakshatra over a 9-day sweep (covers each tara at least once)."""
+    from datetime import timedelta
+    start = date(2026, 7, 18)
+    seen_taras = set()
+    for offset in range(9):
+        sky = build_daily_sky(start + timedelta(days=offset))
+        for row in all_guidance(sky, RULES):
+            seen_taras.add(row["tara"]["number"])
+            for line in row["area_lines"].values():
+                assert line and (line[0].isupper() or line[0].isdigit())
+            assert row["opportunity"] and row["warning"]
+    assert seen_taras == set(range(1, 10))
 
 
 def test_sky_payload_shape():
