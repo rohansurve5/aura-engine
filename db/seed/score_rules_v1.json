@@ -1,0 +1,107 @@
+{
+  "version": "v1",
+  "_about": "v1 HEURISTIC daily-guidance rules — subject to astrologer review. Basis: Tarabala (the 9-fold auspiciousness cycle counted from the natal/janma nakshatra to the day's Moon nakshatra) sets base energy; the weekday (hora) lord and paksha modulate it per life-area; lucky colour/number/direction come from the day lord (dik + Vedic numerology). Every number below is tunable IN THIS TABLE without a code change. weekday indices are Python weekday(): Monday=0 ... Sunday=6.",
+  "rules": {
+    "areas": {
+      "order": ["career", "money", "love", "health", "mind", "growth"],
+      "labels": {
+        "career": "Career",
+        "money": "Finances",
+        "love": "Relationships",
+        "health": "Health",
+        "mind": "Mind",
+        "growth": "Growth"
+      }
+    },
+    "paksha": {
+      "waxing": 5,
+      "waning": -4
+    },
+    "weekday_energy_mod": {
+      "0": 2, "1": 0, "2": 3, "3": 4, "4": 3, "5": -2, "6": 2
+    },
+    "weekday_area_mod": {
+      "0": {"career": -2, "money": 0,  "love": 6,  "health": 2,  "mind": 8,  "growth": 2},
+      "1": {"career": 6,  "money": 2,  "love": -4, "health": 6,  "mind": -2, "growth": 2},
+      "2": {"career": 4,  "money": 8,  "love": 0,  "health": 0,  "mind": 6,  "growth": 2},
+      "3": {"career": 2,  "money": 6,  "love": 2,  "health": 2,  "mind": 4,  "growth": 8},
+      "4": {"career": 0,  "money": 6,  "love": 10, "health": 2,  "mind": 2,  "growth": 2},
+      "5": {"career": 6,  "money": 2,  "love": -2, "health": -6, "mind": -2, "growth": 6},
+      "6": {"career": 8,  "money": 2,  "love": -2, "health": 6,  "mind": 0,  "growth": 2}
+    },
+    "lucky_by_weekday": {
+      "0": {"planet": "Moon",    "color": "Pearl White",    "number": 2, "direction": "North-West"},
+      "1": {"planet": "Mars",    "color": "Coral Red",      "number": 9, "direction": "South"},
+      "2": {"planet": "Mercury", "color": "Emerald Green",  "number": 5, "direction": "North"},
+      "3": {"planet": "Jupiter", "color": "Saffron Yellow", "number": 3, "direction": "North-East"},
+      "4": {"planet": "Venus",   "color": "Rose Pink",      "number": 6, "direction": "South-East"},
+      "5": {"planet": "Saturn",  "color": "Indigo Blue",    "number": 8, "direction": "West"},
+      "6": {"planet": "Sun",     "color": "Amber Gold",     "number": 1, "direction": "East"}
+    },
+    "tara": {
+      "1": {
+        "energy": 55,
+        "good_for": ["self-care", "reflection", "planning"],
+        "avoid": ["risky ventures", "elective surgery"],
+        "opportunity": "A day to tend to yourself — {area} rewards quiet, deliberate effort.",
+        "warning": "Guard your reserves; {area} can drain you if you overextend."
+      },
+      "2": {
+        "energy": 88,
+        "good_for": ["investments", "new ventures", "celebrations", "shopping"],
+        "avoid": ["careless spending"],
+        "opportunity": "Fortune favours you — {area} is primed for a bold, well-timed move.",
+        "warning": "Don't let a lucky run make you careless with {area}."
+      },
+      "3": {
+        "energy": 32,
+        "good_for": ["routine tasks", "double-checking", "caution"],
+        "avoid": ["travel", "signing contracts", "confrontation"],
+        "opportunity": "Small, careful steps still move {area} forward today.",
+        "warning": "A friction day — postpone big {area} decisions and sidestep disputes."
+      },
+      "4": {
+        "energy": 78,
+        "good_for": ["relationships", "health", "steady work"],
+        "avoid": ["reckless risk"],
+        "opportunity": "Stability is on your side — nurture {area} and it flourishes.",
+        "warning": "Comfort can turn to complacency; keep {area} from stalling."
+      },
+      "5": {
+        "energy": 42,
+        "good_for": ["closing loose ends", "introspection"],
+        "avoid": ["launches", "negotiations"],
+        "opportunity": "Clearing what's stuck now frees {area} for what's next.",
+        "warning": "Expect headwinds in {area}; patience beats force today."
+      },
+      "6": {
+        "energy": 82,
+        "good_for": ["completing goals", "focused work", "important tasks"],
+        "avoid": ["idleness", "scattering effort"],
+        "opportunity": "You can finish what matters — {area} responds to focused effort.",
+        "warning": "Don't spread yourself thin; one strong {area} push beats many."
+      },
+      "7": {
+        "energy": 30,
+        "good_for": ["rest", "caution", "letting go"],
+        "avoid": ["new starts", "travel", "risk"],
+        "opportunity": "Even a hard day can protect {area} if you slow right down.",
+        "warning": "A vulnerable day — shield {area} and skip unnecessary risk."
+      },
+      "8": {
+        "energy": 80,
+        "good_for": ["collaboration", "networking", "asking for support"],
+        "avoid": ["going it alone"],
+        "opportunity": "Allies lift you — lean into {area} with people you trust.",
+        "warning": "Don't isolate; {area} needs connection more than control today."
+      },
+      "9": {
+        "energy": 90,
+        "good_for": ["big moves", "partnerships", "launches", "commitments"],
+        "avoid": ["hesitation"],
+        "opportunity": "One of your strongest days — {area} is wide open for a leap.",
+        "warning": "Rare tailwinds fade; don't waste today's momentum on {area}."
+      }
+    }
+  }
+}

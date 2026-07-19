@@ -1,0 +1,2605 @@
+{
+  "source": "AstroSage \u2014 Vimshottari Dasha.docx",
+  "birth": {
+    "date": "1989-09-23",
+    "time": "04:47",
+    "tz": "+05:30",
+    "note": "Birth place/coordinates were not provided. Vimshottari dasha depends only on the geocentric Moon longitude, which is location-independent, so the table is unaffected."
+  },
+  "balance": {
+    "lord": "Rahu",
+    "years": 3,
+    "months": 10,
+    "days": 24
+  },
+  "maha": [
+    {
+      "lord": "Rahu",
+      "start": "1989-09-23",
+      "end": "1993-08-17",
+      "antar": [
+        {
+          "lord": "Rahu",
+          "end": null
+        },
+        {
+          "lord": "Jupiter",
+          "end": null
+        },
+        {
+          "lord": "Saturn",
+          "end": null
+        },
+        {
+          "lord": "Mercury",
+          "end": null
+        },
+        {
+          "lord": "Ketu",
+          "end": null
+        },
+        {
+          "lord": "Venus",
+          "end": "1990-03-05"
+        },
+        {
+          "lord": "Sun",
+          "end": "1991-01-29"
+        },
+        {
+          "lord": "Moon",
+          "end": "1992-07-29"
+        },
+        {
+          "lord": "Mars",
+          "end": "1993-08-17"
+        }
+      ]
+    },
+    {
+      "lord": "Jupiter",
+      "start": "1993-08-17",
+      "end": "2009-08-17",
+      "antar": [
+        {
+          "lord": "Jupiter",
+          "end": "1995-10-05"
+        },
+        {
+          "lord": "Saturn",
+          "end": "1998-04-17"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2000-07-23"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2001-06-29"
+        },
+        {
+          "lord": "Venus",
+          "end": "2004-03-01"
+        },
+        {
+          "lord": "Sun",
+          "end": "2004-12-17"
+        },
+        {
+          "lord": "Moon",
+          "end": "2006-04-17"
+        },
+        {
+          "lord": "Mars",
+          "end": "2007-03-23"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2009-08-17"
+        }
+      ]
+    },
+    {
+      "lord": "Saturn",
+      "start": "2009-08-17",
+      "end": "2028-08-17",
+      "antar": [
+        {
+          "lord": "Saturn",
+          "end": "2012-08-20"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2015-04-29"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2016-06-08"
+        },
+        {
+          "lord": "Venus",
+          "end": "2019-08-08"
+        },
+        {
+          "lord": "Sun",
+          "end": "2020-07-20"
+        },
+        {
+          "lord": "Moon",
+          "end": "2022-02-20"
+        },
+        {
+          "lord": "Mars",
+          "end": "2023-03-29"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2026-02-05"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2028-08-17"
+        }
+      ]
+    },
+    {
+      "lord": "Mercury",
+      "start": "2028-08-17",
+      "end": "2045-08-17",
+      "antar": [
+        {
+          "lord": "Mercury",
+          "end": "2031-01-14"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2032-01-11"
+        },
+        {
+          "lord": "Venus",
+          "end": "2034-11-11"
+        },
+        {
+          "lord": "Sun",
+          "end": "2035-09-17"
+        },
+        {
+          "lord": "Moon",
+          "end": "2037-02-17"
+        },
+        {
+          "lord": "Mars",
+          "end": "2038-02-14"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2040-09-02"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2042-12-08"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2045-08-17"
+        }
+      ]
+    },
+    {
+      "lord": "Ketu",
+      "start": "2045-08-17",
+      "end": "2052-08-17",
+      "antar": [
+        {
+          "lord": "Ketu",
+          "end": "2046-01-14"
+        },
+        {
+          "lord": "Venus",
+          "end": "2047-03-14"
+        },
+        {
+          "lord": "Sun",
+          "end": "2047-07-20"
+        },
+        {
+          "lord": "Moon",
+          "end": "2048-02-20"
+        },
+        {
+          "lord": "Mars",
+          "end": "2048-07-17"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2049-08-05"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2050-07-11"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2051-08-20"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2052-08-17"
+        }
+      ]
+    },
+    {
+      "lord": "Venus",
+      "start": "2052-08-17",
+      "end": "2072-08-17",
+      "antar": [
+        {
+          "lord": "Venus",
+          "end": "2055-12-17"
+        },
+        {
+          "lord": "Sun",
+          "end": "2056-12-17"
+        },
+        {
+          "lord": "Moon",
+          "end": "2058-08-17"
+        },
+        {
+          "lord": "Mars",
+          "end": "2059-10-17"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2062-10-17"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2065-06-17"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2068-08-17"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2071-06-17"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2072-08-17"
+        }
+      ]
+    },
+    {
+      "lord": "Sun",
+      "start": "2072-08-17",
+      "end": "2078-08-17",
+      "antar": [
+        {
+          "lord": "Sun",
+          "end": "2072-12-05"
+        },
+        {
+          "lord": "Moon",
+          "end": "2073-06-05"
+        },
+        {
+          "lord": "Mars",
+          "end": "2073-10-11"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2074-09-05"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2075-06-23"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2076-06-05"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2077-04-11"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2077-08-17"
+        },
+        {
+          "lord": "Venus",
+          "end": "2078-08-17"
+        }
+      ]
+    },
+    {
+      "lord": "Moon",
+      "start": "2078-08-17",
+      "end": "2088-08-17",
+      "antar": [
+        {
+          "lord": "Moon",
+          "end": "2079-06-17"
+        },
+        {
+          "lord": "Mars",
+          "end": "2080-01-17"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2081-07-17"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2082-11-17"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2084-06-17"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2085-11-17"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2086-06-17"
+        },
+        {
+          "lord": "Venus",
+          "end": "2088-02-17"
+        },
+        {
+          "lord": "Sun",
+          "end": "2088-08-17"
+        }
+      ]
+    },
+    {
+      "lord": "Mars",
+      "start": "2088-08-17",
+      "end": "2095-08-17",
+      "antar": [
+        {
+          "lord": "Mars",
+          "end": "2089-01-14"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2090-02-02"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2091-01-08"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2092-02-17"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2093-02-14"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2093-07-11"
+        },
+        {
+          "lord": "Venus",
+          "end": "2094-09-11"
+        },
+        {
+          "lord": "Sun",
+          "end": "2095-01-17"
+        },
+        {
+          "lord": "Moon",
+          "end": "2095-08-17"
+        }
+      ]
+    },
+    {
+      "lord": "Rahu",
+      "start": "2095-08-17",
+      "end": "2113-08-17",
+      "antar": [
+        {
+          "lord": "Rahu",
+          "end": "2098-04-29"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2100-09-23"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2103-07-29"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2106-02-17"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2107-03-05"
+        },
+        {
+          "lord": "Venus",
+          "end": "2110-03-05"
+        },
+        {
+          "lord": "Sun",
+          "end": "2111-01-29"
+        },
+        {
+          "lord": "Moon",
+          "end": "2112-07-29"
+        },
+        {
+          "lord": "Mars",
+          "end": "2113-08-17"
+        }
+      ]
+    }
+  ],
+  "pratyantar": [
+    {
+      "maha": "Rahu",
+      "antar": "Venus",
+      "start": "1989-09-23",
+      "end": "1990-03-05",
+      "periods": [
+        {
+          "lord": "Venus",
+          "end": null
+        },
+        {
+          "lord": "Sun",
+          "end": null
+        },
+        {
+          "lord": "Moon",
+          "end": null
+        },
+        {
+          "lord": "Mars",
+          "end": null
+        },
+        {
+          "lord": "Rahu",
+          "end": null
+        },
+        {
+          "lord": "Jupiter",
+          "end": null
+        },
+        {
+          "lord": "Saturn",
+          "end": null
+        },
+        {
+          "lord": "Mercury",
+          "end": "1990-01-02"
+        },
+        {
+          "lord": "Ketu",
+          "end": "1990-03-05"
+        }
+      ]
+    },
+    {
+      "maha": "Rahu",
+      "antar": "Sun",
+      "start": "1990-03-05",
+      "end": "1991-01-29",
+      "periods": [
+        {
+          "lord": "Sun",
+          "end": "1990-03-21"
+        },
+        {
+          "lord": "Moon",
+          "end": "1990-04-18"
+        },
+        {
+          "lord": "Mars",
+          "end": "1990-05-07"
+        },
+        {
+          "lord": "Rahu",
+          "end": "1990-06-26"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "1990-08-09"
+        },
+        {
+          "lord": "Saturn",
+          "end": "1990-09-30"
+        },
+        {
+          "lord": "Mercury",
+          "end": "1990-11-16"
+        },
+        {
+          "lord": "Ketu",
+          "end": "1990-12-05"
+        },
+        {
+          "lord": "Venus",
+          "end": "1991-01-29"
+        }
+      ]
+    },
+    {
+      "maha": "Rahu",
+      "antar": "Moon",
+      "start": "1991-01-29",
+      "end": "1992-07-29",
+      "periods": [
+        {
+          "lord": "Moon",
+          "end": "1991-03-14"
+        },
+        {
+          "lord": "Mars",
+          "end": "1991-04-16"
+        },
+        {
+          "lord": "Rahu",
+          "end": "1991-07-07"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "1991-09-19"
+        },
+        {
+          "lord": "Saturn",
+          "end": "1991-12-14"
+        },
+        {
+          "lord": "Mercury",
+          "end": "1992-03-01"
+        },
+        {
+          "lord": "Ketu",
+          "end": "1992-04-02"
+        },
+        {
+          "lord": "Venus",
+          "end": "1992-07-02"
+        },
+        {
+          "lord": "Sun",
+          "end": "1992-07-29"
+        }
+      ]
+    },
+    {
+      "maha": "Rahu",
+      "antar": "Mars",
+      "start": "1992-07-29",
+      "end": "1993-08-17",
+      "periods": [
+        {
+          "lord": "Mars",
+          "end": "1992-08-21"
+        },
+        {
+          "lord": "Rahu",
+          "end": "1992-10-18"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "1992-12-08"
+        },
+        {
+          "lord": "Saturn",
+          "end": "1993-02-08"
+        },
+        {
+          "lord": "Mercury",
+          "end": "1993-04-02"
+        },
+        {
+          "lord": "Ketu",
+          "end": "1993-04-24"
+        },
+        {
+          "lord": "Venus",
+          "end": "1993-06-27"
+        },
+        {
+          "lord": "Sun",
+          "end": "1993-07-16"
+        },
+        {
+          "lord": "Moon",
+          "end": "1993-08-17"
+        }
+      ]
+    },
+    {
+      "maha": "Jupiter",
+      "antar": "Jupiter",
+      "start": "1993-08-17",
+      "end": "1995-10-05",
+      "periods": [
+        {
+          "lord": "Jupiter",
+          "end": "1993-11-30"
+        },
+        {
+          "lord": "Saturn",
+          "end": "1994-04-01"
+        },
+        {
+          "lord": "Mercury",
+          "end": "1994-07-20"
+        },
+        {
+          "lord": "Ketu",
+          "end": "1994-09-05"
+        },
+        {
+          "lord": "Venus",
+          "end": "1995-01-13"
+        },
+        {
+          "lord": "Sun",
+          "end": "1995-02-21"
+        },
+        {
+          "lord": "Moon",
+          "end": "1995-04-25"
+        },
+        {
+          "lord": "Mars",
+          "end": "1995-06-10"
+        },
+        {
+          "lord": "Rahu",
+          "end": "1995-10-05"
+        }
+      ]
+    },
+    {
+      "maha": "Jupiter",
+      "antar": "Saturn",
+      "start": "1995-10-05",
+      "end": "1998-04-17",
+      "periods": [
+        {
+          "lord": "Saturn",
+          "end": "1996-03-02"
+        },
+        {
+          "lord": "Mercury",
+          "end": "1996-07-09"
+        },
+        {
+          "lord": "Ketu",
+          "end": "1996-09-02"
+        },
+        {
+          "lord": "Venus",
+          "end": "1997-02-04"
+        },
+        {
+          "lord": "Sun",
+          "end": "1997-03-20"
+        },
+        {
+          "lord": "Moon",
+          "end": "1997-06-06"
+        },
+        {
+          "lord": "Mars",
+          "end": "1997-07-29"
+        },
+        {
+          "lord": "Rahu",
+          "end": "1997-12-16"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "1998-04-17"
+        }
+      ]
+    },
+    {
+      "maha": "Jupiter",
+      "antar": "Mercury",
+      "start": "1998-04-17",
+      "end": "2000-07-23",
+      "periods": [
+        {
+          "lord": "Mercury",
+          "end": "1998-08-13"
+        },
+        {
+          "lord": "Ketu",
+          "end": "1998-09-30"
+        },
+        {
+          "lord": "Venus",
+          "end": "1999-02-16"
+        },
+        {
+          "lord": "Sun",
+          "end": "1999-03-27"
+        },
+        {
+          "lord": "Moon",
+          "end": "1999-06-05"
+        },
+        {
+          "lord": "Mars",
+          "end": "1999-07-23"
+        },
+        {
+          "lord": "Rahu",
+          "end": "1999-11-25"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2000-03-14"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2000-07-23"
+        }
+      ]
+    },
+    {
+      "maha": "Jupiter",
+      "antar": "Ketu",
+      "start": "2000-07-23",
+      "end": "2001-06-29",
+      "periods": [
+        {
+          "lord": "Ketu",
+          "end": "2000-08-13"
+        },
+        {
+          "lord": "Venus",
+          "end": "2000-10-09"
+        },
+        {
+          "lord": "Sun",
+          "end": "2000-10-26"
+        },
+        {
+          "lord": "Moon",
+          "end": "2000-11-24"
+        },
+        {
+          "lord": "Mars",
+          "end": "2000-12-13"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2001-02-04"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2001-03-18"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2001-05-12"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2001-06-29"
+        }
+      ]
+    },
+    {
+      "maha": "Jupiter",
+      "antar": "Venus",
+      "start": "2001-06-29",
+      "end": "2004-03-01",
+      "periods": [
+        {
+          "lord": "Venus",
+          "end": "2001-12-09"
+        },
+        {
+          "lord": "Sun",
+          "end": "2002-01-27"
+        },
+        {
+          "lord": "Moon",
+          "end": "2002-04-17"
+        },
+        {
+          "lord": "Mars",
+          "end": "2002-06-13"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2002-11-07"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2003-03-15"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2003-08-17"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2004-01-03"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2004-03-01"
+        }
+      ]
+    },
+    {
+      "maha": "Jupiter",
+      "antar": "Sun",
+      "start": "2004-03-01",
+      "end": "2004-12-17",
+      "periods": [
+        {
+          "lord": "Sun",
+          "end": "2004-03-14"
+        },
+        {
+          "lord": "Moon",
+          "end": "2004-04-08"
+        },
+        {
+          "lord": "Mars",
+          "end": "2004-04-24"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2004-06-08"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2004-07-16"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2004-09-02"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2004-10-12"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2004-10-29"
+        },
+        {
+          "lord": "Venus",
+          "end": "2004-12-17"
+        }
+      ]
+    },
+    {
+      "maha": "Jupiter",
+      "antar": "Moon",
+      "start": "2004-12-17",
+      "end": "2006-04-17",
+      "periods": [
+        {
+          "lord": "Moon",
+          "end": "2005-01-27"
+        },
+        {
+          "lord": "Mars",
+          "end": "2005-02-25"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2005-05-07"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2005-07-11"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2005-09-27"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2005-12-05"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2006-01-03"
+        },
+        {
+          "lord": "Venus",
+          "end": "2006-03-23"
+        },
+        {
+          "lord": "Sun",
+          "end": "2006-04-17"
+        }
+      ]
+    },
+    {
+      "maha": "Jupiter",
+      "antar": "Mars",
+      "start": "2006-04-17",
+      "end": "2007-03-23",
+      "periods": [
+        {
+          "lord": "Mars",
+          "end": "2006-05-07"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2006-06-27"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2006-08-12"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2006-10-05"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2006-11-23"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2006-12-12"
+        },
+        {
+          "lord": "Venus",
+          "end": "2007-02-08"
+        },
+        {
+          "lord": "Sun",
+          "end": "2007-02-25"
+        },
+        {
+          "lord": "Moon",
+          "end": "2007-03-23"
+        }
+      ]
+    },
+    {
+      "maha": "Jupiter",
+      "antar": "Rahu",
+      "start": "2007-03-23",
+      "end": "2009-08-17",
+      "periods": [
+        {
+          "lord": "Rahu",
+          "end": "2007-08-03"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2007-11-28"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2008-04-15"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2008-08-17"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2008-10-08"
+        },
+        {
+          "lord": "Venus",
+          "end": "2009-03-02"
+        },
+        {
+          "lord": "Sun",
+          "end": "2009-04-15"
+        },
+        {
+          "lord": "Moon",
+          "end": "2009-06-27"
+        },
+        {
+          "lord": "Mars",
+          "end": "2009-08-17"
+        }
+      ]
+    },
+    {
+      "maha": "Saturn",
+      "antar": "Saturn",
+      "start": "2009-08-17",
+      "end": "2012-08-20",
+      "periods": [
+        {
+          "lord": "Saturn",
+          "end": "2010-02-09"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2010-07-12"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2010-09-15"
+        },
+        {
+          "lord": "Venus",
+          "end": "2011-03-16"
+        },
+        {
+          "lord": "Sun",
+          "end": "2011-05-10"
+        },
+        {
+          "lord": "Moon",
+          "end": "2011-08-10"
+        },
+        {
+          "lord": "Mars",
+          "end": "2011-10-13"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2012-03-26"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2012-08-20"
+        }
+      ]
+    },
+    {
+      "maha": "Saturn",
+      "antar": "Mercury",
+      "start": "2012-08-20",
+      "end": "2015-04-29",
+      "periods": [
+        {
+          "lord": "Mercury",
+          "end": "2013-01-07"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2013-03-04"
+        },
+        {
+          "lord": "Venus",
+          "end": "2013-08-15"
+        },
+        {
+          "lord": "Sun",
+          "end": "2013-10-04"
+        },
+        {
+          "lord": "Moon",
+          "end": "2013-12-25"
+        },
+        {
+          "lord": "Mars",
+          "end": "2014-02-21"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2014-07-16"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2014-11-26"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2015-04-29"
+        }
+      ]
+    },
+    {
+      "maha": "Saturn",
+      "antar": "Ketu",
+      "start": "2015-04-29",
+      "end": "2016-06-08",
+      "periods": [
+        {
+          "lord": "Ketu",
+          "end": "2015-05-22"
+        },
+        {
+          "lord": "Venus",
+          "end": "2015-07-29"
+        },
+        {
+          "lord": "Sun",
+          "end": "2015-08-19"
+        },
+        {
+          "lord": "Moon",
+          "end": "2015-09-22"
+        },
+        {
+          "lord": "Mars",
+          "end": "2015-10-15"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2015-12-15"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2016-02-08"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2016-04-12"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2016-06-08"
+        }
+      ]
+    },
+    {
+      "maha": "Saturn",
+      "antar": "Venus",
+      "start": "2016-06-08",
+      "end": "2019-08-08",
+      "periods": [
+        {
+          "lord": "Venus",
+          "end": "2016-12-18"
+        },
+        {
+          "lord": "Sun",
+          "end": "2017-02-15"
+        },
+        {
+          "lord": "Moon",
+          "end": "2017-05-20"
+        },
+        {
+          "lord": "Mars",
+          "end": "2017-07-27"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2018-01-18"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2018-06-20"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2018-12-20"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2019-06-02"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2019-08-08"
+        }
+      ]
+    },
+    {
+      "maha": "Saturn",
+      "antar": "Sun",
+      "start": "2019-08-08",
+      "end": "2020-07-20",
+      "periods": [
+        {
+          "lord": "Sun",
+          "end": "2019-08-25"
+        },
+        {
+          "lord": "Moon",
+          "end": "2019-09-24"
+        },
+        {
+          "lord": "Mars",
+          "end": "2019-10-14"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2019-12-05"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2020-01-21"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2020-03-15"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2020-05-03"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2020-05-23"
+        },
+        {
+          "lord": "Venus",
+          "end": "2020-07-20"
+        }
+      ]
+    },
+    {
+      "maha": "Saturn",
+      "antar": "Moon",
+      "start": "2020-07-20",
+      "end": "2022-02-20",
+      "periods": [
+        {
+          "lord": "Moon",
+          "end": "2020-09-08"
+        },
+        {
+          "lord": "Mars",
+          "end": "2020-10-11"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2021-01-06"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2021-03-22"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2021-06-23"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2021-09-13"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2021-10-17"
+        },
+        {
+          "lord": "Venus",
+          "end": "2022-01-22"
+        },
+        {
+          "lord": "Sun",
+          "end": "2022-02-20"
+        }
+      ]
+    },
+    {
+      "maha": "Saturn",
+      "antar": "Mars",
+      "start": "2022-02-20",
+      "end": "2023-03-29",
+      "periods": [
+        {
+          "lord": "Mars",
+          "end": "2022-03-13"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2022-05-13"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2022-07-06"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2022-09-10"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2022-11-06"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2022-11-29"
+        },
+        {
+          "lord": "Venus",
+          "end": "2023-02-06"
+        },
+        {
+          "lord": "Sun",
+          "end": "2023-02-26"
+        },
+        {
+          "lord": "Moon",
+          "end": "2023-03-29"
+        }
+      ]
+    },
+    {
+      "maha": "Saturn",
+      "antar": "Rahu",
+      "start": "2023-03-29",
+      "end": "2026-02-05",
+      "periods": [
+        {
+          "lord": "Rahu",
+          "end": "2023-09-03"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2024-01-20"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2024-07-02"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2024-11-28"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2025-01-27"
+        },
+        {
+          "lord": "Venus",
+          "end": "2025-07-18"
+        },
+        {
+          "lord": "Sun",
+          "end": "2025-09-10"
+        },
+        {
+          "lord": "Moon",
+          "end": "2025-12-05"
+        },
+        {
+          "lord": "Mars",
+          "end": "2026-02-05"
+        }
+      ]
+    },
+    {
+      "maha": "Saturn",
+      "antar": "Jupiter",
+      "start": "2026-02-05",
+      "end": "2028-08-17",
+      "periods": [
+        {
+          "lord": "Jupiter",
+          "end": "2026-06-07"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2026-11-01"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2027-03-10"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2027-05-04"
+        },
+        {
+          "lord": "Venus",
+          "end": "2027-10-06"
+        },
+        {
+          "lord": "Sun",
+          "end": "2027-11-21"
+        },
+        {
+          "lord": "Moon",
+          "end": "2028-02-07"
+        },
+        {
+          "lord": "Mars",
+          "end": "2028-03-30"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2028-08-17"
+        }
+      ]
+    },
+    {
+      "maha": "Mercury",
+      "antar": "Mercury",
+      "start": "2028-08-17",
+      "end": "2031-01-14",
+      "periods": [
+        {
+          "lord": "Mercury",
+          "end": "2028-12-20"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2029-02-11"
+        },
+        {
+          "lord": "Venus",
+          "end": "2029-07-05"
+        },
+        {
+          "lord": "Sun",
+          "end": "2029-08-18"
+        },
+        {
+          "lord": "Moon",
+          "end": "2029-11-01"
+        },
+        {
+          "lord": "Mars",
+          "end": "2029-12-21"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2030-05-01"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2030-08-27"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2031-01-14"
+        }
+      ]
+    },
+    {
+      "maha": "Mercury",
+      "antar": "Ketu",
+      "start": "2031-01-14",
+      "end": "2032-01-11",
+      "periods": [
+        {
+          "lord": "Ketu",
+          "end": "2031-02-05"
+        },
+        {
+          "lord": "Venus",
+          "end": "2031-04-04"
+        },
+        {
+          "lord": "Sun",
+          "end": "2031-04-22"
+        },
+        {
+          "lord": "Moon",
+          "end": "2031-05-22"
+        },
+        {
+          "lord": "Mars",
+          "end": "2031-06-13"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2031-08-06"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2031-09-24"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2031-11-21"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2032-01-11"
+        }
+      ]
+    },
+    {
+      "maha": "Mercury",
+      "antar": "Venus",
+      "start": "2032-01-11",
+      "end": "2034-11-11",
+      "periods": [
+        {
+          "lord": "Venus",
+          "end": "2032-07-01"
+        },
+        {
+          "lord": "Sun",
+          "end": "2032-08-22"
+        },
+        {
+          "lord": "Moon",
+          "end": "2032-11-17"
+        },
+        {
+          "lord": "Mars",
+          "end": "2033-01-17"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2033-06-20"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2033-11-06"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2034-04-17"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2034-09-12"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2034-11-11"
+        }
+      ]
+    },
+    {
+      "maha": "Mercury",
+      "antar": "Sun",
+      "start": "2034-11-11",
+      "end": "2035-09-17",
+      "periods": [
+        {
+          "lord": "Sun",
+          "end": "2034-11-26"
+        },
+        {
+          "lord": "Moon",
+          "end": "2034-12-22"
+        },
+        {
+          "lord": "Mars",
+          "end": "2035-01-10"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2035-02-26"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2035-04-06"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2035-05-25"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2035-07-08"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2035-07-26"
+        },
+        {
+          "lord": "Venus",
+          "end": "2035-09-17"
+        }
+      ]
+    },
+    {
+      "maha": "Mercury",
+      "antar": "Moon",
+      "start": "2035-09-17",
+      "end": "2037-02-17",
+      "periods": [
+        {
+          "lord": "Moon",
+          "end": "2035-10-30"
+        },
+        {
+          "lord": "Mars",
+          "end": "2035-11-29"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2036-02-16"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2036-04-24"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2036-07-15"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2036-09-27"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2036-10-27"
+        },
+        {
+          "lord": "Venus",
+          "end": "2037-01-22"
+        },
+        {
+          "lord": "Sun",
+          "end": "2037-02-17"
+        }
+      ]
+    },
+    {
+      "maha": "Mercury",
+      "antar": "Mars",
+      "start": "2037-02-17",
+      "end": "2038-02-14",
+      "periods": [
+        {
+          "lord": "Mars",
+          "end": "2037-03-08"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2037-05-01"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2037-06-19"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2037-08-16"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2037-10-06"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2037-10-27"
+        },
+        {
+          "lord": "Venus",
+          "end": "2037-12-27"
+        },
+        {
+          "lord": "Sun",
+          "end": "2038-01-14"
+        },
+        {
+          "lord": "Moon",
+          "end": "2038-02-14"
+        }
+      ]
+    },
+    {
+      "maha": "Mercury",
+      "antar": "Rahu",
+      "start": "2038-02-14",
+      "end": "2040-09-02",
+      "periods": [
+        {
+          "lord": "Rahu",
+          "end": "2038-07-02"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2038-11-04"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2039-03-30"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2039-08-10"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2039-10-03"
+        },
+        {
+          "lord": "Venus",
+          "end": "2040-03-06"
+        },
+        {
+          "lord": "Sun",
+          "end": "2040-04-22"
+        },
+        {
+          "lord": "Moon",
+          "end": "2040-07-09"
+        },
+        {
+          "lord": "Mars",
+          "end": "2040-09-02"
+        }
+      ]
+    },
+    {
+      "maha": "Mercury",
+      "antar": "Jupiter",
+      "start": "2040-09-02",
+      "end": "2042-12-08",
+      "periods": [
+        {
+          "lord": "Jupiter",
+          "end": "2040-12-21"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2041-04-30"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2041-08-26"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2041-10-13"
+        },
+        {
+          "lord": "Venus",
+          "end": "2042-03-01"
+        },
+        {
+          "lord": "Sun",
+          "end": "2042-04-10"
+        },
+        {
+          "lord": "Moon",
+          "end": "2042-06-18"
+        },
+        {
+          "lord": "Mars",
+          "end": "2042-08-06"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2042-12-08"
+        }
+      ]
+    },
+    {
+      "maha": "Mercury",
+      "antar": "Saturn",
+      "start": "2042-12-08",
+      "end": "2045-08-17",
+      "periods": [
+        {
+          "lord": "Saturn",
+          "end": "2043-05-12"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2043-09-29"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2043-11-25"
+        },
+        {
+          "lord": "Venus",
+          "end": "2044-05-07"
+        },
+        {
+          "lord": "Sun",
+          "end": "2044-06-25"
+        },
+        {
+          "lord": "Moon",
+          "end": "2044-09-16"
+        },
+        {
+          "lord": "Mars",
+          "end": "2044-11-13"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2045-04-08"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2045-08-17"
+        }
+      ]
+    },
+    {
+      "maha": "Ketu",
+      "antar": "Ketu",
+      "start": "2045-08-17",
+      "end": "2046-01-14",
+      "periods": [
+        {
+          "lord": "Ketu",
+          "end": "2045-08-26"
+        },
+        {
+          "lord": "Venus",
+          "end": "2045-09-20"
+        },
+        {
+          "lord": "Sun",
+          "end": "2045-09-28"
+        },
+        {
+          "lord": "Moon",
+          "end": "2045-10-10"
+        },
+        {
+          "lord": "Mars",
+          "end": "2045-10-18"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2045-11-10"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2045-11-30"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2045-12-23"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2046-01-14"
+        }
+      ]
+    },
+    {
+      "maha": "Ketu",
+      "antar": "Venus",
+      "start": "2046-01-14",
+      "end": "2047-03-14",
+      "periods": [
+        {
+          "lord": "Venus",
+          "end": "2046-03-24"
+        },
+        {
+          "lord": "Sun",
+          "end": "2046-04-15"
+        },
+        {
+          "lord": "Moon",
+          "end": "2046-05-20"
+        },
+        {
+          "lord": "Mars",
+          "end": "2046-06-15"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2046-08-18"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2046-10-14"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2046-12-20"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2047-02-20"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2047-03-14"
+        }
+      ]
+    },
+    {
+      "maha": "Ketu",
+      "antar": "Sun",
+      "start": "2047-03-14",
+      "end": "2047-07-20",
+      "periods": [
+        {
+          "lord": "Sun",
+          "end": "2047-03-20"
+        },
+        {
+          "lord": "Moon",
+          "end": "2047-04-01"
+        },
+        {
+          "lord": "Mars",
+          "end": "2047-04-08"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2047-04-27"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2047-05-14"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2047-06-04"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2047-06-22"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2047-06-29"
+        },
+        {
+          "lord": "Venus",
+          "end": "2047-07-20"
+        }
+      ]
+    },
+    {
+      "maha": "Ketu",
+      "antar": "Moon",
+      "start": "2047-07-20",
+      "end": "2048-02-20",
+      "periods": [
+        {
+          "lord": "Moon",
+          "end": "2047-08-08"
+        },
+        {
+          "lord": "Mars",
+          "end": "2047-08-20"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2047-09-21"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2047-10-19"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2047-11-23"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2047-12-22"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2048-01-05"
+        },
+        {
+          "lord": "Venus",
+          "end": "2048-02-10"
+        },
+        {
+          "lord": "Sun",
+          "end": "2048-02-20"
+        }
+      ]
+    },
+    {
+      "maha": "Ketu",
+      "antar": "Mars",
+      "start": "2048-02-20",
+      "end": "2048-07-17",
+      "periods": [
+        {
+          "lord": "Mars",
+          "end": "2048-03-01"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2048-03-21"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2048-04-10"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2048-05-04"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2048-05-24"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2048-06-03"
+        },
+        {
+          "lord": "Venus",
+          "end": "2048-06-28"
+        },
+        {
+          "lord": "Sun",
+          "end": "2048-07-05"
+        },
+        {
+          "lord": "Moon",
+          "end": "2048-07-17"
+        }
+      ]
+    },
+    {
+      "maha": "Ketu",
+      "antar": "Rahu",
+      "start": "2048-07-17",
+      "end": "2049-08-05",
+      "periods": [
+        {
+          "lord": "Rahu",
+          "end": "2048-09-14"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2048-11-04"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2049-01-04"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2049-02-28"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2049-03-20"
+        },
+        {
+          "lord": "Venus",
+          "end": "2049-05-23"
+        },
+        {
+          "lord": "Sun",
+          "end": "2049-06-12"
+        },
+        {
+          "lord": "Moon",
+          "end": "2049-07-13"
+        },
+        {
+          "lord": "Mars",
+          "end": "2049-08-05"
+        }
+      ]
+    },
+    {
+      "maha": "Ketu",
+      "antar": "Jupiter",
+      "start": "2049-08-05",
+      "end": "2050-07-11",
+      "periods": [
+        {
+          "lord": "Jupiter",
+          "end": "2049-09-20"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2049-11-13"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2050-01-01"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2050-01-20"
+        },
+        {
+          "lord": "Venus",
+          "end": "2050-03-16"
+        },
+        {
+          "lord": "Sun",
+          "end": "2050-04-03"
+        },
+        {
+          "lord": "Moon",
+          "end": "2050-05-01"
+        },
+        {
+          "lord": "Mars",
+          "end": "2050-05-21"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2050-07-11"
+        }
+      ]
+    },
+    {
+      "maha": "Ketu",
+      "antar": "Saturn",
+      "start": "2050-07-11",
+      "end": "2051-08-20",
+      "periods": [
+        {
+          "lord": "Saturn",
+          "end": "2050-09-14"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2050-11-11"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2050-12-04"
+        },
+        {
+          "lord": "Venus",
+          "end": "2051-02-11"
+        },
+        {
+          "lord": "Sun",
+          "end": "2051-03-01"
+        },
+        {
+          "lord": "Moon",
+          "end": "2051-04-04"
+        },
+        {
+          "lord": "Mars",
+          "end": "2051-04-27"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2051-06-27"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2051-08-20"
+        }
+      ]
+    },
+    {
+      "maha": "Ketu",
+      "antar": "Mercury",
+      "start": "2051-08-20",
+      "end": "2052-08-17",
+      "periods": [
+        {
+          "lord": "Mercury",
+          "end": "2051-10-11"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2051-11-02"
+        },
+        {
+          "lord": "Venus",
+          "end": "2052-01-01"
+        },
+        {
+          "lord": "Sun",
+          "end": "2052-01-19"
+        },
+        {
+          "lord": "Moon",
+          "end": "2052-02-19"
+        },
+        {
+          "lord": "Mars",
+          "end": "2052-03-09"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2052-05-03"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2052-06-21"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2052-08-17"
+        }
+      ]
+    },
+    {
+      "maha": "Venus",
+      "antar": "Venus",
+      "start": "2052-08-17",
+      "end": "2055-12-17",
+      "periods": [
+        {
+          "lord": "Venus",
+          "end": "2053-03-07"
+        },
+        {
+          "lord": "Sun",
+          "end": "2053-05-07"
+        },
+        {
+          "lord": "Moon",
+          "end": "2053-08-17"
+        },
+        {
+          "lord": "Mars",
+          "end": "2053-10-27"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2054-04-27"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2054-10-07"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2055-04-17"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2055-10-07"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2055-12-17"
+        }
+      ]
+    },
+    {
+      "maha": "Venus",
+      "antar": "Sun",
+      "start": "2055-12-17",
+      "end": "2056-12-17",
+      "periods": [
+        {
+          "lord": "Sun",
+          "end": "2056-01-05"
+        },
+        {
+          "lord": "Moon",
+          "end": "2056-02-05"
+        },
+        {
+          "lord": "Mars",
+          "end": "2056-02-26"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2056-04-20"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2056-06-08"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2056-08-05"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2056-09-26"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2056-10-17"
+        },
+        {
+          "lord": "Venus",
+          "end": "2056-12-17"
+        }
+      ]
+    },
+    {
+      "maha": "Venus",
+      "antar": "Moon",
+      "start": "2056-12-17",
+      "end": "2058-08-17",
+      "periods": [
+        {
+          "lord": "Moon",
+          "end": "2057-02-07"
+        },
+        {
+          "lord": "Mars",
+          "end": "2057-03-12"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2057-06-12"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2057-09-02"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2057-12-07"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2058-03-02"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2058-04-07"
+        },
+        {
+          "lord": "Venus",
+          "end": "2058-07-17"
+        },
+        {
+          "lord": "Sun",
+          "end": "2058-08-17"
+        }
+      ]
+    },
+    {
+      "maha": "Venus",
+      "antar": "Mars",
+      "start": "2058-08-17",
+      "end": "2059-10-17",
+      "periods": [
+        {
+          "lord": "Mars",
+          "end": "2058-09-12"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2058-11-15"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2059-01-11"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2059-03-17"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2059-05-17"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2059-06-11"
+        },
+        {
+          "lord": "Venus",
+          "end": "2059-08-21"
+        },
+        {
+          "lord": "Sun",
+          "end": "2059-09-12"
+        },
+        {
+          "lord": "Moon",
+          "end": "2059-10-17"
+        }
+      ]
+    },
+    {
+      "maha": "Venus",
+      "antar": "Rahu",
+      "start": "2059-10-17",
+      "end": "2062-10-17",
+      "periods": [
+        {
+          "lord": "Rahu",
+          "end": "2060-03-29"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2060-08-23"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2061-02-14"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2061-07-17"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2061-09-20"
+        },
+        {
+          "lord": "Venus",
+          "end": "2062-03-20"
+        },
+        {
+          "lord": "Sun",
+          "end": "2062-05-14"
+        },
+        {
+          "lord": "Moon",
+          "end": "2062-08-14"
+        },
+        {
+          "lord": "Mars",
+          "end": "2062-10-17"
+        }
+      ]
+    },
+    {
+      "maha": "Venus",
+      "antar": "Jupiter",
+      "start": "2062-10-17",
+      "end": "2065-06-17",
+      "periods": [
+        {
+          "lord": "Jupiter",
+          "end": "2063-02-25"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2063-07-27"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2063-12-13"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2064-02-09"
+        },
+        {
+          "lord": "Venus",
+          "end": "2064-07-19"
+        },
+        {
+          "lord": "Sun",
+          "end": "2064-09-07"
+        },
+        {
+          "lord": "Moon",
+          "end": "2064-11-27"
+        },
+        {
+          "lord": "Mars",
+          "end": "2065-01-23"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2065-06-17"
+        }
+      ]
+    },
+    {
+      "maha": "Venus",
+      "antar": "Saturn",
+      "start": "2065-06-17",
+      "end": "2068-08-17",
+      "periods": [
+        {
+          "lord": "Saturn",
+          "end": "2065-12-18"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2066-05-29"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2066-08-06"
+        },
+        {
+          "lord": "Venus",
+          "end": "2067-02-16"
+        },
+        {
+          "lord": "Sun",
+          "end": "2067-04-13"
+        },
+        {
+          "lord": "Moon",
+          "end": "2067-07-18"
+        },
+        {
+          "lord": "Mars",
+          "end": "2067-09-24"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2068-03-15"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2068-08-17"
+        }
+      ]
+    },
+    {
+      "maha": "Venus",
+      "antar": "Mercury",
+      "start": "2068-08-17",
+      "end": "2071-06-17",
+      "periods": [
+        {
+          "lord": "Mercury",
+          "end": "2069-01-12"
+        },
+        {
+          "lord": "Ketu",
+          "end": "2069-03-11"
+        },
+        {
+          "lord": "Venus",
+          "end": "2069-09-01"
+        },
+        {
+          "lord": "Sun",
+          "end": "2069-10-22"
+        },
+        {
+          "lord": "Moon",
+          "end": "2070-01-17"
+        },
+        {
+          "lord": "Mars",
+          "end": "2070-03-17"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2070-08-20"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2071-01-06"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2071-06-17"
+        }
+      ]
+    },
+    {
+      "maha": "Venus",
+      "antar": "Ketu",
+      "start": "2071-06-17",
+      "end": "2072-08-17",
+      "periods": [
+        {
+          "lord": "Ketu",
+          "end": "2071-07-12"
+        },
+        {
+          "lord": "Venus",
+          "end": "2071-09-22"
+        },
+        {
+          "lord": "Sun",
+          "end": "2071-10-13"
+        },
+        {
+          "lord": "Moon",
+          "end": "2071-11-18"
+        },
+        {
+          "lord": "Mars",
+          "end": "2071-12-12"
+        },
+        {
+          "lord": "Rahu",
+          "end": "2072-02-15"
+        },
+        {
+          "lord": "Jupiter",
+          "end": "2072-04-11"
+        },
+        {
+          "lord": "Saturn",
+          "end": "2072-06-18"
+        },
+        {
+          "lord": "Mercury",
+          "end": "2072-08-17"
+        }
+      ]
+    }
+  ]
+}

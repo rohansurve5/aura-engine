@@ -1,0 +1,336 @@
+{
+  "source": "drikpanchang.com day-panchang + choghadiya pages (geoname-id 1259229), fetched 2026-07-18",
+  "location": {
+    "name": "Pune, Maharashtra, India",
+    "lat": 18.5204,
+    "lon": 73.8567,
+    "tz": "+05:30"
+  },
+  "notes": [
+    "Times are local IST, 24h. 'end' is the DrikPanchang 'upto' moment (ISO local).",
+    "Entries listed as DrikPanchang shows them: element prevailing at sunrise first, then successors.",
+    "end: null means the element extends beyond the page's listing window (next sunrise).",
+    "A few pages' karana/yoga rows were disambiguated via the fixed 60-karana cycle; all 10 days verified mutually consistent."
+  ],
+  "days": [
+    {
+      "date": "1989-09-23",
+      "weekday": "Saturday",
+      "sunrise": "06:24",
+      "sunset": "18:30",
+      "paksha": "Krishna",
+      "tithi": [
+        {"name": "Navami", "end": "1989-09-23T18:47"},
+        {"name": "Dashami", "end": null}
+      ],
+      "nakshatra": [
+        {"name": "Ardra", "end": "1989-09-23T10:02"},
+        {"name": "Punarvasu", "end": null}
+      ],
+      "yoga": [
+        {"name": "Variyana", "end": "1989-09-23T16:09"},
+        {"name": "Parigha", "end": null}
+      ],
+      "karana": [
+        {"name": "Taitila", "end": "1989-09-23T06:54"},
+        {"name": "Garaja", "end": "1989-09-23T18:47"},
+        {"name": "Vanija", "end": null}
+      ],
+      "rahu_kalam": ["09:25", "10:56"],
+      "gulika_kalam": ["06:24", "07:54"],
+      "yamaganda": ["13:58", "15:28"]
+    },
+    {
+      "date": "2026-01-14",
+      "weekday": "Wednesday",
+      "sunrise": "07:10",
+      "sunset": "18:18",
+      "paksha": "Krishna",
+      "tithi": [
+        {"name": "Ekadashi", "end": "2026-01-14T17:52"},
+        {"name": "Dwadashi", "end": null}
+      ],
+      "nakshatra": [
+        {"name": "Anuradha", "end": "2026-01-15T03:03"},
+        {"name": "Jyeshtha", "end": null}
+      ],
+      "yoga": [
+        {"name": "Ganda", "end": "2026-01-14T19:56"},
+        {"name": "Vriddhi", "end": null}
+      ],
+      "karana": [
+        {"name": "Balava", "end": "2026-01-14T17:52"},
+        {"name": "Kaulava", "end": "2026-01-15T07:06"},
+        {"name": "Taitila", "end": null}
+      ],
+      "rahu_kalam": ["12:44", "14:07"],
+      "gulika_kalam": ["11:20", "12:44"],
+      "yamaganda": ["08:33", "09:57"]
+    },
+    {
+      "date": "2026-03-14",
+      "weekday": "Saturday",
+      "sunrise": "06:44",
+      "sunset": "18:44",
+      "paksha": "Krishna",
+      "tithi": [
+        {"name": "Dashami", "end": "2026-03-14T08:10"},
+        {"name": "Ekadashi", "end": null}
+      ],
+      "nakshatra": [
+        {"name": "Uttara Ashadha", "end": "2026-03-15T04:49"},
+        {"name": "Shravana", "end": null}
+      ],
+      "yoga": [
+        {"name": "Variyana", "end": "2026-03-14T10:43"},
+        {"name": "Parigha", "end": null}
+      ],
+      "karana": [
+        {"name": "Vishti", "end": "2026-03-14T08:10"},
+        {"name": "Bava", "end": "2026-03-14T20:48"},
+        {"name": "Balava", "end": null}
+      ],
+      "rahu_kalam": ["09:44", "11:14"],
+      "gulika_kalam": ["06:44", "08:14"],
+      "yamaganda": ["14:14", "15:44"]
+    },
+    {
+      "date": "2026-06-05",
+      "weekday": "Friday",
+      "sunrise": "05:57",
+      "sunset": "19:09",
+      "paksha": "Krishna",
+      "tithi": [
+        {"name": "Panchami", "end": "2026-06-06T01:20"},
+        {"name": "Shashthi", "end": null}
+      ],
+      "nakshatra": [
+        {"name": "Shravana", "end": null, "full_night": true}
+      ],
+      "yoga": [
+        {"name": "Brahma", "end": "2026-06-05T09:43"},
+        {"name": "Indra", "end": null}
+      ],
+      "karana": [
+        {"name": "Kaulava", "end": "2026-06-05T12:28"},
+        {"name": "Taitila", "end": "2026-06-06T01:20"},
+        {"name": "Garaja", "end": null}
+      ],
+      "rahu_kalam": ["10:54", "12:33"],
+      "gulika_kalam": ["07:36", "09:15"],
+      "yamaganda": ["15:51", "17:30"]
+    },
+    {
+      "date": "2026-07-17",
+      "weekday": "Friday",
+      "sunrise": "06:07",
+      "sunset": "19:14",
+      "paksha": "Shukla",
+      "tithi": [
+        {"name": "Tritiya", "end": "2026-07-17T06:27"},
+        {"name": "Chaturthi", "end": "2026-07-18T04:42"}
+      ],
+      "nakshatra": [
+        {"name": "Magha", "end": "2026-07-17T18:34"},
+        {"name": "Purva Phalguni", "end": "2026-07-18T18:00"}
+      ],
+      "yoga": [
+        {"name": "Vyatipata", "end": "2026-07-17T22:46"},
+        {"name": "Variyana", "end": "2026-07-18T20:46"}
+      ],
+      "karana": [
+        {"name": "Garaja", "end": "2026-07-17T06:27"},
+        {"name": "Vanija", "end": "2026-07-17T17:29"},
+        {"name": "Vishti", "end": "2026-07-18T04:42"}
+      ],
+      "rahu_kalam": ["11:02", "12:41"],
+      "gulika_kalam": ["07:45", "09:24"],
+      "yamaganda": ["15:58", "17:36"]
+    },
+    {
+      "date": "2026-07-18",
+      "weekday": "Saturday",
+      "sunrise": "06:07",
+      "sunset": "19:14",
+      "paksha": "Shukla",
+      "tithi": [
+        {"name": "Panchami", "end": "2026-07-19T03:42"},
+        {"name": "Shashthi", "end": null}
+      ],
+      "nakshatra": [
+        {"name": "Purva Phalguni", "end": "2026-07-18T18:00"},
+        {"name": "Uttara Phalguni", "end": null}
+      ],
+      "yoga": [
+        {"name": "Variyana", "end": "2026-07-18T20:46"},
+        {"name": "Parigha", "end": null}
+      ],
+      "karana": [
+        {"name": "Bava", "end": "2026-07-18T16:06"},
+        {"name": "Balava", "end": "2026-07-19T03:42"},
+        {"name": "Kaulava", "end": null}
+      ],
+      "rahu_kalam": ["09:24", "11:02"],
+      "gulika_kalam": ["06:07", "07:46"],
+      "yamaganda": ["14:19", "15:57"]
+    },
+    {
+      "date": "2026-07-19",
+      "weekday": "Sunday",
+      "sunrise": "06:08",
+      "sunset": "19:14",
+      "paksha": "Shukla",
+      "tithi": [
+        {"name": "Shashthi", "end": "2026-07-20T03:29"},
+        {"name": "Saptami", "end": null}
+      ],
+      "nakshatra": [
+        {"name": "Uttara Phalguni", "end": "2026-07-19T18:12"},
+        {"name": "Hasta", "end": null}
+      ],
+      "yoga": [
+        {"name": "Parigha", "end": "2026-07-19T19:23"},
+        {"name": "Shiva", "end": null}
+      ],
+      "karana": [
+        {"name": "Kaulava", "end": "2026-07-19T15:30"},
+        {"name": "Taitila", "end": "2026-07-20T03:29"},
+        {"name": "Garaja", "end": null}
+      ],
+      "rahu_kalam": ["17:36", "19:14"],
+      "gulika_kalam": ["15:57", "17:36"],
+      "yamaganda": ["12:41", "14:19"]
+    },
+    {
+      "date": "2026-08-15",
+      "weekday": "Saturday",
+      "sunrise": "06:16",
+      "sunset": "19:02",
+      "paksha": "Shukla",
+      "tithi": [
+        {"name": "Tritiya", "end": "2026-08-15T17:28"},
+        {"name": "Chaturthi", "end": null}
+      ],
+      "nakshatra": [
+        {"name": "Uttara Phalguni", "end": "2026-08-16T03:25"},
+        {"name": "Hasta", "end": null}
+      ],
+      "yoga": [
+        {"name": "Shiva", "end": "2026-08-15T07:09"},
+        {"name": "Siddha", "end": "2026-08-16T05:21"}
+      ],
+      "karana": [
+        {"name": "Garaja", "end": "2026-08-15T17:28"},
+        {"name": "Vanija", "end": "2026-08-16T05:05"},
+        {"name": "Vishti", "end": null}
+      ],
+      "rahu_kalam": ["09:28", "11:03"],
+      "gulika_kalam": ["06:16", "07:52"],
+      "yamaganda": ["14:15", "15:50"]
+    },
+    {
+      "date": "2026-10-20",
+      "weekday": "Tuesday",
+      "sunrise": "06:30",
+      "sunset": "18:09",
+      "paksha": "Shukla",
+      "tithi": [
+        {"name": "Navami", "end": "2026-10-20T12:50"},
+        {"name": "Dashami", "end": null}
+      ],
+      "nakshatra": [
+        {"name": "Shravana", "end": "2026-10-20T18:02"},
+        {"name": "Dhanishta", "end": null}
+      ],
+      "yoga": [
+        {"name": "Shula", "end": "2026-10-21T00:50"},
+        {"name": "Ganda", "end": null}
+      ],
+      "karana": [
+        {"name": "Kaulava", "end": "2026-10-20T12:50"},
+        {"name": "Taitila", "end": "2026-10-21T01:36"},
+        {"name": "Garaja", "end": null}
+      ],
+      "rahu_kalam": ["15:14", "16:41"],
+      "gulika_kalam": ["12:19", "13:47"],
+      "yamaganda": ["09:24", "10:52"]
+    },
+    {
+      "date": "2026-12-25",
+      "weekday": "Friday",
+      "sunrise": "07:04",
+      "sunset": "18:05",
+      "paksha": "Krishna",
+      "tithi": [
+        {"name": "Dwitiya", "end": "2026-12-25T23:25"},
+        {"name": "Tritiya", "end": null}
+      ],
+      "nakshatra": [
+        {"name": "Punarvasu", "end": "2026-12-25T22:50"},
+        {"name": "Pushya", "end": null}
+      ],
+      "yoga": [
+        {"name": "Brahma", "end": "2026-12-25T08:28"},
+        {"name": "Indra", "end": "2026-12-26T04:16"}
+      ],
+      "karana": [
+        {"name": "Taitila", "end": "2026-12-25T13:14"},
+        {"name": "Garaja", "end": "2026-12-25T23:25"},
+        {"name": "Vanija", "end": null}
+      ],
+      "rahu_kalam": ["11:12", "12:35"],
+      "gulika_kalam": ["08:27", "09:49"],
+      "yamaganda": ["15:20", "16:43"]
+    }
+  ],
+  "choghadiya": [
+    {
+      "date": "2026-07-18",
+      "weekday": "Saturday",
+      "day": [
+        {"name": "Kaal", "start": "06:07", "end": "07:46"},
+        {"name": "Shubh", "start": "07:46", "end": "09:24"},
+        {"name": "Rog", "start": "09:24", "end": "11:02"},
+        {"name": "Udveg", "start": "11:02", "end": "12:41"},
+        {"name": "Chal", "start": "12:41", "end": "14:19"},
+        {"name": "Labh", "start": "14:19", "end": "15:57"},
+        {"name": "Amrit", "start": "15:57", "end": "17:36"},
+        {"name": "Kaal", "start": "17:36", "end": "19:14"}
+      ],
+      "night": [
+        {"name": "Labh", "start": "19:14", "end": "20:36"},
+        {"name": "Udveg", "start": "20:36", "end": "21:58"},
+        {"name": "Shubh", "start": "21:58", "end": "23:19"},
+        {"name": "Amrit", "start": "23:19", "end": "00:41"},
+        {"name": "Chal", "start": "00:41", "end": "02:03"},
+        {"name": "Rog", "start": "02:03", "end": "03:24"},
+        {"name": "Kaal", "start": "03:24", "end": "04:46"},
+        {"name": "Labh", "start": "04:46", "end": "06:08"}
+      ]
+    },
+    {
+      "date": "2026-12-25",
+      "weekday": "Friday",
+      "day": [
+        {"name": "Chal", "start": "07:04", "end": "08:27"},
+        {"name": "Labh", "start": "08:27", "end": "09:49"},
+        {"name": "Amrit", "start": "09:49", "end": "11:12"},
+        {"name": "Kaal", "start": "11:12", "end": "12:35"},
+        {"name": "Shubh", "start": "12:35", "end": "13:57"},
+        {"name": "Rog", "start": "13:57", "end": "15:20"},
+        {"name": "Udveg", "start": "15:20", "end": "16:43"},
+        {"name": "Chal", "start": "16:43", "end": "18:05"}
+      ],
+      "night": [
+        {"name": "Rog", "start": "18:05", "end": "19:43"},
+        {"name": "Kaal", "start": "19:43", "end": "21:20"},
+        {"name": "Labh", "start": "21:20", "end": "22:57"},
+        {"name": "Udveg", "start": "22:57", "end": "00:35"},
+        {"name": "Shubh", "start": "00:35", "end": "02:12"},
+        {"name": "Amrit", "start": "02:12", "end": "03:50"},
+        {"name": "Chal", "start": "03:50", "end": "05:27"},
+        {"name": "Rog", "start": "05:27", "end": "07:04"}
+      ]
+    }
+  ]
+}
