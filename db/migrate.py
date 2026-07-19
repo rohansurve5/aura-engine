@@ -3,8 +3,9 @@
 
 Applies every `db/migrations/*.sql` in filename order exactly once (tracked in a
 `schema_migrations` table), then seeds `score_rules` from
-`db/seed/score_rules_content_v2.json` with an idempotent upsert. Older rule
-versions (e.g. v1) keep their rows — versions are additive, enabling rollback.
+`db/seed/score_rules_content_v2.json` and `dasha_content` from
+`db/seed/dasha_content_v1.json` with idempotent upserts. Older versions keep
+their rows — versions are additive, enabling rollback.
 
     NEON_DATABASE_URL=postgres://... uv run python db/migrate.py
     ...                              uv run python db/migrate.py --seed-only
@@ -27,6 +28,7 @@ from psycopg.types.json import Json
 ROOT = Path(__file__).resolve().parent
 MIGRATIONS = ROOT / "migrations"
 SEED = ROOT / "seed" / "score_rules_content_v2.json"
+DASHA_SEED = ROOT / "seed" / "dasha_content_v1.json"
 
 
 def _dsn() -> str:
@@ -85,10 +87,31 @@ def seed(conn: psycopg.Connection) -> None:
     print(f"seeded {len(data['rules'])} score_rules (version {version})")
 
 
+def seed_dasha_content(conn: psycopg.Connection) -> None:
+    data = json.loads(DASHA_SEED.read_text())
+    version = data["version"]
+    count = 0
+    with conn.cursor() as cur:
+        for key_type in ("maha", "maha_antar"):
+            for key, payload in data[key_type].items():
+                cur.execute(
+                    "INSERT INTO dasha_content (version, key_type, key, payload) "
+                    "VALUES (%s, %s, %s, %s) "
+                    "ON CONFLICT (version, key_type, key) "
+                    "DO UPDATE SET payload = EXCLUDED.payload",
+                    (version, key_type, key, Json(payload)),
+                )
+                count += 1
+    conn.commit()
+    print(f"seeded {count} dasha_content entries (version {version})")
+
+
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description="apply migrations and seed score_rules")
+    ap = argparse.ArgumentParser(
+        description="apply migrations and seed score_rules + dasha_content"
+    )
     ap.add_argument("--seed-only", action="store_true", help="skip migrations")
-    ap.add_argument("--no-seed", action="store_true", help="skip seeding score_rules")
+    ap.add_argument("--no-seed", action="store_true", help="skip seeding")
     args = ap.parse_args(argv)
 
     with psycopg.connect(_dsn()) as conn:
@@ -96,6 +119,7 @@ def main(argv: list[str] | None = None) -> int:
             migrate(conn)
         if not args.no_seed:
             seed(conn)
+            seed_dasha_content(conn)
     return 0
 
 
