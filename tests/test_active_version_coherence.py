@@ -16,6 +16,8 @@ the other; the incident needed both.
 from __future__ import annotations
 
 import json
+import os
+import sys
 from pathlib import Path
 
 import pytest
@@ -63,6 +65,30 @@ def test_migrate_seeds_the_exact_file_content_py_activates():
         f"{SEED_PATH}. Two declarations of the seed path is how seeded and "
         "served diverge."
     )
+
+
+def test_migrate_runs_as_a_script():
+    """`python db/migrate.py` must import cleanly — the way CI actually calls it.
+
+    Importing db/migrate.py from pytest succeeds trivially (the repo root is
+    already on sys.path), which masked a real ModuleNotFoundError the first time
+    this change reached the nightly job. Only a subprocess reproduces the real
+    invocation, where sys.path[0] is db/ and `engine` is not importable.
+    """
+    import subprocess
+
+    root = Path(__file__).resolve().parent.parent
+    env = {k: v for k, v in os.environ.items() if k != "NEON_DATABASE_URL"}
+    proc = subprocess.run(
+        [sys.executable, "db/migrate.py", "--no-seed"],
+        cwd=root, env=env, capture_output=True, text=True,
+    )
+    combined = proc.stdout + proc.stderr
+    assert "ModuleNotFoundError" not in combined, (
+        f"db/migrate.py cannot be run as a script:\n{combined}"
+    )
+    # Reaching the credentials check proves every import resolved.
+    assert "NEON_DATABASE_URL is not set" in combined, combined
 
 
 def test_precompute_takes_no_rules_version_override():

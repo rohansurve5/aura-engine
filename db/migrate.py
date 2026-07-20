@@ -28,10 +28,18 @@ import json
 import os
 from pathlib import Path
 
+import sys
+
 import psycopg
 from psycopg.types.json import Json
 
-from engine.content import SEED_PATH as CONTENT_SEED_PATH
+# This module is run as a script (`python db/migrate.py`), so sys.path[0] is
+# db/, not the repo root, and `engine` is not importable by default. The repo
+# root is added explicitly rather than duplicating the seed path here: one
+# declaration of the active version is worth three lines of path setup.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from engine.content import SEED_PATH as CONTENT_SEED_PATH  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
 MIGRATIONS = ROOT / "migrations"
