@@ -18,8 +18,10 @@ jobs:
       - name: Sync dependencies
         run: uv sync
 
-      # The content diversity gate + determinism tests must pass before this
-      # job is allowed to seed rules or write guidance rows.
+      # Both content gates — corpus diversity AND per-day distinctness — plus
+      # the determinism tests must pass before this job is allowed to seed rules
+      # or write guidance rows. The per-day gate covers the live rolling 14-day
+      # window, i.e. exactly the dates this run is about to write.
       - name: Tests (gate the seed)
         run: uv run pytest -q
 

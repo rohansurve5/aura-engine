@@ -20,5 +20,8 @@ jobs:
       - name: Lint
         run: uv run ruff check .
 
-      - name: Tests (incl. content diversity gate)
+      # Two content gates run here: the corpus-level diversity gate and the
+      # per-day distinctness gate (no two areas may explain themselves the same
+      # way on the same date). See docs/CONTENT_KEYS.md § Two gates.
+      - name: Tests (incl. corpus + per-day content gates)
         run: uv run pytest -q

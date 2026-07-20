@@ -19,11 +19,20 @@ content_v3 additions (see docs/CONTENT_KEYS.md for the key scheme):
   • `band_labels` — per-area score-band label from a 6 × 5 vocabulary in which
     no label is shared between two areas.
   • `score_why` — the score-detail "why today", composed per area as
-    RECOGNITION (area × band × moon_group) + CAUSE (area × day-lord × paksha).
-    CAUSE lines are band-neutral so every pairing reads coherently. Two areas
-    can never render the same copy: the corpora are disjoint per area and CI
+    RECOGNITION (area × band × moon_group) + CAUSE. CAUSE lines are
+    band-neutral so every pairing reads coherently. Two areas can never render
+    the same copy: the corpora are disjoint per area and CI
     (tests/test_content_diversity.py) fails on any shared label, line or
     sentence skeleton.
+
+content_v3_1 (the multi-source CAUSE fix): v3 drew every area's CAUSE from one
+source — (day lord × paksha) — so on any single date all six cards explained
+themselves through the weekday's planet in near-identical framings. The
+corpus-wide diversity gate could not see this: the unit that matters is what
+one person reads in one day. v3_1 keeps that corpus as one source among six
+(`daylord`, `nakshatra`, `paksha`, `tara`, `phase`, `none`) and `cause_rotation`
+hands the six areas six DIFFERENT sources on every date. Enforced by
+tests/test_per_day_distinctness.py.
 
 Determinism: pure integer arithmetic with fixed rounding, stable tie-breaks and
 date-ordinal variant rotation — no `now()` / randomness. Same `sky` + same
@@ -38,9 +47,9 @@ from pathlib import Path
 
 from .vimshottari import NAKSHATRAS, TOTAL_NAKSHATRAS
 
-SCORE_RULES_VERSION = "content_v3"
+SCORE_RULES_VERSION = "content_v3_1"
 SEED_PATH = (
-    Path(__file__).resolve().parent.parent / "db" / "seed" / "score_rules_content_v3.json"
+    Path(__file__).resolve().parent.parent / "db" / "seed" / "score_rules_content_v3_1.json"
 )
 
 # The nine taras (1-indexed), in cycle order from the natal nakshatra.
@@ -86,6 +95,42 @@ def _pick(variants: list, day_ordinal: int, natal_index: int, salt: int):
     return variants[(day_ordinal * 7 + natal_index * 3 + salt) % len(variants)]
 
 
+def cause_sources_for(day_ordinal: int, rules: dict) -> dict[str, str]:
+    """area → cause source id for one date (docs/CONTENT_KEYS.md § rotation).
+
+    One row of `cause_rotation` per date. Every row is a permutation of the six
+    sources over the six areas, so no two areas can explain themselves the same
+    way on the same date; the row advances daily, so no area is permanently
+    wedded to one kind of explanation.
+    """
+    rotation = rules["cause_rotation"]
+    row = rotation[day_ordinal % len(rotation)]
+    return dict(zip(rules["areas"]["order"], row, strict=True))
+
+
+def _cause(source: str, area: str, sky: dict, rules: dict, tara: int, pick) -> str:
+    """The CAUSE half for one area under one source id ("" for `none`)."""
+    if source == "none":
+        return ""
+    if source == "daylord":
+        paksha_key = "waxing" if sky["waxing"] else "waning"
+        return rules["why_cause"][area][str(sky["weekday_index"])][paksha_key]
+    if source == "nakshatra":
+        moon_index = sky["day_nakshatra_index"]
+        trait = rules["nakshatra_traits"][str(moon_index)]
+        return rules["why_cause_nakshatra"][area][trait].format(
+            nakshatra=NAKSHATRAS[moon_index]
+        )
+    if source == "paksha":
+        paksha_key = "waxing" if sky["waxing"] else "waning"
+        return pick(rules["why_cause_paksha"][area][paksha_key])
+    if source == "tara":
+        return rules["why_cause_tara"][area][str(tara)]
+    if source == "phase":
+        return rules["why_cause_phase"][area][sky["moon_phase"]["name"]]
+    raise KeyError(f"unknown cause source {source!r}")
+
+
 def guidance_for_nakshatra(natal_index: int, sky: dict, rules: dict) -> dict:
     """The daily_guidance payload for one natal nakshatra against `sky`."""
     tara = tara_of(natal_index, sky["day_nakshatra_index"])
@@ -115,20 +160,23 @@ def guidance_for_nakshatra(natal_index: int, sky: dict, rules: dict) -> dict:
         for i, a in enumerate(order)
     }
 
-    # content_v3: per-area band labels + the two-sentence score-detail "why".
+    # content_v3_1: per-area band labels + the score-detail "why".
     # Key scheme (docs/CONTENT_KEYS.md): band from the area's own score,
-    # RECOGNITION from (area, band, day-Moon texture group), CAUSE from
-    # (area, weekday day lord, paksha) — fully determined by date + natal.
+    # RECOGNITION from (area, band, day-Moon texture group), CAUSE from the
+    # source this date's rotation row hands this area — fully determined by
+    # date + natal. Under the `none` source the recognition stands alone.
     moon_group = rules["moon_groups"][str(sky["day_nakshatra_index"])]
-    paksha_key = "waxing" if sky["waxing"] else "waning"
+    sources = cause_sources_for(day_ordinal, rules)
     band_labels = {}
     score_why = {}
-    for a in order:
+    for i, a in enumerate(order):
         band = _score_band(scores[a], rules["score_bands"])
         band_labels[labels[a]] = rules["band_labels"][a][band]
         recognition = rules["why_recognition"][a][band][moon_group]
-        cause = rules["why_cause"][a][wd][paksha_key]
-        score_why[labels[a]] = f"{recognition} {cause}"
+        cause = _cause(
+            sources[a], a, sky, rules, tara, lambda v, i=i: pick(v, salt=23 + i)
+        )
+        score_why[labels[a]] = f"{recognition} {cause}".strip()
 
     # Two-sentence "story of your day": energy-band opener + best/caution closer.
     narrative_conf = rules["narrative"]

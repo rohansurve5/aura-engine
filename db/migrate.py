@@ -3,7 +3,7 @@
 
 Applies every `db/migrations/*.sql` in filename order exactly once (tracked in a
 `schema_migrations` table), then seeds `score_rules` from
-`db/seed/score_rules_content_v3.json` and `dasha_content` from
+`db/seed/score_rules_content_v3_1.json` and `dasha_content` from
 `db/seed/dasha_content_v1.json` with idempotent upserts. Older versions keep
 their rows — versions are additive, enabling rollback.
 
@@ -27,7 +27,7 @@ from psycopg.types.json import Json
 
 ROOT = Path(__file__).resolve().parent
 MIGRATIONS = ROOT / "migrations"
-SEED = ROOT / "seed" / "score_rules_content_v3.json"
+SEED = ROOT / "seed" / "score_rules_content_v3_1.json"
 DASHA_SEED = ROOT / "seed" / "dasha_content_v1.json"
 
 

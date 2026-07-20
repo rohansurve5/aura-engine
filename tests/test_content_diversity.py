@@ -30,7 +30,7 @@ import re
 from collections import Counter
 from pathlib import Path
 
-SEED = Path(__file__).resolve().parent.parent / "db" / "seed" / "score_rules_content_v3.json"
+SEED = Path(__file__).resolve().parent.parent / "db" / "seed" / "score_rules_content_v3_1.json"
 RULES = json.loads(SEED.read_text())["rules"]
 
 MAX_WORD_SHARE = 0.06
@@ -65,6 +65,14 @@ STOPWORDS = {
     "such", "own", "same", "too", "very", "just", "only", "also", "still",
     "once", "again", "ever", "never", "always", "now",
     "today", "day", "days", "tomorrow", "tonight", "week", "moon",
+    # content_v3_1 mechanism nouns, exempt for the same reason "moon" is: they
+    # NAME the sky fact a whole cause source is built on, so their frequency
+    # measures how many sources we have, not how repetitive the writing is.
+    # "star" carries the nakshatra + tara sources; "light" carries the paksha +
+    # phase sources. The risk they'd otherwise mask — every card explaining
+    # itself the same way — is now caught directly, per rendered day, by
+    # tests/test_per_day_distinctness.py.
+    "star", "stars", "light",
     "let", "get", "gets", "keep", "make", "makes", "made", "give", "gives",
     "it's", "don't", "doesn't", "won't", "you've", "you'll", "you'd",
 }
@@ -90,7 +98,8 @@ def _corpus_lines() -> list[str]:
     sections carry no strings, so walking everything is safe)."""
     content_keys = (
         "area_lines", "narrative", "tara", "band_labels",
-        "why_recognition", "why_cause", "lucky_by_weekday",
+        "why_recognition", "lucky_by_weekday",
+        *CAUSE_SECTIONS,
     )
     lines: list[str] = []
     for key in content_keys:
@@ -111,6 +120,13 @@ def _skeleton(line: str) -> str:
 
 AREAS = RULES["areas"]["order"]
 BANDS = RULES["score_bands"]["order"]
+
+# content_v3_1: the CAUSE half now has one corpus per explanation source. All of
+# them are user-visible copy and all are subject to every gate below.
+CAUSE_SECTIONS = (
+    "why_cause", "why_cause_nakshatra", "why_cause_paksha",
+    "why_cause_tara", "why_cause_phase",
+)
 
 
 def test_corpus_is_substantial():
@@ -160,7 +176,8 @@ def _area_skeletons(area: str) -> dict[str, str]:
     lines: list[str] = []
     _walk_strings(RULES["area_lines"][area], lines)
     _walk_strings(RULES["why_recognition"][area], lines)
-    _walk_strings(RULES["why_cause"][area], lines)
+    for section in CAUSE_SECTIONS:
+        _walk_strings(RULES[section][area], lines)
     lines.extend(RULES["band_labels"][area].values())
     return {_skeleton(line): line for line in lines if len(_words(line)) >= 4}
 
@@ -188,7 +205,7 @@ def test_recognition_and_cause_cells_are_unique_within_each_area():
     """Every cell in an area's own corpus is distinct — a duplicated cell
     would silently collapse two keys into one mood."""
     for area in AREAS:
-        for section in ("why_recognition", "why_cause"):
+        for section in ("why_recognition", *CAUSE_SECTIONS):
             lines: list[str] = []
             _walk_strings(RULES[section][area], lines)
             dupes = [line for line, n in Counter(lines).items() if n > 1]
