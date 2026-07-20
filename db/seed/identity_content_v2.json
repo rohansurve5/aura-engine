@@ -1,0 +1,509 @@
+{
+  "version": "identity_content_v2",
+  "_about": {
+    "spec": "docs/voice/IDENTITY.md",
+    "status": "COMPLETE — 27 of 27 nakshatra entries, 12 of 12 moon-sign entries. Every gate in IDENTITY.md §6 now runs; none skips.",
+    "axis": "One root, two outputs. Each entry names ONE governing disposition, then shows that same disposition paying off (core) and costing (cost). Not a good trait and a bad trait — one trait read twice. No entry may read as a worse star to be born under.",
+    "supersedes": "identity_content_v1, whose 7 pilot entries (Krittika, Purva Ashadha, Uttara Ashadha; Aries, Taurus, Sagittarius, Capricorn) proved the pipeline and the gates at n=3/n=4. Versions are additive: v1's rows stay in the table and stay queryable, so rollback is repointing IDENTITY_SEED_PATH, never a data restore.",
+    "changed_from_v1": "NOTHING. All 7 pilot entries — Krittika, Purva Ashadha, Uttara Ashadha, Aries, Taurus, Sagittarius, Capricorn — are byte-identical to v1. This is worth stating because an earlier draft of v2 DID edit four of them and justified each edit as gate-forced. It was not: every one of those collisions had been introduced by this author's own rewrite of the pilot copy, not by a newly authored neighbour. Each edit was then reverted one at a time with the full gate suite re-run after each revert, and all five reverted clean. Recorded because 'the gate made me do it' is the most comfortable possible reason to rewrite reviewed copy, and it was wrong here — the 24 + 8 new entries were written around the pilot, which is the direction the constraint is supposed to run.",
+    "what_the_share_gate_caught": "The word-share gate was SKIPPED at v1 — round(3 x 0.185) = 1 is noise, not the spec's gate — and auto-enables at 27/12. This corpus is the first time it ran for real, and it fired on eleven words. The worst was `whoever` in 13 of 27 entries: the author had systematically substituted it for `people` to stay under the cap on `people`, and so reproduced the exact `stretch` failure the dasha corpus recorded — a tic invisible inside any single entry and unmistakable across the corpus. Also caught, in the nakshatra half: `something` (13), `thing` (10), `nobody` (10), `part` (9), `rather` (8), `wrong` (7), `year` (7), `somebody` (6), and on a later pass `thing` again (7) and `job` (6). In the moon-sign half: `want` (7 of 12), `nothing` (6), `something` (4). Every firing was answered by rewriting copy. No threshold was moved and no content word was exempted.",
+    "stopword_additions": "NONE at v2. §6a's rule is that only function words may ever join the stopword list, and no content word is ever added to make copy pass. v1 added five temporal prepositions (`before after until since during`) under that rule; v2 needed no addition. The indefinite pronouns the gate caught — `nobody`, `something`, `whoever`, `somebody` — would have qualified as function words on a permissive reading, and were deliberately NOT added: at 10 and 13 entries they were measuring a real authoring tic, not a grammatical artefact, and a gate answered by editing its own exemption list is a gate switched off politely. They were written out of the copy instead. (`no one` tokenises to two existing stopwords and is therefore free, which is a genuine asymmetry in the gate and is recorded here rather than relied on quietly.)",
+    "contrast": "Authoring scaffolding and audit trail, seeded but NOT rendered (IDENTITY.md §2). Excluded from the word-share and cross-corpus gates because it is not shipped prose and never shares a screen with anything; still checked for banned vocabulary. At 27 entries the contrast graph is asserted over all 27 — every nakshatra is named as a contrast by at least one other entry."
+  },
+  "nakshatra": {
+    "Ashwini": {
+      "title": "First out of the gate",
+      "core": "You are already underway while the others are still reading the brief, and half your advantage is simply that you went early. Speed is the whole method — you would sooner correct a project in flight than plan one that has not left the ground.",
+      "cost": "What you began in week one is somebody else's problem by week three, and the friends who joined on your enthusiasm are the ones still carrying it.",
+      "misread": "Called impatient, when the truer version is that a delay costs you more than a false start does.",
+      "contrast": [
+        {
+          "nakshatra": "Uttara Ashadha",
+          "because": "is there at the end; you are gone long before it"
+        },
+        {
+          "nakshatra": "Uttara Bhadrapada",
+          "because": "waits the impulse out; you obey it immediately"
+        }
+      ]
+    },
+    "Bharani": {
+      "title": "The one who carries it",
+      "core": "You end up holding what no one else will touch — the difficult relative, the failing account, the conversation the family has been avoiding. No one assigns it to you; you simply do not put a load down once it is in your hands.",
+      "cost": "You are carrying several burdens right now that were never yours, and you resent the relatives who handed them over while going on accepting more.",
+      "misread": "Taken for strength, when much of it is an inability to say out loud that this one is not yours.",
+      "contrast": [
+        {
+          "nakshatra": "Swati",
+          "because": "keeps a clean exit open; you accept the weight"
+        },
+        {
+          "nakshatra": "Revati",
+          "because": "hands somebody onward gently; you keep them yourself"
+        }
+      ]
+    },
+    "Krittika": {
+      "title": "The eye that lands on the flaw",
+      "core": "You see the flaw before you see the whole, and you name it out loud while everyone else is still being encouraging. Handed something half-built, your instinct is subtraction — what should leave, not what should be added.",
+      "cost": "People stop showing you work before it is finished, so you get handed decisions instead of drafts and wonder why nobody wanted your eye earlier. The room goes careful around you.",
+      "misread": "Read as harshness, when what is actually happening is that you cannot unsee the one part that is wrong.",
+      "contrast": [
+        {
+          "nakshatra": "Purva Ashadha",
+          "because": "wins the room over; you take the flaw out of it"
+        },
+        {
+          "nakshatra": "Revati",
+          "because": "ends things gently; you end them exactly"
+        }
+      ]
+    },
+    "Rohini": {
+      "title": "What you grow, you keep",
+      "core": "You improve the ground you stand on instead of looking for better ground — the flat, the job, the friendships all get steadily nicer under your attention. Given five years anywhere, you will have made it worth staying in.",
+      "cost": "You will defend an arrangement long past its usefulness instead of admitting the decade inside it was the sunk cost, and you call that patience.",
+      "misread": "Mistaken for contentment, when it is closer to an unwillingness to give up what you already improved.",
+      "contrast": [
+        {
+          "nakshatra": "Vishakha",
+          "because": "burns the ground for one target; you improve it"
+        },
+        {
+          "nakshatra": "Mrigashira",
+          "because": "goes looking elsewhere; you improve where you stand"
+        }
+      ]
+    },
+    "Mrigashira": {
+      "title": "Always one option short",
+      "core": "You are searching for the better version of what you have — the better job, the better flat, the better phrasing of one sentence. What sits in front of you registers as a draft, never as an answer.",
+      "cost": "You have quietly downgraded perfectly good options by measuring them against a version that does not exist, and the partner you left for an upgrade has noticed the pattern.",
+      "misread": "Read as restlessness, when the accurate account is that you cannot switch off the comparison.",
+      "contrast": [
+        {
+          "nakshatra": "Rohini",
+          "because": "makes what it has better; you go looking"
+        },
+        {
+          "nakshatra": "Uttara Ashadha",
+          "because": "stays past the doubt; you act on it"
+        }
+      ]
+    },
+    "Ardra": {
+      "title": "The question no one wanted asked",
+      "core": "You say the thing the room has been carefully working around, evenly, about ten minutes before anyone was ready to hear it. Easy agreement registers to you as proof that nothing real has been discussed yet.",
+      "cost": "Meetings recover from you slowly, and you have mistaken the discomfort you generate for progress enough times that some of what you broke was only broken.",
+      "misread": "Heard as hostility, when the aim is to reach the half of it that was being carefully managed.",
+      "contrast": [
+        {
+          "nakshatra": "Purva Phalguni",
+          "because": "protects the atmosphere; you break it open"
+        },
+        {
+          "nakshatra": "Anuradha",
+          "because": "keeps the alliance whole; you test what it rests on"
+        }
+      ]
+    },
+    "Punarvasu": {
+      "title": "Back again, and intact",
+      "core": "You recover from losses at a speed that unnerves the ones watching — the job goes, the relationship ends, and within a month you have rebuilt a recognisable routine. Starting over is not a crisis for you; it is a familiar procedure.",
+      "cost": "You rebuild so competently that you skip working out why the original one fell over, and the second attempt fails at exactly the same join.",
+      "misread": "Seen as resilience, when a good deal of it is a refusal to sit in the wreckage.",
+      "contrast": [
+        {
+          "nakshatra": "Bharani",
+          "because": "holds what broke; you build straight past it"
+        },
+        {
+          "nakshatra": "Ardra",
+          "because": "stays inside the wreckage; you clear it away"
+        }
+      ]
+    },
+    "Pushya": {
+      "title": "The kitchen everyone eats from",
+      "core": "You make sure the group is provided for before anyone has asked — the food, the cover, the item they forgot, the money no one wants to raise. Being who others can arrive empty-handed to is how you occupy a household.",
+      "cost": "You have trained several relationships into one-way traffic and then quietly kept score, which is harder to admit than simply being generous would have been.",
+      "misread": "Treated as inexhaustible, which suits you exactly until the winter when you have nothing spare.",
+      "contrast": [
+        {
+          "nakshatra": "Swati",
+          "because": "owes nobody anything; you arrange to be owed"
+        },
+        {
+          "nakshatra": "Jyeshtha",
+          "because": "assumes command of a crisis; you assume the catering"
+        }
+      ]
+    },
+    "Ashlesha": {
+      "title": "Always asking what they actually want",
+      "core": "You track what a person is after rather than what they are saying, and you are right about the gap between the two more than you are mistaken. Stated reasons register to you as an opening bid.",
+      "cost": "You have gone hunting for a motive in someone who simply meant it, and the friends who felt investigated by you did not come back a second time.",
+      "misread": "Called suspicious, when the fact of it is that you cannot hear a sentence without hearing its purpose.",
+      "contrast": [
+        {
+          "nakshatra": "Rohini",
+          "because": "takes it at face value; you check underneath"
+        },
+        {
+          "nakshatra": "Shravana",
+          "because": "listens to be taught; you listen for the angle"
+        }
+      ]
+    },
+    "Magha": {
+      "title": "Holding a seat you inherited",
+      "core": "You measure yourself against the ones who held the position before you, and you behave as though they are watching. Ordinary occasions get treated with a formality others find slightly excessive — standards are what you keep on somebody else's behalf.",
+      "cost": "You are hard to be casual with, and some of the respect you receive is distance that was never going to close into anything warmer.",
+      "misread": "Assumed to be proud, when the load you are actually under is an ancestor's reputation.",
+      "contrast": [
+        {
+          "nakshatra": "Purva Phalguni",
+          "because": "wants the evening easy; you keep it formal"
+        },
+        {
+          "nakshatra": "Swati",
+          "because": "answers to nobody at all; you answer upward"
+        }
+      ]
+    },
+    "Purva Phalguni": {
+      "title": "Nobody leaves your table unhappy",
+      "core": "You manage the mood of a gathering the way a host manages the food — noticing who has gone quiet, moving talk off the sore subject, keeping the evening good. Warmth is an output you actively produce, not a temperament you happen to have.",
+      "cost": "The conversation that would have fixed the real problem has been postponed for three years now, and the pleasantness you kept up is exactly what postponed it.",
+      "misread": "Enjoyed as easy company, and no one counts the constant labour of stopping an evening from turning.",
+      "contrast": [
+        {
+          "nakshatra": "Ardra",
+          "because": "says the spoiling thing; you route around it"
+        },
+        {
+          "nakshatra": "Krittika",
+          "because": "names the fault aloud; you keep the evening whole"
+        }
+      ]
+    },
+    "Uttara Phalguni": {
+      "title": "Help, on agreed terms",
+      "core": "You give generously and you like the arrangement stated — who does what, what happens if it changes, what this is in exchange for. Vagueness about terms bothers you more than the size of the favour ever will.",
+      "cost": "You keep a private ledger of what you have handed over, and the ones you love find out it exists only on the day you finally read it aloud.",
+      "misread": "Taken as coolness, when it is an attempt to make generosity survive contact with reality.",
+      "contrast": [
+        {
+          "nakshatra": "Pushya",
+          "because": "gives with no terms at all; you set them first"
+        },
+        {
+          "nakshatra": "Purva Bhadrapada",
+          "because": "goes all in without limit; you agree the limit"
+        }
+      ]
+    },
+    "Hasta": {
+      "title": "It goes through your hands",
+      "core": "You would sooner make the object than describe how it should be made, and your standard for done is what your own hands produced. Given a team, you will rebuild the piece you were supposed to hand over.",
+      "cost": "Every job routes through you, so the queue is you, and whoever you never trained is now genuinely unable to proceed without you — which you half arranged.",
+      "misread": "Praised as reliable, while the honest shape of it is that you would not let go.",
+      "contrast": [
+        {
+          "nakshatra": "Magha",
+          "because": "holds the position itself; you hold the tools"
+        },
+        {
+          "nakshatra": "Purva Ashadha",
+          "because": "moves the room along; you move the work"
+        }
+      ]
+    },
+    "Chitra": {
+      "title": "The version that shows well",
+      "core": "You compose how a page lands — the deck, the flat, the sentence, the outfit — and you can tell within seconds that it is nearly there, which is not at all the same as being there. Presentation is not decoration to you; it is the argument.",
+      "cost": "You have shipped work that looked done and was not, and you knew, and the polish is what let you know and go ahead anyway.",
+      "misread": "Dismissed as vanity, when the real operation is that you treat the surface as load-bearing.",
+      "contrast": [
+        {
+          "nakshatra": "Hasta",
+          "because": "makes it work properly; you make it land"
+        },
+        {
+          "nakshatra": "Mula",
+          "because": "digs under the surface; you compose it"
+        }
+      ]
+    },
+    "Swati": {
+      "title": "Nobody holds a claim",
+      "core": "You arrange your life so that leaving stays cheap — the flexible lease, the freelance contract, the friendship that survives six months of silence. Independence is not a preference you hold; it is the structure you build everything else upon.",
+      "cost": "The ones who wanted to lean on you learned not to, and the life you kept unencumbered is now genuinely light in a way you did not plan for.",
+      "misread": "Envied as freedom, when a fair share of it is the price of never having let anything bind.",
+      "contrast": [
+        {
+          "nakshatra": "Rohini",
+          "because": "puts roots down deliberately; you keep them shallow"
+        },
+        {
+          "nakshatra": "Anuradha",
+          "because": "builds the long alliance; you stay unattached"
+        }
+      ]
+    },
+    "Vishakha": {
+      "title": "Everything else can wait",
+      "core": "You pick the objective and bend the remainder of your life around it — the training, the qualification, the number — with a clarity about trade-offs that others find slightly frightening. Once a target is set, arguing about it bores you.",
+      "cost": "The decade you spent on the last objective is a decade your family spent waiting, and you would make the same trade again, which is what they mind.",
+      "misread": "Labelled driven, when the truer description is that you are unable to hold a second priority.",
+      "contrast": [
+        {
+          "nakshatra": "Mrigashira",
+          "because": "keeps every option open; you close all but one"
+        },
+        {
+          "nakshatra": "Purva Phalguni",
+          "because": "keeps the gathering happy; you keep the target"
+        }
+      ]
+    },
+    "Anuradha": {
+      "title": "Loyal past the evidence",
+      "core": "You build the alliance long before you have any use for it and you keep turning up for it afterwards — the old friend, the difficult colleague, the group that stopped being fun. Belonging is a structure you construct on purpose.",
+      "cost": "You have defended a person for years on the strength of who they were when you met, and the ones who watched you do it lost some faith in your judgement.",
+      "misread": "Valued as constancy, when what runs underneath is a refusal to update your reading of anyone.",
+      "contrast": [
+        {
+          "nakshatra": "Ashlesha",
+          "because": "watches the motive closely; you decline to"
+        },
+        {
+          "nakshatra": "Krittika",
+          "because": "names the fault immediately; you cover for it"
+        }
+      ]
+    },
+    "Jyeshtha": {
+      "title": "First to take the weight",
+      "core": "When a crisis lands on a crowd, you are already handling it before anyone has agreed that you should be. Authority is not a thing you wait to be granted; you assume it and let the objections turn up afterwards.",
+      "cost": "You are a poor equal. Where you are not the one in charge you go competitive or you go silent, and both are visible to everybody present.",
+      "misread": "Experienced as dominance, when the trigger is that you cannot watch a situation go unhandled.",
+      "contrast": [
+        {
+          "nakshatra": "Shravana",
+          "because": "takes it in first; you take over first"
+        },
+        {
+          "nakshatra": "Uttara Bhadrapada",
+          "because": "lets it stand a while; you intervene at once"
+        }
+      ]
+    },
+    "Mula": {
+      "title": "Pull it up by the root",
+      "core": "You are not interested in the symptom and you will take a functioning system apart to reach what generates it. Half-explanations irritate you physically; you would sooner have the true structure and a mess than a tidy account that is false.",
+      "cost": "You have dismantled arrangements that were working adequately and left a hole where they stood for months, and whoever was living inside them was not consulted.",
+      "misread": "Called disruptive, when the intention is to reach the mechanism that is actually producing the trouble.",
+      "contrast": [
+        {
+          "nakshatra": "Rohini",
+          "because": "cultivates what is already there; you excavate it"
+        },
+        {
+          "nakshatra": "Revati",
+          "because": "lets a thing taper out; you pull it up"
+        }
+      ]
+    },
+    "Purva Ashadha": {
+      "title": "Certain long before the proof arrives",
+      "core": "You decide you are right early, and then you talk people into it — not by arguing them down but by sounding so sure that doubting you feels like the harder position. Momentum is your instrument, and you play it before the evidence is fully in.",
+      "cost": "Some of what you carried the room into was wrong, and you learned it late because nobody near you wanted to be the one slowing it down. You are expensive to disagree with.",
+      "misread": "Taken for arrogance, when the truth is you commit early and would rather be corrected than be slow.",
+      "contrast": [
+        {
+          "nakshatra": "Uttara Ashadha",
+          "because": "outlasts the argument; you win it in the first hour"
+        },
+        {
+          "nakshatra": "Krittika",
+          "because": "removes what is wrong; you carry the room past it"
+        }
+      ]
+    },
+    "Uttara Ashadha": {
+      "title": "Still standing when the others left",
+      "core": "You stay with things past the point where staying stops being interesting, and that is usually what decides them. Where others arrive loud and leave, you are the one still there in month nine, which is when the thing finally moves.",
+      "cost": "You are still carrying commitments that stopped being worth it years ago, because leaving would feel like losing. What reads as loyalty from outside is nearer to refusal.",
+      "misread": "Mistaken for patience, when it is closer to a refusal to be the one who left.",
+      "contrast": [
+        {
+          "nakshatra": "Purva Ashadha",
+          "because": "convinces early; you are simply the last one there"
+        },
+        {
+          "nakshatra": "Krittika",
+          "because": "cuts a thing short; you refuse to"
+        }
+      ]
+    },
+    "Shravana": {
+      "title": "You heard all of it",
+      "core": "You listen properly — not waiting for a gap, genuinely taking it in — and you retain what was spoken with an exactness that startles the speaker. Being told is how you assemble your view of anything at all.",
+      "cost": "Your own position arrives late and sounds borrowed, and you have carried other adults' opinions around for a decade before noticing that none of them were yours.",
+      "misread": "Trusted as agreement, when you were collecting, and the conclusion you reached afterwards surprised the lot of them.",
+      "contrast": [
+        {
+          "nakshatra": "Purva Ashadha",
+          "because": "commits before the input; you wait for all of it"
+        },
+        {
+          "nakshatra": "Ardra",
+          "because": "interrupts the account; you let it run out"
+        }
+      ]
+    },
+    "Dhanishta": {
+      "title": "You set the tempo",
+      "core": "You give a loose collection of adults a rhythm — the standing call, the deadline no one imposed but everybody honours, the pace that welds them into a unit. You hear when a team is out of time before anyone can name the fault.",
+      "cost": "You have written off capable colleagues for being slow, and some of them were being careful about a risk you went straight past at speed.",
+      "misread": "Read as energy, when it is nearer to an inability to sit through a slack fortnight.",
+      "contrast": [
+        {
+          "nakshatra": "Uttara Bhadrapada",
+          "because": "keeps its own time entirely; you keep everyone's"
+        },
+        {
+          "nakshatra": "Shatabhisha",
+          "because": "goes off alone to solve it; you set the count"
+        }
+      ]
+    },
+    "Shatabhisha": {
+      "title": "Solved alone, explained never",
+      "core": "You go silent and come back with the answer, having done the whole of it out of anybody's view. Problems others find unapproachable are the ones you enjoy, and much of the appeal is that no one is standing next to you while you work.",
+      "cost": "No one can help you and no one can check you, so your errors run unexamined for much longer than they should, and being unreachable has already cost you a job you wanted.",
+      "misread": "Judged as aloof, when the reality is that company measurably slows the whole machinery down.",
+      "contrast": [
+        {
+          "nakshatra": "Dhanishta",
+          "because": "keeps the group in time; you leave the group"
+        },
+        {
+          "nakshatra": "Purva Phalguni",
+          "because": "works the gathering warm; you work out of sight"
+        }
+      ]
+    },
+    "Purva Bhadrapada": {
+      "title": "No small setting available",
+      "core": "You do a thing at full intensity or you do not do it at all — the total commitment, the drastic change, the position carried the whole way to its logical end. Moderation registers to you as a way of not really trying.",
+      "cost": "You have burned through savings, sleep and goodwill chasing pursuits you later found ordinary, and each recovery has taken longer than the one before it.",
+      "misread": "Admired as conviction, right up until the moment when somebody has to live in the aftermath.",
+      "contrast": [
+        {
+          "nakshatra": "Uttara Phalguni",
+          "because": "agrees the limit in advance; you have no limit"
+        },
+        {
+          "nakshatra": "Rohini",
+          "because": "grows a thing slowly; you go all at once"
+        }
+      ]
+    },
+    "Uttara Bhadrapada": {
+      "title": "The pause before any answer",
+      "core": "You do not respond at the speed a situation appears to demand — you let it sit, occasionally for days, and what comes back is considered instead of reflexive. Reacting fast strikes you as handing away your judgement for free.",
+      "cost": "The ones around you cannot tell what you think, so they fill the silence with a version of you that is worse than the real one, and you allow it.",
+      "misread": "Interpreted as indifference, when the process running underneath is slower and considerably more thorough than it looks.",
+      "contrast": [
+        {
+          "nakshatra": "Ashwini",
+          "because": "moves before the thought lands; you wait for it"
+        },
+        {
+          "nakshatra": "Chitra",
+          "because": "answers with a finished surface; you answer late"
+        }
+      ]
+    },
+    "Revati": {
+      "title": "Everyone gets a soft landing",
+      "core": "You end things well — the resignation that leaves a team fine, the breakup the other party survives, the handover no one resents. Getting a person cleanly to their next chapter matters to you more than being right about why this one closed.",
+      "cost": "You have kept relationships and contracts alive for months past their end so that no one had to take the drop, and the slow way hurt more than the clean one would have.",
+      "misread": "Received as kindness, when some of what drives it is that you cannot be the one who ends it.",
+      "contrast": [
+        {
+          "nakshatra": "Krittika",
+          "because": "ends it exactly; you ease it out slowly"
+        },
+        {
+          "nakshatra": "Punarvasu",
+          "because": "starts the next one at once; you linger in the last"
+        }
+      ]
+    }
+  },
+  "moon_sign": {
+    "Aries": {
+      "title": "Steady only while moving",
+      "need": "Rest arrives for you in motion, not in stillness — a body with somewhere to be will settle in a way a free afternoon never manages. Waiting is where your calm quietly falls apart.",
+      "unsettles": "An open week with nothing in it, and the expectation that you should enjoy the emptiness."
+    },
+    "Taurus": {
+      "title": "Calm built on sameness",
+      "need": "You feel steady when tomorrow looks like today — the same bed, the same route, the same faces in the same order. Comfort for you is physical and repetitive, and it is not a small thing to lose.",
+      "unsettles": "Being moved — house, team, timetable — by someone who assumed you would not mind, because you rarely say so."
+    },
+    "Gemini": {
+      "title": "Fed by new input",
+      "need": "Your head runs on fresh material — an unread article, an unfamiliar route, a friend with news. A day that adds no new idea leaves you dulled in a way sleep does not correct.",
+      "unsettles": "A fortnight of the same walls and the same three topics, with no one bringing you a fact you did not know."
+    },
+    "Cancer": {
+      "title": "Somebody's first call",
+      "need": "You look to be near the top of one particular list — the one who gets told first, ahead of the general announcement. Knowing you hold that spot in at least one life is what lets the ordinary hours stay ordinary.",
+      "unsettles": "Learning it at the same moment as everybody else, and finding it was not thought worth passing on."
+    },
+    "Leo": {
+      "title": "Named, not counted",
+      "need": "Your part in a piece of work has to be acknowledged out loud and attached to your name. Being one of several contributors is not the same to you as being the one who did that bit.",
+      "unsettles": "Your idea repeated back to the meeting with no memory of where it came from, and everyone nodding along."
+    },
+    "Virgo": {
+      "title": "Order in the small things",
+      "need": "Small physical order is what regulates you — the counter clear, the inbox empty, the bag packed the night before. With those in place you absorb a great deal of chaos elsewhere; when they slip, the whole day tilts.",
+      "unsettles": "A backlog of tiny unresolved admin, each item too minor to raise and collectively loud enough to drown a morning."
+    },
+    "Libra": {
+      "title": "Even air in the room",
+      "need": "What steadies you is level air — no one bristling, no one talked over, no unspoken grievance parked in the corner. You cannot relax inside friction, including friction that has no bearing on you at all.",
+      "unsettles": "Two of your friends at odds with each other, and the assumption that you will carry on cheerfully in the middle of it."
+    },
+    "Scorpio": {
+      "title": "All of it, or nothing",
+      "need": "You are after the full picture, including the parts someone judged you better off without. Partial information does not protect you; it tells you a version of events is being curated on your behalf, and you will hunt down the rest.",
+      "unsettles": "Learning that a matter concerning you was resolved elsewhere before it reached you, by others who meant well."
+    },
+    "Sagittarius": {
+      "title": "Breathing space, always",
+      "need": "Somewhere further ahead has to exist for you — a next place, a next idea, an unbooked weekend — or the present one closes in. Being able to picture the exit is what lets you sit still at all.",
+      "unsettles": "A calendar already spoken for, with every free evening allocated before you had any part in it."
+    },
+    "Capricorn": {
+      "title": "Steadied by visible progress",
+      "need": "You settle when effort turns into something countable — a number that shifted, a box ticked, a figure you can show later. Reassurance that is not attached to evidence does very little for you.",
+      "unsettles": "Long stretches where the work is real but nothing has visibly changed, and nobody has said so."
+    },
+    "Aquarius": {
+      "title": "A step back from it",
+      "need": "You are steadiest at a slight remove from whatever is happening — near enough to follow it, far enough to be outside the feeling. Watching from one step back is genuinely restful for you, and it is not avoidance.",
+      "unsettles": "Being folded into a collective mood you did not choose, and expected to wear it on your face."
+    },
+    "Pisces": {
+      "title": "Hours nobody has claimed",
+      "need": "You run on stretches of time with no expectations inside them — an empty morning, a walk with no destination, an evening no one is waiting on. Your own mood is porous, so unclaimed time is where you find out what you feel.",
+      "unsettles": "A house where the mood is loud and continuous, with no door you can put between yourself and it."
+    }
+  }
+}

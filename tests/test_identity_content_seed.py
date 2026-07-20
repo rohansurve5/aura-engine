@@ -1,25 +1,37 @@
-"""Quality gates for db/seed/identity_content_v1.json — the "About your star" corpus.
+"""Quality gates for the ACTIVE identity corpus — the "About your star" library.
 
 Implements every gate IDENTITY.md §6 specifies. Runs in CI and gates the nightly
 pre-seed, like the three existing content gates.
 
-## Pilot mode, stated plainly
+## The seed path is derived, never typed here
 
-The corpus is seeded at 3 of 27 nakshatra entries and 4 of 12 moon-sign entries.
-Most gates are *stronger* at pilot size than they will be at full size, because
-they are pairwise or per-entry: distinctness, contrast well-formedness, the
-banned carriers, the hedge cap and the cross-corpus collision gate all run at
-full strength right now, over 5 real co-occurring pairs.
+`SEED_PATH` comes from `engine.content.IDENTITY_SEED_PATH` — the one line that
+declares which corpus is live. It was originally a literal `identity_content_v1.json`
+in this file, which made this module a SECOND declaration of the active seed, and
+that is the precise bug the repo has now closed three times: `content_v3_2` was
+gated green while precompute read a different version, and
+`test_migrate_seeds_the_exact_identity_file_content_py_activates` exists to stop
+`db/migrate.py` doing the same thing. The test suite had the identical defect and
+nothing was watching it. When v2 was activated, every gate in this file silently
+went on grading v1 — including the two that had been waiting for a full corpus to
+wake up. A gate pointed at the wrong file is not a weaker gate, it is no gate.
 
-**One gate cannot.** The word-share cap (§6a) is a *ratio against a corpus
-denominator*, and IDENTITY.md derives its two thresholds specifically against
-n=27 and n=12. At n=3 the limit is round(3 × 0.185) = 1, which fails the moment
-any content word appears in two of three profiles — that is not the spec's gate,
-it is noise with the spec's name on it. So the share gate SKIPS below a
-meaningful corpus size, says so out loud, and `test_share_gate_is_not_skipped_when_complete`
-makes it impossible to reach a full corpus with the gate still asleep. It is
-falsified against a synthetic full-size corpus in test_identity_gates_falsify.py,
-so it is a gate that has been *seen to fire* rather than one merely written down.
+## The word-share cap and its skip (§6a)
+
+The cap is a *ratio against a corpus denominator*, and IDENTITY.md derives its two
+thresholds specifically against n=27 and n=12. Below that the limit degenerates —
+at n=3, round(3 × 0.185) = 1, which fails the moment any content word appears in
+two of three profiles. That is not the spec's gate, it is noise wearing the spec's
+name. So the gate skips below a meaningful corpus size and says so out loud.
+
+**The skip is closed as of identity_content_v2**, which seeds the full 27 + 12: the
+limit is 5 and 3, both >= 2, so both gates run. `test_share_gate_is_not_skipped_when_complete`
+makes it impossible to reach a full corpus with the gate still asleep, and
+`test_no_gate_skips_on_a_complete_corpus` asserts the stronger property that
+nothing in this module skips once the corpus is complete. The gate is additionally
+falsified on the real corpus and against a synthetic full-size one in
+test_identity_gates_falsify.py, so it is a gate that has been *seen to fire*
+rather than one merely written down.
 
 ## A note on `round` vs `int`
 
@@ -36,13 +48,20 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from collections import Counter
 from pathlib import Path
 
 import pytest
+from _pytest.outcomes import Skipped
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from engine.content import IDENTITY_SEED_PATH  # noqa: E402
 
 SEED_DIR = Path(__file__).resolve().parents[1] / "db" / "seed"
-SEED_PATH = SEED_DIR / "identity_content_v1.json"
+#: Derived from the ONE line that activates a corpus — never typed twice. See
+#: the module docstring for why this is not a style preference.
+SEED_PATH = IDENTITY_SEED_PATH
 
 # Canonical order, identical to aura-api's src/natal.ts NAKSHATRAS/SIGNS. The
 # Worker computes the reader's nakshatra and moon sign; if these lists drift
@@ -273,7 +292,13 @@ def seeded_pairs(data: dict) -> list[tuple[str, str]]:
 
 
 def test_version() -> None:
-    assert _load()["version"] == "identity_content_v1"
+    """The corpus declares the version its own filename claims.
+
+    Asserted against the FILENAME rather than a literal, so activating a new
+    corpus needs one edit (engine/content.py) and not two. A literal here is how
+    this module ended up grading v1 after v2 went live.
+    """
+    assert _load()["version"] == SEED_PATH.stem
 
 
 def test_keys_are_canonical_names() -> None:
@@ -574,6 +599,62 @@ def test_share_gate_is_not_skipped_when_complete() -> None:
             assert _share_limit(kind, FULL_N[kind]) >= 2, (
                 f"{kind} corpus is complete but the share gate would still skip"
             )
+
+
+def test_no_gate_skips_on_a_complete_corpus() -> None:
+    """Once the corpus is complete, NOTHING in this module may skip.
+
+    Stronger than `test_share_gate_is_not_skipped_when_complete`, which only
+    covers the one gate whose skip was designed in. This runs the whole module
+    and fails if any test reports skipped — the honest form of "all gates are
+    now running", and the only version of that claim which stays true when a
+    future author adds a second conditional skip and forgets it.
+
+    Deliberately a no-op while a corpus is partial: the skip is legitimate then.
+
+    Implemented by CALLING every gate in this module in-process and catching
+    `Skipped`, not by shelling out to pytest. The subprocess version of this test
+    recursed into itself and hung; more importantly, executing the gates directly
+    is the stronger check — it proves each one ran to completion on the real
+    corpus rather than parsing a summary line for the word "skipped".
+    """
+    data = _load()
+    if len(data["nakshatra"]) != FULL_NAKSHATRA_N or len(data["moon_sign"]) != FULL_MOON_SIGN_N:
+        return
+
+    import inspect
+
+    module = sys.modules[__name__]
+    skipped: list[str] = []
+    ran = 0
+    for name, fn in sorted(vars(module).items()):
+        if not name.startswith("test_") or not inspect.isfunction(fn):
+            continue
+        if name == "test_no_gate_skips_on_a_complete_corpus":
+            continue  # no recursion
+        params = inspect.signature(fn).parameters
+        calls = []
+        if marks := getattr(fn, "pytestmark", []):
+            for mark in marks:
+                if mark.name == "parametrize":
+                    for argset in mark.args[1]:
+                        calls.append(argset if isinstance(argset, tuple) else (argset,))
+        if not calls:
+            if params:
+                continue  # a fixture-taking gate; nothing here uses one
+            calls = [()]
+        for args in calls:
+            try:
+                fn(*args)
+                ran += 1
+            except Skipped as exc:  # noqa: PERF203 — we want the name with it
+                skipped.append(f"{name}{args}: {exc}")
+
+    assert not skipped, (
+        "the corpus is complete but these gates still skipped — a skip that "
+        "outlives the pilot is a hole, not a carve-out:\n  " + "\n  ".join(skipped)
+    )
+    assert ran >= 20, f"only {ran} gates executed; this guard is not covering the module"
 
 
 def test_share_thresholds_match_the_spec_table() -> None:

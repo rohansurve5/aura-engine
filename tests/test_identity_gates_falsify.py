@@ -29,18 +29,36 @@ Two gates here have that shape and are falsified twice each:
   shrinks the gate's input to nothing and passes vacuously. So it is falsified
   with (1) a genuine shared word, and (2) a shrunk pair set, which must be
   caught by the coverage gate instead.
-* **The contrast-graph gate** skips targets outside the authored set. A violation
-  that points every contrast at an unauthored nakshatra leaves the authored graph
-  empty rather than corrupt. Falsified with (1) a self-contrast, (2) both targets
-  aimed outside the authored set.
+* **The contrast-graph gate** admits a violation that leaves the graph *sparse*
+  rather than *malformed*. Falsified with (1) a self-contrast, (2) a silently
+  orphaned nakshatra — every inbound edge redirected, per-entry validity intact.
 
-## The word-share gate, which cannot be falsified on the pilot
+## Updated for a COMPLETE corpus (identity_content_v2)
 
-It skips at n=3/n=4 by design (see the seed test's docstring). Skipping it here
-too would leave the corpus's only lexical backstop entirely unproven, so it is
-falsified against a **synthetic full-size corpus** — 27 and 12 generated entries
-— which is the only way to see it fire at the denominator the spec derives it
-against.
+Three fixtures here were written against the 3+4 pilot and asserted pilot facts.
+At 27+12 they failed, correctly, and were rewritten rather than relaxed:
+
+* the contrast-graph fallback signature was "aim every contrast outside the
+  authored set", which is **not expressible** once the authored set is all 27 —
+  there is nowhere outside it. Replaced with the orphan signature above.
+* the cross-corpus vacuous-pass fixture emptied the work-list by seeding one real
+  sign; at full size every sign co-occurs with three nakshatras, so it now uses a
+  **misspelled** key, which is the only thing that still empties it.
+* `test_share_gate_skip_is_visible_not_silent` asserted the gate was skipping
+  *today*. It is not, and must not be. It now asserts the skip **closed on its
+  own** at full size while remaining reachable at n=3 — a gate that can no longer
+  skip on a small corpus was disabled, not outgrown.
+
+## The word-share gate, now falsified on real prose
+
+Until v2 it had only ever been seen to fire against a **synthetic** corpus of
+generated tokens, because it skipped on the pilot. That proved the arithmetic. It
+did not prove the gate bites on copy written by a human with habits — which is
+the only thing it exists for. `test_falsify_word_share_on_the_REAL_corpus` now
+pushes an ordinary, natural-reading word (`quietly`) one entry past the cap in
+the live corpus and requires red, then re-checks the far side of the boundary.
+The synthetic tests are kept: they pin the threshold to IDENTITY.md §6a's table
+at both edges, which real copy cannot do as precisely.
 """
 
 from __future__ import annotations
@@ -266,27 +284,53 @@ def test_falsify_contrast_graph_signature_1_self_contrast(monkeypatch) -> None:
     _expect_green(monkeypatch, G.test_contrast_fields_well_formed)
 
 
-def test_falsify_contrast_graph_signature_2_aimed_outside(monkeypatch) -> None:
-    """The fallback-shaped one. Pointing every contrast at an UNAUTHORED
-    nakshatra is valid per-entry — each target is a real name and not itself —
-    so the well-formedness gate stays green. Only the connectivity gate catches
-    it, and only because it asserts over the authored set rather than skipping
-    when the authored set has no inbound edges.
+def test_falsify_contrast_graph_signature_2_orphan_at_full_corpus(monkeypatch) -> None:
+    """The fallback-shaped one, in the form it takes at a COMPLETE corpus.
+
+    At pilot size the hazard was contrasts aimed at unauthored nakshatras: valid
+    per-entry — each target is a real name and not itself — so the
+    well-formedness gate stays green while the authored graph has no inbound
+    edges at all. That violation is no longer expressible at 27 entries, because
+    the authored set IS the universe; there is nowhere outside it to point.
+
+    The same hazard survives in a different shape, and this is now the honest
+    one: silently ORPHAN a single nakshatra by redirecting every contrast that
+    named it. Per-entry validity is untouched, 26 of 27 remain connected, and
+    only the connectivity gate notices that one disposition is no longer
+    distinguished from anything. Choosing a real orphan rather than corrupting
+    the shape is what keeps this a test of the gate and not of the schema.
     """
     data = _corpus()
-    for entry, targets in zip(
-        data["nakshatra"].values(),
-        [("Revati", "Ardra"), ("Rohini", "Pushya"), ("Magha", "Swati")],
-    ):
-        for c, target in zip(entry["contrast"], targets):
-            c["nakshatra"] = target
+    victim = "Vishakha"
+    inbound = [
+        (name, i)
+        for name, entry in data["nakshatra"].items()
+        for i, c in enumerate(entry["contrast"])
+        if c["nakshatra"] == victim
+    ]
+    assert inbound, f"fixture assumes {victim} has inbound contrast edges to remove"
+    for name, i in inbound:
+        # redirect to any valid target that is neither the victim nor the entry itself
+        data["nakshatra"][name]["contrast"][i]["nakshatra"] = next(
+            n for n in G.NAKSHATRAS
+            if n != victim
+            and n != name
+            and n != data["nakshatra"][name]["contrast"][1 - i]["nakshatra"]
+        )
 
     monkeypatch.setattr(G, "_load", lambda: data)
     G.test_contrast_fields_well_formed()  # still green — that is the point
 
     msg = _expect_red(monkeypatch, data, G.test_contrast_graph_is_connected)
-    assert "named as a contrast by no other authored entry" in msg
+    assert victim in msg
     _expect_green(monkeypatch, G.test_contrast_graph_is_connected)
+
+    # and the complete-corpus hardening gate must catch the same orphan
+    msg = _expect_red(
+        monkeypatch, data, G.test_contrast_graph_gate_hardens_to_all_27_when_complete
+    )
+    assert victim in msg and "never contrasted" in msg
+    _expect_green(monkeypatch, G.test_contrast_graph_gate_hardens_to_all_27_when_complete)
 
 
 # ── Distinctness ─────────────────────────────────────────────────────────────
@@ -387,7 +431,12 @@ def test_falsify_cross_corpus_signature_2_vacuous_pass(monkeypatch) -> None:
     in both directions.
     """
     data = _corpus()
-    data["moon_sign"] = {"Gemini": data["moon_sign"]["Taurus"]}
+    # A MISSPELLED sign key, not a real one. At pilot size a single real sign
+    # was enough to empty the work-list; at full corpus every one of the twelve
+    # co-occurs with three nakshatras, so only a key that matches no sign at all
+    # reproduces the vacuous pass. Same violation, updated to a corpus where the
+    # cheap version of it no longer bites.
+    data["moon_sign"] = {"Gemeni": data["moon_sign"]["Gemini"]}
     assert G.seeded_pairs(data) == [], "fixture must actually empty the work-list"
 
     monkeypatch.setattr(G, "_load", lambda: data)
@@ -504,10 +553,86 @@ def test_falsify_word_share_frame_exemption_is_narrow() -> None:
     )
 
 
-def test_share_gate_skip_is_visible_not_silent() -> None:
-    """The pilot skip is a known hole. It must be reachable only while the corpus
-    is genuinely small, and must close on its own at full size — never require a
-    human to remember to re-enable it."""
+def test_share_gate_skip_has_closed_on_its_own() -> None:
+    """The pilot skip was a known hole that had to close WITHOUT a human
+    remembering to re-enable it. identity_content_v2 is the moment it closed, and
+    this is the assertion that it closed by itself.
+
+    Both halves are asserted, because either alone is misleading: the gate must
+    now run on the live corpus, AND the skip must still be reachable at a
+    genuinely small n — a gate that can no longer skip at n=3 was disabled rather
+    than outgrown, and would fire nonsense on the next pilot corpus somebody
+    seeds.
+    """
+    corpus = _corpus()
     for kind, full in (("nakshatra", G.FULL_NAKSHATRA_N), ("moon_sign", G.FULL_MOON_SIGN_N)):
-        assert G._share_limit(kind, len(_corpus()[kind])) < 2  # skipping today
-        assert G._share_limit(kind, full) >= 2  # runs at full size, automatically
+        assert len(corpus[kind]) == full, f"{kind} corpus is no longer complete"
+        assert G._share_limit(kind, full) >= 2, f"{kind} gate would still skip at full size"
+        assert G._share_limit(kind, 3) < 2, (
+            f"{kind} gate would no longer skip on a 3-entry pilot — the skip was "
+            "removed rather than outgrown"
+        )
+
+
+@pytest.mark.parametrize("kind,fields", [
+    ("nakshatra", G.NAKSHATRA_PROSE),
+    ("moon_sign", G.MOON_SIGN_PROSE),
+])
+def test_falsify_word_share_on_the_REAL_corpus(monkeypatch, kind, fields) -> None:
+    """The gate's first falsification against real copy rather than a fixture.
+
+    Until identity_content_v2 the share cap had only ever been seen to fire on a
+    synthetic corpus of generated tokens, because it skipped on the pilot. That
+    proved the arithmetic; it did not prove the gate bites on prose written by a
+    human with habits. So: take the real corpus and push one ordinary word — the
+    kind an author actually reaches for — into one entry more than the cap
+    allows, and require red.
+
+    `template` is deliberately NOT used. A nonsense token would fire trivially;
+    the question worth asking is whether a word that reads perfectly natural in
+    every sentence it appears in still gets caught once it is in six profiles.
+    """
+    word = "quietly"  # plausible, unexempt, and exactly the sort of tic §6a targets
+    field = fields[1]  # core / need — always present, always prose
+
+    def _spread_to(target: int) -> dict:
+        """The real corpus with `word` in EXACTLY `target` entries.
+
+        It already occurs in some of them — that is the point of using a real
+        word — so the fixture counts existing usage and tops up, rather than
+        assuming a clean slate. An earlier version of this test injected
+        blindly and produced 7 where it asserted 6; the assertion caught the
+        fixture, which is the behaviour a falsification suite is supposed to have.
+        """
+        data = _corpus()
+        entries = data[kind]
+        assert len(entries) > target, "corpus too small for this falsification"
+        holders = {
+            name for name, e in entries.items()
+            if any(word in G._content_words(e[f]) for f in fields)
+        }
+        assert len(holders) <= target, (
+            f"{word!r} already appears in {len(holders)} {kind} entries, above the "
+            f"target of {target}; pick a rarer word for this fixture"
+        )
+        for name in [n for n in entries if n not in holders][: target - len(holders)]:
+            entries[name][field] = f"{entries[name][field]} You do it {word}."
+        return data
+
+    limit = G._share_limit(kind, len(_corpus()[kind]))
+
+    over = _spread_to(limit + 1)
+    offenders = G.check_word_share(over, kind, fields)
+    assert offenders.get(word) == limit + 1, (
+        f"{kind}: {word!r} in {limit + 1} entries must exceed the cap of {limit}, "
+        f"got {offenders}"
+    )
+    msg = _expect_red(monkeypatch, over, G.test_no_content_word_dominates, kind, fields)
+    assert word in msg
+    _expect_green(monkeypatch, G.test_no_content_word_dominates, kind, fields)
+
+    # the other side of the boundary, on the same real copy: exactly AT the cap passes
+    at = _spread_to(limit)
+    assert not G.check_word_share(at, kind, fields), (
+        f"{kind}: {word!r} in exactly {limit} entries is at the cap and must pass"
+    )

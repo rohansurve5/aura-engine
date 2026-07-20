@@ -1,13 +1,34 @@
-# Identity — voice spec (identity_content_v1)
+# Identity — voice spec
 
 The corpus behind **"About your star"**: 27 nakshatra profiles + 12 moon-sign
 trait entries. This is the AstroSage-parity lever — the copy that has to make
 the app feel like it *knows* the reader.
 
-**Status: spec only.** No entry has been authored. This document exists because
-`dasha_content_v1` was written before its spec and had to be thrown away; the
-same mistake at 27+12 entries is a bigger write-off. Rohan reviews this before
-Block C2 authors anything.
+**Status: AUTHORED AND COMPLETE** as `identity_content_v2` (2026-07-20) — all
+27 + 12 entries, every gate in §6 running with none skipped. `identity_content_v1`
+was the 3 + 4 pilot that proved the pipeline and the gates; its rows remain in the
+table, and all 7 of its entries are carried into v2 byte-identical. This document
+was written before any entry existed, because `dasha_content_v1` was authored
+before its spec and had to be thrown away; the same mistake at 27 + 12 entries
+would have been a bigger write-off.
+
+**Two things this spec got right, confirmed by what actually happened at full
+size**, recorded here because both were contested while writing it:
+
+* **§6a's insistence on re-deriving the share cap rather than reusing 0.06.** The
+  gate necessarily slept through the pilot and woke at 27/12. Its first real run
+  caught `whoever` in **13 of 27** entries — a tic the author had introduced
+  precisely by dodging the cap on `people`, and which was invisible while writing
+  any single entry. The backstop earned its place on its first firing.
+* **§6c's refusal to automate the Barnum check.** Nothing mechanical here would
+  have caught that tic's *meaning*; the share cap caught its *shape*. The division
+  of labour the section argues for — CI enforces carriers and structure, a human
+  enforces the claim — is still the honest one, and the human review of the
+  Swap Test across all 27 remains outstanding.
+
+**Still outstanding (a human, per §6c):** the Swap Test on every line, the
+wince-or-forward test on every `cost`, and whether each `contrast` pair names a
+real difference or a synonym. CI cannot answer any of the three.
 
 ## Why the existing voice docs don't cover this
 
