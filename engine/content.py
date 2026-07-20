@@ -46,6 +46,8 @@ SEED_PATH = _SEED_DIR / "score_rules_content_v3_2.json"
 DASHA_SEED_PATH = _SEED_DIR / "dasha_content_v2.json"
 # ── THE ONE LINE THAT SETS THE ACTIVE identity_content VERSION ───────────────
 IDENTITY_SEED_PATH = _SEED_DIR / "identity_content_v2.json"
+# ── THE ONE LINE THAT SETS THE ACTIVE report_content VERSION ─────────────────
+REPORT_SEED_PATH = _SEED_DIR / "report_content_v1.json"
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -74,3 +76,9 @@ ACTIVE_DASHA_CONTENT_VERSION = declared_version(DASHA_SEED_PATH)
 #: silently rolled the library back eight versions at v10. Starting here costs
 #: nothing and makes that class of bug unreachable for this corpus.
 ACTIVE_IDENTITY_CONTENT_VERSION = declared_version(IDENTITY_SEED_PATH)
+
+#: The active period-report corpus version — derived, never typed. Written to
+#: `active_content` by migrate; served by /v1/report/content. v1 covers the
+#: WEEKLY report only; the remaining report types are a scope decision, not an
+#: authoring backlog — see docs/REPORTS.md § what we can actually compute.
+ACTIVE_REPORT_CONTENT_VERSION = declared_version(REPORT_SEED_PATH)

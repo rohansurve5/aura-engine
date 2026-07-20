@@ -25,9 +25,11 @@ import pytest
 from engine.content import (
     ACTIVE_DASHA_CONTENT_VERSION,
     ACTIVE_IDENTITY_CONTENT_VERSION,
+    ACTIVE_REPORT_CONTENT_VERSION,
     ACTIVE_SCORE_RULES_VERSION,
     DASHA_SEED_PATH,
     IDENTITY_SEED_PATH,
+    REPORT_SEED_PATH,
     SEED_PATH,
     declared_version,
 )
@@ -386,7 +388,12 @@ def test_no_kind_selects_its_version_by_inference():
     the data. `max(version)` and `ORDER BY version` are both lexical over TEXT.
     """
     migrate = _migrate_module()
-    for fn in (migrate.seed, migrate.seed_dasha_content, migrate.seed_identity_content):
+    for fn in (
+        migrate.seed,
+        migrate.seed_dasha_content,
+        migrate.seed_identity_content,
+        migrate.seed_report_content,
+    ):
         code = _code_only(fn).lower()
         assert "max(version)" not in code, f"{fn.__name__} infers a version via max()"
         assert "order by version" not in code, (
@@ -401,3 +408,84 @@ def test_no_kind_selects_its_version_by_inference():
         assert "data['version']" in code, (
             f"{fn.__name__} does not take its version from the seed file"
         )
+
+
+# ── report_content: the fourth corpus, on the marker from version ONE ────────
+#
+# Same contract as identity_content, and for the same reason: this corpus has
+# never had a max(version) phase and never will. The lexical-sort bug
+# ('..._v10' < '..._v2' in Postgres) has been closed by retrofit twice in this
+# repo; the cheapest place to close it a third time is before anything reads it.
+
+
+def test_active_report_seed_file_exists():
+    assert REPORT_SEED_PATH.is_file(), f"active report seed missing: {REPORT_SEED_PATH}"
+
+
+def test_active_report_version_matches_seed_filename():
+    expected = f"{ACTIVE_REPORT_CONTENT_VERSION}.json"
+    assert REPORT_SEED_PATH.name == expected, (
+        f"report seed {REPORT_SEED_PATH.name} declares version "
+        f"{ACTIVE_REPORT_CONTENT_VERSION!r}; expected the file named {expected}"
+    )
+    assert ACTIVE_REPORT_CONTENT_VERSION == declared_version(REPORT_SEED_PATH)
+
+
+def test_migrate_seeds_the_exact_report_file_content_py_activates():
+    """One declaration of the report seed path, not two."""
+    migrate = _migrate_module()
+    assert migrate.REPORT_SEED == REPORT_SEED_PATH, (
+        f"db/migrate.py seeds {migrate.REPORT_SEED} but engine/content.py "
+        f"activates {REPORT_SEED_PATH}. Two declarations is how seeded and "
+        "served diverge."
+    )
+
+
+def test_seeding_report_content_also_marks_it_active():
+    """Seed-without-activate must not be expressible for this corpus either."""
+    import inspect
+
+    src = inspect.getsource(_migrate_module().seed_report_content)
+    assert "active_content" in src and "'report_content'" in src, (
+        "seed_report_content does not stamp active_content. Seeding and "
+        "activating must be one act."
+    )
+
+
+def test_report_seeds_all_four_movements_in_one_transaction():
+    """The consecutive-week distinctness gate spans all four movements, so it is
+    only meaningful over a matched SET of them. A seeder that wrote `shape` and
+    `close` under different versions would produce a report whose movements were
+    never gated against each other — made unreachable, not merely detected."""
+    code = _code_only(_migrate_module().seed_report_content)
+    assert "'shape', 'turn', 'standing', 'close'" in code, (
+        "seed_report_content must write all four key types in the same "
+        "transaction as the marker"
+    )
+    assert code.count("active_content") == 1, (
+        "exactly one activation write, covering all four movements"
+    )
+
+
+def test_every_report_seed_file_declares_a_version_matching_its_name():
+    for path in sorted(SEED_DIR.glob("report_content_v*.json")):
+        version = json.loads(path.read_text()).get("version")
+        assert path.name == f"{version}.json", (
+            f"{path.name} declares version {version!r}; name and version disagree"
+        )
+
+
+def test_active_report_version_is_the_newest_seed():
+    """Numeric ordering, as for the other three kinds."""
+
+    def key(name: str) -> tuple[int, ...]:
+        stem = name.removesuffix(".json").removeprefix("report_content_v")
+        return tuple(int(p) for p in stem.split("_") if p.isdigit())
+
+    names = [p.name for p in SEED_DIR.glob("report_content_v*.json")]
+    newest = max(names, key=key)
+    assert REPORT_SEED_PATH.name == newest, (
+        f"the newest report seed is {newest} but engine/content.py activates "
+        f"{REPORT_SEED_PATH.name}. If that is a deliberate rollback, update "
+        "this test's expectation in the same commit."
+    )

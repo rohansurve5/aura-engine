@@ -1,0 +1,380 @@
+{
+  "version": "report_content_v1",
+  "_about": {
+    "spec": "docs/REPORTS.md",
+    "status": "v1 — WEEKLY report only. The other nine report types are a scope decision pending the audit in docs/REPORTS.md, not an authoring backlog.",
+    "axis": "shape (6, a DISTRIBUTION claim not a trend) x opening variant (11) | turn kind (5) x 7 | area.role (18) x 5 | close by shape (6) x 5",
+    "counts": "66 openings + 35 turns + 90 standings + 30 closes = 221 authored lines",
+    "why_primes": "11, 7 and 5 are mutually coprime and none shares a factor with 52. A rotation whose period divides the report cadence collapses — a 12-row table indexed by month hands every January the same row forever.",
+    "why_distribution": "The first draft classified weeks as rising/falling/cresting/dipping. Real sky data produced only two of those six, because daily energy is a tara-driven sawtooth (nine alternating energies, advancing one step per day) with a 48-70 point weekly spread and no trend at all. These six describe WHERE the strong days fall, which is a claim the data actually supports."
+  },
+  "shape": {
+    "even": {
+      "openings": [
+        "This week is level. Nothing distinguishes one day from another, which makes it excellent for anything requiring consistency.",
+        "An even seven days. No day to aim at and none to avoid, so the schedule can be whatever you decide.",
+        "It holds the same note throughout. Routine tasks, long projects and anything needing repetition all suit this shape.",
+        "There is no rhythm here worth planning around. That is not emptiness; it is the absence of interference.",
+        "A plain week. Nothing argues with you in either direction, so your own discipline sets the pace.",
+        "Every day sits at one level. Weeks like this are where backlogs actually get cleared.",
+        "No standout days in either direction. The differences are smaller than your own mood will be.",
+        "It runs flat. Pick the project that benefits from a long uninterrupted run and give it all seven days.",
+        "This one does not move much. Treat the whole as a single block rather than as parts.",
+        "Uniform throughout. What you get out of it depends almost entirely on what you put in.",
+        "A quiet, unvarying week. Nothing will carry you and nothing will obstruct you."
+      ]
+    },
+    "front": {
+      "openings": [
+        "Your strongest days land at the front. Whatever needs sharp judgement should be scheduled before midweek, not after.",
+        "The week gives most of what it has early. Treat the opening as prime time rather than as a warm-up.",
+        "Front-loaded. The two highest days arrive before most people have finished planning, so do your planning on Sunday.",
+        "The strong days cluster at the start. That is convenient if you act on it and wasteful if you do not.",
+        "This week opens at its best. Nothing later matches those first days, so spend them rather than saving them.",
+        "The high days come early. Anything waiting for the right moment has its moment almost immediately.",
+        "The first half holds most of it. Book the hard conversations there and let the rest be admin.",
+        "Early days carry this one. By the back half you will be working on what you set up, not setting up anything new.",
+        "The opening days are the ones that count. Judge the week by what you do in them.",
+        "Strength arrives immediately and does not wait around. Move the important thing forward in your calendar.",
+        "The best of this week is at the beginning. Read that as an instruction about scheduling, not about luck."
+      ]
+    },
+    "back": {
+      "openings": [
+        "Your strongest days are at the end. Push what matters later rather than forcing it early.",
+        "The week saves its strongest for last. The opening days are for preparation and they are genuinely enough for that.",
+        "Back-loaded. Whatever feels heavy at the start gets noticeably lighter once the strong days arrive.",
+        "The high days cluster near the close. Protect them — do not let routine fill the end of your week.",
+        "Most of the strength sits in the second half. Move deadlines back where you honestly can.",
+        "This one finishes better than it starts. Do not judge it on Monday.",
+        "The capable days come late. Anything requiring sharp judgement belongs at the far end.",
+        "Strength arrives toward the finish. Use the opening to clear the ground so the strong days are free.",
+        "The closing days are the ones that count. Everything before them is legitimately preparation.",
+        "This week's peak is at the end. Arrange things so you are not too tired to use it.",
+        "Later is stronger. Every task you can honestly defer gets better support when you defer it."
+      ]
+    },
+    "split": {
+      "openings": [
+        "This week is strong at both ends and thin through the middle. Book the demanding things either side of the centre.",
+        "Two good runs with a gap between them. The gap is short and it does not need managing.",
+        "The strength sits at the edges. Midweek is for maintenance, and there is no shame in planning it that way.",
+        "Both ends are better than the centre. Plan two pushes rather than one long one.",
+        "You get a strong opening and a strong close. What sits between them is quieter than either.",
+        "The middle is the soft spot. Schedule around it and this reads as two solid runs rather than one uneven week.",
+        "Energy comes in two blocks. Treat them as separate weeks and the middle stops being a problem.",
+        "Strong, thin, strong. Knowing the order in advance is most of what you need.",
+        "The centre asks least of you. Let it, and put the real effort on either side.",
+        "This one has a dip in the middle with strength around it. The dip is bounded, which is the useful bit.",
+        "The edges carry this week. Midweek is for whatever tolerates a slower pace."
+      ]
+    },
+    "centre": {
+      "openings": [
+        "Your strongest days sit in the middle. Aim the thing that matters at midweek rather than at either edge.",
+        "The centre carries this one. Both ends are ordinary; what sits between them is not.",
+        "Midweek is where the strength is. Use the opening to prepare and the close to consolidate.",
+        "The high days are central. That gives you a run-up and a wind-down, which is the most workable arrangement there is.",
+        "Neither end of this week tells you much. The middle is where it actually happens.",
+        "Strength gathers toward the centre. Book the demanding conversation for midweek and it will go better.",
+        "Midweek holds the peak. Do not spend yourself on the opening trying to get ahead.",
+        "This one peaks between its ends. Approach that deliberately rather than arriving already tired.",
+        "The centre is the strong stretch. Front and back are for setup and tidying respectively.",
+        "Midweek does the heavy lifting. Everything else is scaffolding around it.",
+        "The best days are neither first nor last. Plan around the middle."
+      ]
+    },
+    "scattered": {
+      "openings": [
+        "The strong days are scattered rather than clustered. Check each morning instead of planning a run.",
+        "Capable and thin days alternate. That is workable, but it rewards a flexible schedule over a fixed one.",
+        "This week has no block of strength — it comes a day at a time, with gaps between.",
+        "Strength arrives in single days rather than runs. Keep the demanding tasks short enough to fit one.",
+        "The good days do not sit together. Pair each with a lighter one after it and the week runs evenly.",
+        "It alternates. Expect to feel capable and then ordinary in quick succession, and read nothing into either.",
+        "No two strong days in a row. Plan the important things one at a time rather than in a push.",
+        "The week comes in single high days. That suits errands and decisions better than long projects.",
+        "Strength is distributed rather than concentrated. There is no standout run here, only standout days.",
+        "The rhythm is uneven. Take the strong days as they come and keep everything else light.",
+        "This one gives and withholds by turns. Short commitments will serve you better than long ones."
+      ]
+    }
+  },
+  "turn": {
+    "peak_early": {
+      "lines": [
+        "The strongest hours arrive almost immediately, so the decision worth making is what you point them at.",
+        "Your high lands near the start, which gives you everything after it to build on.",
+        "The turn happens early. Past it the week is not weaker so much as differently shaped.",
+        "Peak hours come before most people have settled in. Be ready rather than warmed up.",
+        "It opens near its best. Waiting for a better moment means waiting past it.",
+        "The high sits at the front. Everything later is downstream of what you do there.",
+        "Early is when this week is at its most capable. Treat the first hours as the main event."
+      ]
+    },
+    "peak_mid": {
+      "lines": [
+        "The pivot is in the middle. What happens there sets the tone for everything after.",
+        "Your strongest hours sit at the centre, with room on both sides to prepare and recover.",
+        "The turn comes midweek. Approach it deliberately rather than arriving at it already spent.",
+        "The middle carries the high. Book the thing you have been putting off against it.",
+        "Conditions top out in the centre. Neither end is where the leverage is.",
+        "The hinge is midweek. Before it is preparation; after it is consequence.",
+        "Peak sits between the ends. That is the most workable position it can take."
+      ]
+    },
+    "peak_late": {
+      "lines": [
+        "The strongest conditions arrive at the end. Everything before them is legitimately preparation.",
+        "Your high is late, so resist judging the week before it has finished.",
+        "The turn comes near the close. Save what needs strength for it rather than spending early.",
+        "Everything peaks in the final hours. That is worth protecting against fatigue.",
+        "The strongest hours are the last ones. Arrange things so you can still use them.",
+        "Late is when this week is at its best. Do not fill the ending with tidying.",
+        "The high lands at the finish. Whatever you have been building meets its best moment there."
+      ]
+    },
+    "no_turn": {
+      "lines": [
+        "There is no pivot to plan around. That is genuinely useful information rather than a gap.",
+        "Nothing turns. The conditions you get on the first morning are the conditions you get throughout.",
+        "No single moment carries more weight than another. Your schedule can ignore the sky entirely.",
+        "There is no best hour to wait for. Start when you are ready and the week will cooperate.",
+        "It does not hinge anywhere. Consistency, not timing, is what will move things.",
+        "No turn, no peak, no dip. Pick your own moment and it will be as good as any other.",
+        "Nothing asks for particular timing. That freedom is the shape."
+      ]
+    },
+    "whiplash": {
+      "lines": [
+        "Your best and worst days are next to each other. The drop is real but it is one day wide.",
+        "The high and the low sit back to back. Do not read the weaker one as a trend.",
+        "There is a sharp change between two consecutive days. Knowing which order they come in is most of the advantage.",
+        "The strongest and thinnest days are neighbours. Plan nothing important across both.",
+        "You will go from capable to ordinary overnight, or the reverse. Neither says anything about the week as a whole.",
+        "Two adjacent days differ more than the rest combined. Let the weaker one be genuinely light.",
+        "The swing between consecutive days is the sharpest thing here. Expect it and it costs nothing."
+      ]
+    }
+  },
+  "standing": {
+    "love.leads": {
+      "lines": [
+        "Love carries the week. Conversations land where you aim them, so say the thing you have been circling.",
+        "Closeness comes easily. It is a good week to ask for what you actually want from someone.",
+        "The people who matter are reachable. Warmth carries further than usual, and reaching out costs you very little.",
+        "Relationships lead. Time spent with someone is worth more now than the same time spent alone.",
+        "Your closest connections are where the generosity is. Use it on the relationship you have been neglecting."
+      ]
+    },
+    "love.lags": {
+      "lines": [
+        "Love asks for patience. Nothing is wrong, but conversations need more room than you would normally give them.",
+        "Closeness moves slowly now. Let misreadings pass rather than correcting them, and they will settle by themselves.",
+        "Relationships want less pressure. A postponed conversation is not an avoided one.",
+        "The people around you are harder to read. Ask rather than assume, and expect the answer to take a while.",
+        "Connection runs thin. Keep expectations small and you will not be disappointed."
+      ]
+    },
+    "love.steadies": {
+      "lines": [
+        "Love is reliable throughout. Whatever else moves, the people close to you stay where you left them.",
+        "Relationships hold level. That makes them the right place to rest when everything else is uneven.",
+        "Closeness neither peaks nor dips. It is the fixed point you can plan around.",
+        "Your connections are the constant here. Nothing asks anything unusual of them.",
+        "The people close to you do not shift. Lean there when everything else moves."
+      ]
+    },
+    "money.leads": {
+      "lines": [
+        "Money decisions resolve cleanly. Comparisons make sense and the sensible option is visibly the sensible one.",
+        "Your accounts are unusually legible. Good timing for the purchase you researched, not the one you just thought of.",
+        "Asks land well. If there is a rate to negotiate or a bill to query, do it now.",
+        "Spending decisions come easy — not because more is arriving, but because you can see the trade-offs properly.",
+        "Money is where the clarity sits. Review the subscriptions, settle the dues, sign what has been waiting."
+      ]
+    },
+    "money.lags": {
+      "lines": [
+        "Money wants checking rather than committing. Hold the big swing and the small ones will still be fine.",
+        "Decisions about spending are murkier than usual. A second opinion is worth more than your first instinct.",
+        "Nothing about the accounts is urgent. Routine payments are safe; anything requiring a signature can wait.",
+        "Comparisons will not resolve cleanly. Sleep on the ones that matter and revisit them later.",
+        "Money asks for the slower hand. Reviewing where it went beats deciding where it goes next."
+      ]
+    },
+    "money.steadies": {
+      "lines": [
+        "Money holds level. No decision demands anything of you, which is a reasonable argument for simply not spending.",
+        "The accounts stay flat. Neither pressure nor opportunity, so the routine can just run.",
+        "Spending sits exactly where it did. What worked before works now, unchanged.",
+        "Money neither helps nor hinders. Set it aside and give the attention to whatever is actually moving.",
+        "Your finances are quiet. Nothing here needs a decision from you."
+      ]
+    },
+    "career.leads": {
+      "lines": [
+        "Work is where the most is given. Push the thing that has been waiting for a good moment — this is it.",
+        "Your professional standing rises. Visibility comes cheap, so let the right people see what you ship.",
+        "Career leads. Ship what is nearly finished rather than starting something that will not land in time.",
+        "The workplace cooperates. Ask for the thing you need from the person who can grant it.",
+        "Work runs ahead of everything else. Take on the piece slightly beyond you; conditions will cover the gap."
+      ]
+    },
+    "career.lags": {
+      "lines": [
+        "Work wants consolidation rather than expansion. Finish before you start.",
+        "Professionally, everything moves at half pace. Deliver what is promised and resist adding to the pile.",
+        "Career is what resists. Nothing is going wrong; it simply does not reward pushing.",
+        "The workplace is harder going. Keep commitments modest and they will all be met.",
+        "The job asks for less ambition and more follow-through. That trade is worth making."
+      ]
+    },
+    "career.steadies": {
+      "lines": [
+        "Work holds its level. The same effort produces the same result on any morning.",
+        "Your professional life stays exactly level. Predictability suits long tasks, so give it one.",
+        "Career neither climbs nor slips. Use the flatness for anything needing uninterrupted attention.",
+        "The workplace is unremarkable, which is the ideal condition for a backlog.",
+        "Your standing stays where it is. Nothing will move it for you, and nothing will move against you."
+      ]
+    },
+    "mind.leads": {
+      "lines": [
+        "Thinking is sharp. The problem you have been avoiding because it is complicated is the one to open.",
+        "Your attention is worth more than usual. Give it to something deserving the quality it has right now.",
+        "Clarity leads. Decisions sitting unresolved will resolve if you sit with them properly.",
+        "The mind runs clean. Reading, planning and anything requiring sustained thought all go well.",
+        "Focus is available. Protect a long block for the task only good concentration can finish."
+      ]
+    },
+    "mind.lags": {
+      "lines": [
+        "Thinking comes slower. Write decisions down rather than trusting you will hold them.",
+        "Attention scatters more easily. Shorten the blocks and the work still gets done.",
+        "Clarity comes at a cost. Reduce what you are holding at once and the remainder gets sharper.",
+        "The mind resists complexity. Save the intricate problem for a better week.",
+        "Concentration runs thin. Single tasks, one at a time, with the notifications off."
+      ]
+    },
+    "mind.steadies": {
+      "lines": [
+        "Thinking holds level — neither brilliant nor foggy, but reliably adequate, which is what most days need.",
+        "Attention is the constant. Whatever you could concentrate on before, you can concentrate on now.",
+        "The mind stays even. Consistency here is worth more than a peak you have to catch.",
+        "Clarity neither improves nor slips. Plan on ordinary thinking and you will not be caught out.",
+        "Your focus is dependable throughout. Build the schedule on it."
+      ]
+    },
+    "health.leads": {
+      "lines": [
+        "The body is willing. Good timing to restart something physical you let lapse.",
+        "Energy in the body runs high. Movement will feel like less effort than it did recently.",
+        "Health leads. Sleep, food and exercise all cooperate, so the habit you want to build has room.",
+        "Your physical condition is where the surplus is. Spend some of it rather than banking all of it.",
+        "The body cooperates. Push the pace slightly and it will hold."
+      ]
+    },
+    "health.lags": {
+      "lines": [
+        "The body wants rest. That is a scheduling instruction rather than a warning.",
+        "Physical energy is genuinely lower. Lighter sessions, earlier nights, and everything goes fine.",
+        "Health asks for maintenance rather than gains. Hold the routine and do not add to it.",
+        "The body is slower to recover. Build in the gap rather than pushing through it.",
+        "Rest is the productive choice. Treat sleep as the task, not the leftover."
+      ]
+    },
+    "health.steadies": {
+      "lines": [
+        "The body holds level. No surge and no slump, so the routine you have will simply keep working.",
+        "Physical condition is the constant. Nothing here needs adjusting.",
+        "Health neither improves nor demands. Keep doing what you were doing.",
+        "Your body is entirely predictable. That makes it an easy week for building a habit.",
+        "Physical energy stays flat. Consistency, not intensity, is what gets rewarded."
+      ]
+    },
+    "mood.leads": {
+      "lines": [
+        "Your mood runs generous. Whatever else happens, how you feel about it stays warm.",
+        "Inner weather is bright. Use the buoyancy on something that usually feels heavy.",
+        "Mood leads. Ideal timing for the thing requiring you to be in a settled state before you start.",
+        "You will feel more like yourself than usual. Spend it on people or work that benefit from that.",
+        "The emotional weather is the surplus. It will carry the parts that are thinner."
+      ]
+    },
+    "mood.lags": {
+      "lines": [
+        "Mood asks the most of you. Lower what you expect of yourself and everything improves immediately.",
+        "Inner weather is unsettled. Do not make permanent decisions from a temporary state.",
+        "How you feel will lag behind how things actually are. Check the facts before trusting the feeling.",
+        "The emotional weather runs heavier. Fewer commitments, more room, and it passes.",
+        "Mood lags behind everything else. Be as patient with yourself as you would be with anyone else."
+      ]
+    },
+    "mood.steadies": {
+      "lines": [
+        "Mood holds level — neither high nor low, which makes it a reliable base for everything else.",
+        "Inner weather is the constant. Nothing will swing how you feel.",
+        "How you feel stays even. That evenness is worth using on something needing a calm hand.",
+        "The emotional weather is unchanging. Plan on it and you will be right.",
+        "Your mood is the fixed point. Let the rest move around it."
+      ]
+    }
+  },
+  "close": {
+    "even": {
+      "lines": [
+        "A run like this is measured by what you put into it. Look at the output, not the sky.",
+        "Close by acknowledging the volume. Level weeks clear more than dramatic ones and get no credit.",
+        "Nothing about the rhythm decided this. Whatever happened, you did it.",
+        "Finish and start the next one the same way. Continuity is this shape's only real advantage.",
+        "End with the routine intact. That is the entire point of seven days that do not move."
+      ]
+    },
+    "front": {
+      "lines": [
+        "Carry the early gains forward. What worked in the first days is what to repeat.",
+        "Bank what the strong days produced and do not measure everything by a quiet ending.",
+        "Close by tidying rather than starting. New things belong on the other side of Sunday.",
+        "The tail is for consolidation. Leave it consolidated and Monday opens clean.",
+        "Stop before you are forced to. Ending deliberately beats ending exhausted."
+      ]
+    },
+    "back": {
+      "lines": [
+        "End strong and leave it strong. Monday starts from where this finished.",
+        "The gain is real — write down what changed so you can repeat it.",
+        "What you built in the last days compounds. Do not undo it with a slow restart.",
+        "Finish while the good days are still with you, then stop. The stopping matters too.",
+        "Close on the upswing and let the slow opening be forgotten."
+      ]
+    },
+    "split": {
+      "lines": [
+        "You end where you started, which after a thin middle is a genuinely good outcome.",
+        "Two good runs is more than most weeks give. Count them separately.",
+        "The recovery after the centre is the story. Note that it happened without intervention.",
+        "Finish knowing the soft patch was bounded. That is worth remembering next time one arrives.",
+        "Judge this week from its edges, not from what sat between them."
+      ]
+    },
+    "centre": {
+      "lines": [
+        "Come down deliberately. The descent is part of the rhythm and it deserves a plan.",
+        "Consolidate after the strong days rather than chasing them. What midweek gained needs securing.",
+        "The peak days have passed by the close — that is expected, not a loss.",
+        "Use the tail to finish what the centre started. Nothing new belongs there.",
+        "End by writing down what the peak produced. It will not seem obvious later."
+      ]
+    },
+    "scattered": {
+      "lines": [
+        "Do not draw conclusions from a week this uneven. Wait for a calmer one to decide anything permanent.",
+        "Close by writing down what actually happened. The impression will be less accurate than the record.",
+        "Let it end without a verdict. Alternating weeks resist summary, and forcing one misleads.",
+        "Finish by simplifying. Fewer open threads is the right outcome here.",
+        "End with slack still in the schedule. That is the win, not any particular achievement."
+      ]
+    }
+  }
+}

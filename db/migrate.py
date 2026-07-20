@@ -41,6 +41,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine.content import DASHA_SEED_PATH as CONTENT_DASHA_SEED_PATH
 from engine.content import IDENTITY_SEED_PATH as CONTENT_IDENTITY_SEED_PATH
+from engine.content import REPORT_SEED_PATH as CONTENT_REPORT_SEED_PATH
 from engine.content import SEED_PATH as CONTENT_SEED_PATH  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
@@ -53,6 +54,7 @@ MIGRATIONS = ROOT / "migrations"
 SEED = CONTENT_SEED_PATH
 DASHA_SEED = CONTENT_DASHA_SEED_PATH
 IDENTITY_SEED = CONTENT_IDENTITY_SEED_PATH
+REPORT_SEED = CONTENT_REPORT_SEED_PATH
 
 
 def _dsn() -> str:
@@ -195,9 +197,51 @@ def seed_identity_content(conn: psycopg.Connection) -> None:
     print(f"seeded {count} identity_content entries and marked ACTIVE (version {version})")
 
 
+def seed_report_content(conn: psycopg.Connection) -> None:
+    """Seed the active report_content corpus AND mark it active, atomically.
+
+    Same contract as the three above, and like identity_content this corpus
+    uses the `active_content` marker from its FIRST version — there was never a
+    max(version) phase to migrate off. That lexical-sort bug
+    (`'..._v10' < '..._v2'` in Postgres) has now been closed twice in this repo
+    by retrofit; closing it up front costs nothing.
+
+    All four key types are written in ONE transaction with the marker, because
+    the four movements of a report are gated against each other as a set (the
+    consecutive-week distinctness gate spans all four). A state where `shape` is
+    v2 and `close` is v1 would be a report whose halves were never gated
+    together — made unreachable rather than merely detected.
+    """
+    data = json.loads(REPORT_SEED.read_text())
+    version = data["version"]
+    count = 0
+    with conn.cursor() as cur:
+        for key_type in ("shape", "turn", "standing", "close"):
+            for key, payload in data[key_type].items():
+                cur.execute(
+                    "INSERT INTO report_content (version, key_type, key, payload) "
+                    "VALUES (%s, %s, %s, %s) "
+                    "ON CONFLICT (version, key_type, key) "
+                    "DO UPDATE SET payload = EXCLUDED.payload",
+                    (version, key_type, key, Json(payload)),
+                )
+                count += 1
+        cur.execute(
+            "INSERT INTO active_content (kind, version) VALUES ('report_content', %s) "
+            "ON CONFLICT (kind) DO UPDATE SET "
+            "version = EXCLUDED.version, updated_at = now()",
+            (version,),
+        )
+    conn.commit()
+    print(f"seeded {count} report_content entries and marked ACTIVE (version {version})")
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
-        description="apply migrations and seed score_rules + dasha_content + identity_content"
+        description=(
+            "apply migrations and seed score_rules + dasha_content + "
+            "identity_content + report_content"
+        )
     )
     ap.add_argument("--seed-only", action="store_true", help="skip migrations")
     ap.add_argument("--no-seed", action="store_true", help="skip seeding")
@@ -210,6 +254,7 @@ def main(argv: list[str] | None = None) -> int:
             seed(conn)
             seed_dasha_content(conn)
             seed_identity_content(conn)
+            seed_report_content(conn)
     return 0
 
 
