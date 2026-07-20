@@ -124,8 +124,8 @@ def test_active_version_is_the_newest_score_rules_seed():
     """
     def key(name: str) -> tuple[int, ...]:
         stem = name.removeprefix("score_rules_").removesuffix(".json")
-        digits = [int(p) for p in stem.replace("content_v", "v").lstrip("v").split("_") if p.isdigit()]
-        return tuple(digits)
+        parts = stem.replace("content_v", "v").lstrip("v").split("_")
+        return tuple(int(p) for p in parts if p.isdigit())
 
     names = [p.name for p in SEED_DIR.glob("score_rules_content_v*.json")]
     newest = max(names, key=key)
