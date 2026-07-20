@@ -22,7 +22,13 @@ from pathlib import Path
 
 import pytest
 
-from engine.content import ACTIVE_SCORE_RULES_VERSION, SEED_PATH, declared_version
+from engine.content import (
+    ACTIVE_DASHA_CONTENT_VERSION,
+    ACTIVE_SCORE_RULES_VERSION,
+    DASHA_SEED_PATH,
+    SEED_PATH,
+    declared_version,
+)
 from engine.scoring import SCORE_RULES_VERSION
 
 SEED_DIR = Path(__file__).resolve().parent.parent / "db" / "seed"
@@ -141,3 +147,99 @@ def test_active_corpus_carries_the_keys_v3_2_reauthored(required):
     """Sanity: the activated corpus really is the one with the v3_2 work in it."""
     rules = json.loads(SEED_PATH.read_text())["rules"]
     assert required in rules, f"active corpus is missing rule key {required!r}"
+
+
+# ── dasha_content: the same mechanism, the same gate ─────────────────────────
+#
+# `/v1/dasha/content` used to select `max(version)` — a lexical max, which ranks
+# 'dasha_content_v10' below 'dasha_content_v2' and would have rolled the library
+# back eight versions on the day someone authored v10. These tests hold the
+# dasha library to the identical single-source-of-truth contract as score_rules,
+# so the two kinds cannot drift apart in how they are activated.
+
+
+def test_active_dasha_seed_file_exists():
+    assert DASHA_SEED_PATH.is_file(), f"active dasha seed missing: {DASHA_SEED_PATH}"
+
+
+def test_active_dasha_version_matches_seed_filename():
+    expected = f"{ACTIVE_DASHA_CONTENT_VERSION}.json"
+    assert DASHA_SEED_PATH.name == expected, (
+        f"dasha seed {DASHA_SEED_PATH.name} declares version "
+        f"{ACTIVE_DASHA_CONTENT_VERSION!r}; expected the file named {expected}"
+    )
+
+
+def test_migrate_seeds_the_exact_dasha_file_content_py_activates():
+    """One declaration of the dasha seed path, not two."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "_migrate_dasha", Path(__file__).resolve().parent.parent / "db" / "migrate.py"
+    )
+    migrate = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(migrate)
+    assert migrate.DASHA_SEED == DASHA_SEED_PATH, (
+        f"db/migrate.py seeds {migrate.DASHA_SEED} but engine/content.py activates "
+        f"{DASHA_SEED_PATH}. Two declarations is how seeded and served diverge."
+    )
+
+
+def test_seeding_dasha_content_also_marks_it_active():
+    """Seed-without-activate must not be expressible.
+
+    Asserted on the source of `seed_dasha_content` because the write itself
+    needs a database CI does not have. What is checked is the property that
+    matters: the activation write lives *inside* the same function, and
+    therefore the same transaction, as the corpus write.
+    """
+    import importlib.util
+    import inspect
+
+    spec = importlib.util.spec_from_file_location(
+        "_migrate_active", Path(__file__).resolve().parent.parent / "db" / "migrate.py"
+    )
+    migrate = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(migrate)
+    src = inspect.getsource(migrate.seed_dasha_content)
+    assert "active_content" in src and "'dasha_content'" in src, (
+        "seed_dasha_content does not stamp active_content. Seeding a corpus and "
+        "activating it must be one act — otherwise /v1/dasha/content serves a "
+        "version nobody activated, or 503s because no marker exists."
+    )
+
+
+def test_every_dasha_seed_file_declares_a_version_matching_its_name():
+    for path in sorted(SEED_DIR.glob("dasha_content_v*.json")):
+        version = json.loads(path.read_text()).get("version")
+        assert path.name == f"{version}.json", (
+            f"{path.name} declares version {version!r}; name and version disagree"
+        )
+
+
+def test_active_dasha_version_is_the_newest_seed():
+    """Numeric ordering — the exact comparison the old max(version) got wrong."""
+    def key(name: str) -> tuple[int, ...]:
+        stem = name.removesuffix(".json").removeprefix("dasha_content_v")
+        return tuple(int(p) for p in stem.split("_") if p.isdigit())
+
+    names = [p.name for p in SEED_DIR.glob("dasha_content_v*.json")]
+    newest = max(names, key=key)
+    assert DASHA_SEED_PATH.name == newest, (
+        f"the newest dasha seed is {newest} but engine/content.py activates "
+        f"{DASHA_SEED_PATH.name}. If that is a deliberate rollback, update this "
+        "test's expectation in the same commit so it is a recorded decision."
+    )
+
+
+def test_lexical_max_would_pick_the_wrong_dasha_version():
+    """Guards the premise, so the fix is never 'simplified' back to max(version).
+
+    If this ever fails, string ordering has changed and the whole argument for
+    the marker table needs revisiting — it is not a test of our code so much as
+    of the fact our code is defending against.
+    """
+    versions = ["dasha_content_v1", "dasha_content_v2", "dasha_content_v10"]
+    assert max(versions) == "dasha_content_v2", (
+        "lexical max no longer picks v2 over v10 — re-examine why active_content exists"
+    )

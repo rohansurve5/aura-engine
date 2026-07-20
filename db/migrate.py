@@ -2,16 +2,17 @@
 """Tiny migration + seed runner for Neon (no ORM).
 
 Applies every `db/migrations/*.sql` in filename order exactly once (tracked in a
-`schema_migrations` table), then seeds `score_rules` from the active seed file
-named by `engine/content.py` and `dasha_content` from
-`db/seed/dasha_content_v2.json` with idempotent upserts. Older versions keep
-their rows — versions are additive, enabling rollback: `dasha_content_v1` stays
-in the table, and `/v1/dasha/content` serves `max(version)`, so a rollback is a
-delete of the newer rows rather than a code change.
+`schema_migrations` table), then seeds `score_rules` and `dasha_content` from
+the active seed files named by `engine/content.py`, with idempotent upserts.
+Older versions keep their rows — versions are additive, enabling rollback:
+`dasha_content_v1` stays in the table, so a rollback is repointing the seed path
+in `engine/content.py` and re-running this script, not a data restore.
 
-Seeding score_rules also stamps `active_content` with the seed file's declared
-version, in the same transaction — seeding a corpus and activating it are one
-act, never two.
+Seeding **either** corpus also stamps `active_content` with that seed file's
+declared version, in the same transaction — seeding a corpus and activating it
+are one act, never two. Nothing infers the live version from the data itself:
+`max(version)` is a lexical max over TEXT and would serve `dasha_content_v2`
+once `dasha_content_v10` exists.
 
     NEON_DATABASE_URL=postgres://... uv run python db/migrate.py
     ...                              uv run python db/migrate.py --seed-only
@@ -38,6 +39,7 @@ from psycopg.types.json import Json
 # declaration of the active version is worth three lines of path setup.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from engine.content import DASHA_SEED_PATH as CONTENT_DASHA_SEED_PATH
 from engine.content import SEED_PATH as CONTENT_SEED_PATH  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
@@ -48,7 +50,7 @@ MIGRATIONS = ROOT / "migrations"
 # that what gets seeded and what precompute reads back are the same file by
 # construction rather than by two people remembering to edit two constants.
 SEED = CONTENT_SEED_PATH
-DASHA_SEED = ROOT / "seed" / "dasha_content_v2.json"
+DASHA_SEED = CONTENT_DASHA_SEED_PATH
 
 
 def _dsn() -> str:
@@ -120,6 +122,14 @@ def seed(conn: psycopg.Connection) -> None:
 
 
 def seed_dasha_content(conn: psycopg.Connection) -> None:
+    """Seed the active dasha_content corpus AND mark it active, atomically.
+
+    Same contract as `seed()` above, for the same reason. `/v1/dasha/content`
+    used to pick its version with `max(version)`, which is a lexical max over
+    TEXT: at `dasha_content_v10` Postgres ranks `'dasha_content_v10'` below
+    `'dasha_content_v2'` and the library would have silently rolled back eight
+    versions. The live version is now a recorded fact, not an inference.
+    """
     data = json.loads(DASHA_SEED.read_text())
     version = data["version"]
     count = 0
@@ -134,8 +144,14 @@ def seed_dasha_content(conn: psycopg.Connection) -> None:
                     (version, key_type, key, Json(payload)),
                 )
                 count += 1
+        cur.execute(
+            "INSERT INTO active_content (kind, version) VALUES ('dasha_content', %s) "
+            "ON CONFLICT (kind) DO UPDATE SET "
+            "version = EXCLUDED.version, updated_at = now()",
+            (version,),
+        )
     conn.commit()
-    print(f"seeded {count} dasha_content entries (version {version})")
+    print(f"seeded {count} dasha_content entries and marked ACTIVE (version {version})")
 
 
 def main(argv: list[str] | None = None) -> int:

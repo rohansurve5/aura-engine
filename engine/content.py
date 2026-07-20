@@ -1,7 +1,7 @@
-"""Single source of truth for the ACTIVE content version.
+"""Single source of truth for the ACTIVE content versions.
 
-There is exactly **one** place a human sets which score_rules corpus is live:
-`SEED_PATH` below. Everything else *derives* from it —
+There is exactly **one** place a human sets which corpus is live, per content
+kind: the `*_SEED_PATH` constants below. Everything else *derives* from them —
 
   • `db/migrate.py` seeds that file into `score_rules` and stamps its declared
     version into the `active_content` marker table, in one transaction;
@@ -9,16 +9,28 @@ There is exactly **one** place a human sets which score_rules corpus is live:
   • `engine/jobs/precompute.py` reads rules for that version and writes it into
     `daily_guidance.rules_version`.
 
+and, for the dasha interpretation library —
+
+  • `db/migrate.py` seeds `DASHA_SEED_PATH` into `dasha_content` and stamps its
+    declared version into `active_content` under kind `'dasha_content'`;
+  • `/v1/dasha/content` serves the version that marker names.
+
 Because the version is read out of the seed file's own ``version`` field rather
 than typed a second time, **seeding a corpus and activating it are the same
 act**. The `content_v3_2` incident — a new corpus seeded into Neon while
 precompute kept reading `content_v3_1` from a hand-typed constant — is not
 expressible in this design: there is no second constant to forget.
 
-To change the active version: point `SEED_PATH` at a different seed file. That
-is the whole procedure. To roll back: point it at the previous file. Old
-versions keep their `score_rules` rows (seeding is additive), so a rollback
-needs no data restore — only the nightly job re-running.
+To change an active version: point the relevant `*_SEED_PATH` at a different
+seed file. That is the whole procedure. To roll back: point it at the previous
+file. Old versions keep their rows (seeding is additive), so a rollback needs
+no data restore — only migrate + the nightly job re-running.
+
+Why a marker table rather than asking the data. Both tables are additive, so
+neither can answer "which version is live?" on its own: `max(version)` is a
+**lexical** max over TEXT, and `'dasha_content_v10' < 'dasha_content_v2'` in
+Postgres — reaching v10 would silently serve v2 again. Intent has to be
+recorded, not inferred.
 """
 
 from __future__ import annotations
@@ -26,11 +38,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-# ── THE ONE LINE THAT SETS THE ACTIVE CONTENT VERSION ────────────────────────
-SEED_PATH = (
-    Path(__file__).resolve().parent.parent
-    / "db" / "seed" / "score_rules_content_v3_2.json"
-)
+_SEED_DIR = Path(__file__).resolve().parent.parent / "db" / "seed"
+
+# ── THE ONE LINE THAT SETS THE ACTIVE score_rules VERSION ────────────────────
+SEED_PATH = _SEED_DIR / "score_rules_content_v3_2.json"
+# ── THE ONE LINE THAT SETS THE ACTIVE dasha_content VERSION ──────────────────
+DASHA_SEED_PATH = _SEED_DIR / "dasha_content_v2.json"
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -46,3 +59,7 @@ def declared_version(path: Path) -> str:
 #: The active version — derived, never typed. Read by migrate + scoring +
 #: precompute so all three can only ever agree.
 ACTIVE_SCORE_RULES_VERSION = declared_version(SEED_PATH)
+
+#: The active dasha interpretation library version — derived, never typed.
+#: Written to `active_content` by migrate; served by /v1/dasha/content.
+ACTIVE_DASHA_CONTENT_VERSION = declared_version(DASHA_SEED_PATH)
