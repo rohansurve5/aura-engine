@@ -73,13 +73,16 @@ def test_guidance_payload_shape():
     row = guidance_for_nakshatra(5, sky, RULES)      # Ardra — Rohan's natal star
     assert set(row) >= {
         "nakshatra_index", "nakshatra", "tara", "energy", "scores",
-        "area_lines", "narrative", "why", "lucky", "good_for", "avoid",
+        "area_lines", "band_labels", "score_why", "narrative", "why",
+        "lucky", "good_for", "avoid",
         "opportunity", "warning", "opportunity_detail", "warning_detail",
     }
     assert set(row["lucky"]) == {"color", "number", "direction"}
     # The zero-bug fix: score keys ARE the user-facing labels the app renders.
     assert set(row["scores"]) == USER_FACING_AREAS
     assert set(row["area_lines"]) == USER_FACING_AREAS
+    assert set(row["band_labels"]) == USER_FACING_AREAS
+    assert set(row["score_why"]) == USER_FACING_AREAS
     assert "{area}" not in row["opportunity"] and "{area}" not in row["warning"]
 
 
@@ -113,7 +116,8 @@ def test_headline_copy_is_jargon_free():
             headline = " ".join(
                 [row["narrative"], row["opportunity"], row["warning"],
                  row["opportunity_detail"], row["warning_detail"],
-                 *row["area_lines"].values(), *row["good_for"], *row["avoid"]]
+                 *row["area_lines"].values(), *row["score_why"].values(),
+                 *row["band_labels"].values(), *row["good_for"], *row["avoid"]]
             ).lower()
             for word in jargon:
                 assert word not in headline, f"{word!r} leaked into headline copy"
@@ -147,6 +151,41 @@ def test_every_content_cell_composes():
                 assert line and (line[0].isupper() or line[0].isdigit())
             assert row["opportunity"] and row["warning"]
     assert seen_taras == set(range(1, 10))
+
+
+def test_score_detail_content_separates_areas():
+    """The content_v3 contract testers asked for: on any date, no two areas
+    may share a band label or a score_why sentence, and score_why must be a
+    two-sentence RECOGNITION + CAUSE (never the area name swapped into a
+    shared template)."""
+    from datetime import timedelta
+    start = date(2026, 7, 18)
+    for offset in range(14):
+        sky = build_daily_sky(start + timedelta(days=offset))
+        for row in all_guidance(sky, RULES):
+            labels = list(row["band_labels"].values())
+            assert len(set(labels)) == len(labels), (
+                f"shared band label on {sky['date']}: {row['band_labels']}"
+            )
+            whys = list(row["score_why"].values())
+            assert len(set(whys)) == len(whys), (
+                f"shared score_why on {sky['date']}"
+            )
+            for why in whys:
+                assert why.count(".") + why.count("'") >= 1
+                assert len(why) > 60  # recognition + cause, not a stub
+                assert "{" not in why and "}" not in why
+
+
+def test_score_why_varies_across_consecutive_days():
+    """The day lord changes daily, so the same area must not repeat its
+    score_why on consecutive dates even when the tara cell is pinned."""
+    s1 = build_daily_sky(date(2026, 7, 18))
+    s2 = build_daily_sky(date(2026, 7, 19))
+    r1 = guidance_for_nakshatra(5, s1, RULES)
+    r2 = guidance_for_nakshatra(5, s2, RULES)
+    for label in USER_FACING_AREAS:
+        assert r1["score_why"][label] != r2["score_why"][label]
 
 
 def test_sky_payload_shape():

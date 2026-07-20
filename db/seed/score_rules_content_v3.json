@@ -1,0 +1,1109 @@
+{
+ "version": "content_v3",
+ "_about": "content_v3 = content_v2 (scoring numbers, tara content, area_lines, narrative — all carried over unchanged) + the multi-variable score-detail layer: per-area band labels (band_labels, 6 areas x 5 bands, no label shared), and the two-sentence 'why today' composed as RECOGNITION (why_recognition: area x band x moon_group — names what the person may be feeling in that domain) + CAUSE (why_cause: area x day-lord weekday x paksha — one plain-language sky-based reason, band-neutral so any pairing reads coherently). moon_groups maps the day's Moon nakshatra (0-26) to a texture (deva=gentle, manushya=steady, rakshasa=sharp). Key scheme + guarantees: docs/CONTENT_KEYS.md; per-area voice rules: docs/voice/*.md; enforced by tests/test_content_diversity.py in CI. Actions live in the app's tip chips and are never repeated in why-copy. Subject to astrologer review.",
+ "rules": {
+  "areas": {
+   "order": [
+    "love",
+    "money",
+    "career",
+    "mind",
+    "health",
+    "mood"
+   ],
+   "labels": {
+    "love": "Love",
+    "money": "Money",
+    "career": "Career",
+    "mind": "Mind",
+    "health": "Health",
+    "mood": "Mood"
+   }
+  },
+  "paksha": {
+   "waxing": 5,
+   "waning": -4
+  },
+  "weekday_energy_mod": {
+   "0": 2,
+   "1": 0,
+   "2": 3,
+   "3": 4,
+   "4": 3,
+   "5": -2,
+   "6": 2
+  },
+  "weekday_area_mod": {
+   "0": {
+    "love": 6,
+    "money": 0,
+    "career": -2,
+    "mind": 8,
+    "health": 2,
+    "mood": 6
+   },
+   "1": {
+    "love": -4,
+    "money": 2,
+    "career": 6,
+    "mind": -2,
+    "health": 6,
+    "mood": -2
+   },
+   "2": {
+    "love": 0,
+    "money": 8,
+    "career": 4,
+    "mind": 6,
+    "health": 0,
+    "mood": 2
+   },
+   "3": {
+    "love": 2,
+    "money": 6,
+    "career": 2,
+    "mind": 4,
+    "health": 2,
+    "mood": 4
+   },
+   "4": {
+    "love": 10,
+    "money": 6,
+    "career": 0,
+    "mind": 2,
+    "health": 2,
+    "mood": 8
+   },
+   "5": {
+    "love": -2,
+    "money": 2,
+    "career": 6,
+    "mind": -2,
+    "health": -6,
+    "mood": -4
+   },
+   "6": {
+    "love": -2,
+    "money": 2,
+    "career": 8,
+    "mind": 0,
+    "health": 6,
+    "mood": 4
+   }
+  },
+  "lucky_by_weekday": {
+   "0": {
+    "planet": "Moon",
+    "color": "Pearl White",
+    "number": 2,
+    "direction": "North-West"
+   },
+   "1": {
+    "planet": "Mars",
+    "color": "Coral Red",
+    "number": 9,
+    "direction": "South"
+   },
+   "2": {
+    "planet": "Mercury",
+    "color": "Emerald Green",
+    "number": 5,
+    "direction": "North"
+   },
+   "3": {
+    "planet": "Jupiter",
+    "color": "Saffron Yellow",
+    "number": 3,
+    "direction": "North-East"
+   },
+   "4": {
+    "planet": "Venus",
+    "color": "Rose Pink",
+    "number": 6,
+    "direction": "South-East"
+   },
+   "5": {
+    "planet": "Saturn",
+    "color": "Indigo Blue",
+    "number": 8,
+    "direction": "West"
+   },
+   "6": {
+    "planet": "Sun",
+    "color": "Amber Gold",
+    "number": 1,
+    "direction": "East"
+   }
+  },
+  "tara": {
+   "1": {
+    "energy": 55,
+    "good_for": [
+     "quiet planning",
+     "self-care",
+     "journaling",
+     "time with close family"
+    ],
+    "avoid": [
+     "big launches",
+     "impulse shopping"
+    ],
+    "opportunity": [
+     "Quiet effort pays today — give {area} some unhurried attention.",
+     "Today rewards tending your own garden — {area} grows with gentle care."
+    ],
+    "warning": [
+     "Don't overspend your energy — {area} can wait for a stronger day.",
+     "Keep {area} light today; you don't have to solve it now."
+    ],
+    "opportunity_detail": "Today circles back to you — rest, reflection and honest planning count as real progress. What you steady now quietly supports everything later this week.",
+    "warning_detail": "Energy is precious on a day like this. Choose the few things that matter, do them gently, and let the rest wait without guilt.",
+    "why": "Today's Moon is in {day_nakshatra} — {tara_name} in your nine-day cycle from your birth star {natal}. That makes this a personal, inward-facing day."
+   },
+   "2": {
+    "energy": 88,
+    "good_for": [
+     "interviews",
+     "negotiations",
+     "big purchases",
+     "celebrations",
+     "new beginnings"
+    ],
+    "avoid": [
+     "careless spending"
+    ],
+    "opportunity": [
+     "Luck leans your way — a well-timed move in {area} can pay off today.",
+     "Doors open easily today, especially around {area}. Knock."
+    ],
+    "warning": [
+     "Good days invite carelessness — stay sharp on {area}.",
+     "Don't let the day's shine rush you into {area} decisions."
+    ],
+    "opportunity_detail": "This is one of the friendlier days in your cycle — timing works with you. If you've been waiting to act on something well-prepared, today lowers the resistance.",
+    "warning_detail": "The only trap on a lucky day is autopilot. Enjoy the tailwind, but keep your usual checks — read before you sign, count before you pay.",
+    "why": "Today's Moon is in {day_nakshatra} — {tara_name} in your nine-day cycle from your birth star {natal}. Traditionally the luckiest beat of the cycle."
+   },
+   "3": {
+    "energy": 32,
+    "good_for": [
+     "routine work",
+     "double-checking",
+     "backups"
+    ],
+    "avoid": [
+     "signing contracts",
+     "travel bookings",
+     "difficult conversations"
+    ],
+    "opportunity": [
+     "Careful, small steps still move {area} forward today.",
+     "Even on a scratchy day, {area} responds to patience."
+    ],
+    "warning": [
+     "Go slow around {area} today — double-check, then check again.",
+     "Friction gathers around {area} today; step around it, not into it."
+    ],
+    "opportunity_detail": "Slow is smooth today. Careful, ordinary work — checking, backing up, tidying — quietly protects you from the day's friction.",
+    "warning_detail": "Rushed moves are where today bites. Give everything one extra look, keep conversations light, and let big calls wait a day.",
+    "why": "Today's Moon is in {day_nakshatra} — {tara_name} in your nine-day cycle from your birth star {natal}. A friction beat — which is why today asks for extra care."
+   },
+   "4": {
+    "energy": 78,
+    "good_for": [
+     "family time",
+     "health checkups",
+     "bill payments",
+     "steady work"
+    ],
+    "avoid": [
+     "unnecessary risks"
+    ],
+    "opportunity": [
+     "Steady hands win today — {area} strengthens with every small, reliable step.",
+     "Nurture {area} today; consistency is quietly compounding."
+    ],
+    "warning": [
+     "Comfort can drift into autopilot — give {area} one deliberate touch today.",
+     "Don't let {area} coast unattended today."
+    ],
+    "opportunity_detail": "Today favours the steady builder. Routines, relationships and health respond warmly to small, consistent care right now.",
+    "warning_detail": "The comfortable path is the right one today — just don't fall asleep on it. One deliberate act keeps a good day from drifting past unused.",
+    "why": "Today's Moon is in {day_nakshatra} — {tara_name} in your nine-day cycle from your birth star {natal}. A steady, protective beat of the cycle."
+   },
+   "5": {
+    "energy": 42,
+    "good_for": [
+     "finishing tasks",
+     "clearing dues",
+     "decluttering"
+    ],
+    "avoid": [
+     "new launches",
+     "big announcements"
+    ],
+    "opportunity": [
+     "Clearing old clutter frees {area} to breathe — finish, then rest.",
+     "Tie up loose ends and {area} opens up on its own."
+    ],
+    "warning": [
+     "Starting fresh in {area} today invites friction — finish first.",
+     "Push {area} to tomorrow; today is for closing, not opening."
+    ],
+    "opportunity_detail": "Think of today as clearing the runway. Every loop you close — a task, a due, an apology — hands tomorrow to you lighter and freer.",
+    "warning_detail": "New starts meet resistance today. It's not a wall, just a headwind — anything that can begin tomorrow will begin better tomorrow.",
+    "why": "Today's Moon is in {day_nakshatra} — {tara_name} in your nine-day cycle from your birth star {natal}. A clearing beat — better for finishing than starting."
+   },
+   "6": {
+    "energy": 82,
+    "good_for": [
+     "deep work",
+     "exams and interviews",
+     "important tasks",
+     "workouts"
+    ],
+    "avoid": [
+     "multitasking",
+     "procrastination"
+    ],
+    "opportunity": [
+     "Focused effort moves mountains today — point it at {area}.",
+     "You can finish what matters today; {area} responds fastest."
+    ],
+    "warning": [
+     "Don't spread yourself thin — {area} needs your focus least today.",
+     "One strong push beats five scattered ones; let {area} sit."
+    ],
+    "opportunity_detail": "Effort converts unusually well today. The focused hour you give your most important task will punch far above its weight.",
+    "warning_detail": "Scattering is the one way to waste today. Pick the thing that matters most and give it your best hours first.",
+    "why": "Today's Moon is in {day_nakshatra} — {tara_name} in your nine-day cycle from your birth star {natal}. The achievement beat — effort converts well."
+   },
+   "7": {
+    "energy": 30,
+    "good_for": [
+     "rest",
+     "light routines",
+     "early nights"
+    ],
+    "avoid": [
+     "big decisions",
+     "lending money",
+     "risky travel"
+    ],
+    "opportunity": [
+     "Protecting your energy is the win today — {area} stays safe when you go slow.",
+     "A quiet day guarded well sets {area} up for a stronger tomorrow."
+    ],
+    "warning": [
+     "Shield {area} today — no risks, no big calls, no fine print.",
+     "Today is for defence, not offence — especially in {area}."
+    ],
+    "opportunity_detail": "Today is a rest note in your rhythm — protecting your energy, sleep and peace is the productive choice.",
+    "warning_detail": "Keep the stakes low today. Postpone signings, big spends and heavy talks — not out of fear, simply because better days are close.",
+    "why": "Today's Moon is in {day_nakshatra} — {tara_name} in your nine-day cycle from your birth star {natal}. The most delicate beat — hence today's gentle advice."
+   },
+   "8": {
+    "energy": 80,
+    "good_for": [
+     "meetings",
+     "networking",
+     "asking for help",
+     "team work"
+    ],
+    "avoid": [
+     "going it alone"
+    ],
+    "opportunity": [
+     "The right person can change your day — reach out about {area}.",
+     "Help arrives when asked for — {area} improves through people today."
+    ],
+    "warning": [
+     "Don't carry {area} alone today — going solo is the trap.",
+     "Isolation makes {area} heavier; borrow a hand."
+    ],
+    "opportunity_detail": "People are your luck today. Conversations, introductions and asked-for favours all run smoother than usual — use that.",
+    "warning_detail": "Struggling alone is the only real mistake available today. The problem shrinks the moment you let someone look at it with you.",
+    "why": "Today's Moon is in {day_nakshatra} — {tara_name} in your nine-day cycle from your birth star {natal}. A friendly beat — people and support flow easier."
+   },
+   "9": {
+    "energy": 90,
+    "good_for": [
+     "big decisions",
+     "proposals",
+     "launches",
+     "commitments"
+    ],
+    "avoid": [
+     "hesitation",
+     "overthinking"
+    ],
+    "opportunity": [
+     "This is a green-light day — {area} is ready for your boldest move.",
+     "Momentum is with you; a leap in {area} lands well today."
+    ],
+    "warning": [
+     "Momentum fades if unused — don't leave {area} for someday.",
+     "The only risk today is hesitation — {area} won't wait forever."
+    ],
+    "opportunity_detail": "This is the strongest kind of day in your cycle. Well-prepared moves — asks, launches, commitments — land with unusual grace now.",
+    "warning_detail": "Days like this are rare — don't spend one entirely on routine. Move one meaningful thing forward, even a single step.",
+    "why": "Today's Moon is in {day_nakshatra} — {tara_name} in your nine-day cycle from your birth star {natal}. The strongest beat of the cycle — a natural green light."
+   }
+  },
+  "area_lines": {
+   "love": {
+    "1": [
+     "You'll feel things more deeply today — tell someone what they mean to you instead of keeping it in.",
+     "A quiet day beats a grand gesture. Cook together, walk together, just be around your people.",
+     "If an old conversation resurfaces today, listen first — you'll actually hear what's underneath."
+    ],
+    "2": [
+     "Hearts are open today — plan the date, make the call, say the thing.",
+     "A great day to celebrate someone — a small surprise will land bigger than you expect.",
+     "If you've been waiting for the right moment to talk about the future, this is it."
+    ],
+    "3": [
+     "Small remarks can land wrong today — pause before replying, especially over text.",
+     "Not the day for the big relationship talk. Keep it light and revisit tomorrow.",
+     "If someone snaps at you today, it's probably not about you. Don't pick up the rope."
+    ],
+    "4": [
+     "A steady, warm day for your people — call your parents, check in on an old friend.",
+     "Comfort is the romance today — the shared meal, the familiar show, the unhurried talk.",
+     "Someone close could use your steadiness today. Just showing up is the gesture."
+    ],
+    "5": [
+     "Clear the air today — the small unresolved thing, not the big dramatic one.",
+     "Finish the apology, return the call you owe — closure is today's love language.",
+     "Give people a little room today; space now saves a misunderstanding later."
+    ],
+    "6": [
+     "Show love by following through today — do the thing you promised, without being reminded.",
+     "Plan something to look forward to together — today is good at turning talk into dates.",
+     "One focused hour of real attention today beats a week of distracted presence."
+    ],
+    "7": [
+     "Be extra gentle today — with them and with yourself. Skip the heavy topics.",
+     "Today is for quiet company, not big conversations. Sit close, keep it soft.",
+     "If you feel distant today, don't read meaning into it — some days just sit quieter."
+    ],
+    "8": [
+     "Connection comes easily today — plan the evening with the people who refill you.",
+     "Introduce the people you love to each other today — mixed company brings out your best.",
+     "Say the appreciation out loud today; it will land deeper than you expect."
+    ],
+    "9": [
+     "One of your best days for the heart — make the move you've been rehearsing.",
+     "Commit to something together today — the trip, the plan, the next step.",
+     "Today can hold the big conversation — honest words land softly on a day like this."
+    ]
+   },
+   "money": {
+    "1": [
+     "Park the big spends for now — today is for checking where your money actually went this month.",
+     "Skip the checkout button today. Make the wishlist, sleep on it, and see what still matters tomorrow.",
+     "A good day to quietly tidy your accounts — cancel the one subscription you never use."
+    ],
+    "2": [
+     "A strong day for money moves you've already thought through — negotiate, or finally buy the thing you researched.",
+     "Ask for the better price today — deals tilt your way.",
+     "Good day to start the savings plan you keep postponing. Begin, even small."
+    ],
+    "3": [
+     "Read the fine print twice today — and if a deal feels rushed, let it pass.",
+     "Hold off on big purchases today, and double-check account numbers on anything you must send.",
+     "Today's 'limited offer' will still be there next week. Wait."
+    ],
+    "4": [
+     "A good day for the sensible money stuff — pay the bill, renew the policy, top up the emergency fund.",
+     "Steady beats spectacular today — automate one saving so future-you gets paid first.",
+     "Sort the money paperwork you've been avoiding — today has the patience for it."
+    ],
+    "5": [
+     "Chase what you're owed today — the refund, the invoice, the borrowed amount.",
+     "Close the loop: settle the split bill, clear the small dues, cancel what you don't use.",
+     "Not a day to start new money commitments — finish the old ones first."
+    ],
+    "6": [
+     "A strong day to work the plan — move the money you said you'd move, track what you said you'd track.",
+     "Negotiate today — you have the patience to hold your number.",
+     "Do the boring money task that unlocks the exciting one — the form, the KYC, the transfer."
+    ],
+    "7": [
+     "Keep your wallet closed today — no big buys, no lending, no 'guaranteed' schemes.",
+     "If a money decision can wait two days, let it wait. Today isn't the day to sign.",
+     "Be extra careful with OTPs, links and 'urgent' payment requests today."
+    ],
+    "8": [
+     "Talk money with someone you trust today — a second opinion saves you real rupees.",
+     "A good day for shared plans — split costs, pool ideas, plan the group trip budget.",
+     "The referral, the contact, the friend-of-a-friend — today your network is worth more than your wallet."
+    ],
+    "9": [
+     "A rare green-light day — act on the money decision you've done your homework on.",
+     "Big-ticket clarity is here today — if you've compared and slept on it, go ahead.",
+     "Set the bigger financial goal today and take its first concrete step before bed."
+    ]
+   },
+   "career": {
+    "1": [
+     "Work on your own craft today — clear your backlog, polish that draft, skip the big pitch.",
+     "Keep your head down and finish what's already on your desk. Visibility can wait a day.",
+     "Today favours planning over performing — map out your next move instead of announcing it."
+    ],
+    "2": [
+     "Good day to ask for what you deserve at work — schedule that conversation before evening.",
+     "Pitch the idea today. Doors that are usually shut open a crack on days like this.",
+     "Apply, email, follow up — today your name lands on the right desks."
+    ],
+    "3": [
+     "Triple-check before you hit send today — attachments, numbers, names.",
+     "Keep your head low in meetings today; observe more than you argue.",
+     "If a work conflict sparks today, respond tomorrow. Calm wins this one."
+    ],
+    "4": [
+     "Consistency gets noticed today — deliver the routine thing exceptionally well.",
+     "Strengthen the foundations: update the tracker, thank the teammate, tidy the inbox.",
+     "A good day for one-on-ones and honest check-ins — trust builds easily today."
+    ],
+    "5": [
+     "Finish before you start today — the half-done task is worth more than the new idea.",
+     "Clear your pending list today; tomorrow's opportunities need a clean desk.",
+     "Postpone the launch, the pitch, the announcement — polish today, ship on a better day."
+    ],
+    "6": [
+     "Deep work wins today — block two hours, close the tabs, finish the thing that matters.",
+     "Today rewards the finisher. Ship it at ninety percent instead of polishing forever.",
+     "Set the ambitious deadline today — you're in the mood to meet it."
+    ],
+    "7": [
+     "Do solid, quiet work today — avoid confrontations and keep big asks for later this week.",
+     "Not the day to send the angry email or the risky reply-all. Draft it, don't send it.",
+     "Protect your reputation today: under-promise, double-check, stay out of office politics."
+    ],
+    "8": [
+     "Ask for help today — the person you're hesitant to message will actually be glad you did.",
+     "Collaborate over competing today: co-write, pair up, share credit generously.",
+     "Coffee with a colleague beats an hour of solo grinding today — the shortcut is a conversation."
+    ],
+    "9": [
+     "Swing big today — the promotion ask, the client pitch, the bold application.",
+     "Start the thing today — projects begun on days like this tend to go the distance.",
+     "Say yes to the stretch assignment today. You'll grow into it faster than you think."
+    ]
+   },
+   "mind": {
+    "1": [
+     "Your mind wants quiet today. One task at a time, phone face down.",
+     "Journal for five minutes tonight — today's thoughts are worth keeping.",
+     "Step away from the noise this afternoon; your best thinking happens off-screen today."
+    ],
+    "2": [
+     "Ideas come easily today — write them down before the day gets busy.",
+     "Say yes to the new thing today; your mind is sharp enough to catch up fast.",
+     "A great day to learn in public — ask the question everyone else is afraid to ask."
+    ],
+    "3": [
+     "Your focus may scatter today — shrink the to-do list to three things and forgive the rest.",
+     "Don't make big decisions in a foggy moment. Note it down, decide tomorrow.",
+     "Today rewards slow reading and slow answers. Speed is where the mistakes are."
+    ],
+    "4": [
+     "Your thinking is clear and calm today — use it on the decision you've been circling.",
+     "Read something slow and good tonight instead of scrolling something fast and empty.",
+     "Today is good for sorting, not sprinting — organise your notes and your week."
+    ],
+    "5": [
+     "Unfinished tasks are renting space in your head — evict two of them today.",
+     "Say no to one thing today. The relief will tell you it was right.",
+     "Today thinks best backwards — review what worked this week before planning the next."
+    ],
+    "6": [
+     "Your concentration is a superpower today — spend it on the hardest problem first.",
+     "Whatever you're studying will actually stick today — do the next chapter.",
+     "Write the difficult email in one sitting today. It's clearer now than it will be tomorrow."
+    ],
+    "7": [
+     "Your mind may run worst-case stories today. Notice them, don't believe them.",
+     "Lower the volume today — less news, fewer feeds, more of whatever settles you.",
+     "Don't judge your life from inside a tired day. Decide nothing big tonight."
+    ],
+    "8": [
+     "Think out loud today — your best ideas need another person to bounce off.",
+     "Ask someone how they'd solve your problem today. The outside view is the unlock.",
+     "Teach what you know to someone today — you'll understand it twice as well."
+    ],
+    "9": [
+     "Clarity is at full strength today — make the decision you've been circling for weeks.",
+     "Commit to learning the big skill today — sign up, schedule it, tell someone.",
+     "Trust your judgment today; the overthinking can take the day off."
+    ]
+   },
+   "health": {
+    "1": [
+     "Listen to your body today — stretch, rest, and don't push through tiredness.",
+     "Go gentle: a slow walk and an early night will do more than a hard workout.",
+     "Cook something simple at home tonight — your body will thank you for it."
+    ],
+    "2": [
+     "Energy is on your side — book the class, take the longer route, start the streak.",
+     "Today's a good day to begin a health habit you'll actually keep. Start small and count it.",
+     "Cook the ambitious recipe, take the longer walk — your body is up for more today."
+    ],
+    "3": [
+     "Watch the small stuff today — the skipped meal, the rushed stairs, the fourth coffee.",
+     "Ease off risky workouts today; your body wants maintenance, not max effort.",
+     "Sleep is your repair kit tonight — protect it."
+    ],
+    "4": [
+     "Routine is medicine today — the usual walk, proper meals, water before chai.",
+     "Book the checkup you keep postponing. Today's the day health admin gets done.",
+     "An early, unhurried night tonight will carry you through the whole week."
+    ],
+    "5": [
+     "Recovery is the workout today — stretch what's tight, rest what's sore.",
+     "Break one small unhealthy loop today — the late-night scroll, the skipped breakfast.",
+     "Your energy is for maintenance today, not personal records."
+    ],
+    "6": [
+     "Push day — add the extra set, the extra kilometre. Your discipline shows up today.",
+     "Prep your meals for the next two days — today's willpower can feed the week.",
+     "Turn the goal into a number today — steps, minutes, reps — and beat it."
+    ],
+    "7": [
+     "Rest is productive today — take it before your body insists on it.",
+     "Skip the heavy lifting today, literally. Stretch, walk slowly, sleep early.",
+     "Eat warm, simple food and drink more water than you think you need today."
+    ],
+    "8": [
+     "Health is social today — walk with a friend, cook with family, join the group class.",
+     "Make the health plan with a buddy today; you'll both actually stick to it.",
+     "An evening walk-and-talk today counts double — movement and connection in one."
+    ],
+    "9": [
+     "A strong day to commit — join the gym, book the trek, sign up for the run.",
+     "Set the health goal that scares you a little today, and take its first step immediately.",
+     "Your body and willpower agree today — the habit you start now has staying power."
+    ]
+   },
+   "mood": {
+    "1": [
+     "Feelings run close to the surface today. Be as kind to yourself as you'd be to a friend.",
+     "Don't over-plan today — leave room for one thing that's just for you.",
+     "If the day feels heavy, name it to someone you trust. It gets lighter when it's shared."
+    ],
+    "2": [
+     "Today has a bright edge — share it. Your good mood is contagious.",
+     "Let yourself enjoy today without waiting for the catch. There isn't one.",
+     "Do one thing today purely because it delights you."
+    ],
+    "3": [
+     "An irritable current runs through today — step outside before it builds up.",
+     "Don't measure your life on a wobbly day. Today is weather, not climate.",
+     "Keep your evening simple tonight — fewer plans, softer landing."
+    ],
+    "4": [
+     "A grounded, quietly good day — notice it while it's happening.",
+     "Gratitude lands easily today — tell one person what they've made easier for you.",
+     "Keep today's pace; not every day needs to be a big one."
+    ],
+    "5": [
+     "If today drags, let it — some days are for emptying the bag, not filling it.",
+     "Tidy one corner — a drawer, a desktop, a doubt. Outer order helps today.",
+     "Don't force cheerfulness today; steady and honest is enough."
+    ],
+    "6": [
+     "Progress is today's mood-lifter — finish one real thing before lunch and ride that feeling.",
+     "Channel restlessness into one meaningful push today; drift is the only thing that will sour it.",
+     "Tonight, look at what you finished — not what's left. You earned that."
+    ],
+    "7": [
+     "A fragile-feeling day — shrink your circle to people who ask nothing of you.",
+     "Comfort is allowed today: the familiar food, the old songs, the early night.",
+     "Today asks for less. Doing the minimum on a day like this is a kind of wisdom."
+    ],
+    "8": [
+     "People are the cure today — one honest conversation will lift the whole day.",
+     "Reach out first today. Everyone's waiting for someone to go first, and it may as well be you.",
+     "Accept help gracefully today — letting someone in is a gift to them too."
+    ],
+    "9": [
+     "Today feels like a tailwind — do the thing you'd do if you weren't afraid.",
+     "Save some of today's brightness — note down what's working so you can reread it on a duller day.",
+     "Ride today's momentum somewhere generous — your confidence can carry someone else too."
+    ]
+   }
+  },
+  "narrative": {
+   "bands": {
+    "radiant": [
+     "Today carries real momentum — the kind of day when things you start actually move.",
+     "The day opens with a tailwind; you'll feel it in how easily things line up."
+    ],
+    "bright": [
+     "A warm, capable day — most things you touch should cooperate.",
+     "Today runs smoother than average; a little intention will take it far."
+    ],
+    "steady": [
+     "A balanced, workable day — nothing dramatic, plenty possible.",
+     "Today holds steady; it will follow the pace you set for it."
+    ],
+    "quiet": [
+     "A slower day — better for tending than pushing.",
+     "Today asks for patience more than effort; work with it, not against it."
+    ],
+    "tender": [
+     "A soft, careful day — keep it simple and be kind to yourself.",
+     "Today runs low and quiet; protect your energy and let the small stuff slide."
+    ]
+   },
+   "focus": {
+    "love": "your relationships",
+    "money": "money matters",
+    "career": "work",
+    "mind": "clear thinking",
+    "health": "your body",
+    "mood": "your spirits"
+   },
+   "closers": [
+    "Your brightest window is around {best}, so lean there — and go easy on {caution}.",
+    "Put your best hours into {best}; {caution} will feel better with a lighter touch.",
+    "Give {best} the prime of your day and ask little of {caution}."
+   ]
+  },
+  "score_bands": {
+   "order": [
+    "peak",
+    "high",
+    "mid",
+    "low",
+    "deep"
+   ],
+   "thresholds": {
+    "peak": 85,
+    "high": 70,
+    "mid": 55,
+    "low": 40
+   }
+  },
+  "moon_groups": {
+   "0": "gentle",
+   "4": "gentle",
+   "6": "gentle",
+   "7": "gentle",
+   "12": "gentle",
+   "14": "gentle",
+   "16": "gentle",
+   "21": "gentle",
+   "26": "gentle",
+   "1": "steady",
+   "3": "steady",
+   "5": "steady",
+   "10": "steady",
+   "11": "steady",
+   "19": "steady",
+   "20": "steady",
+   "24": "steady",
+   "25": "steady",
+   "2": "sharp",
+   "8": "sharp",
+   "9": "sharp",
+   "13": "sharp",
+   "15": "sharp",
+   "17": "sharp",
+   "18": "sharp",
+   "22": "sharp",
+   "23": "sharp"
+  },
+  "band_labels": {
+   "money": {
+    "peak": "Green light",
+    "high": "Favourable",
+    "mid": "Balanced",
+    "low": "Hold steady",
+    "deep": "Careful hands"
+   },
+   "love": {
+    "peak": "Glowing",
+    "high": "Warm",
+    "mid": "Settled",
+    "low": "Go slow",
+    "deep": "Extra gentle"
+   },
+   "career": {
+    "peak": "Prime time",
+    "high": "In motion",
+    "mid": "On track",
+    "low": "Regroup",
+    "deep": "Lie low"
+   },
+   "health": {
+    "peak": "Full tank",
+    "high": "Energised",
+    "mid": "Ticking over",
+    "low": "Easy does it",
+    "deep": "Rest first"
+   },
+   "mind": {
+    "peak": "Crystal clear",
+    "high": "Sharp",
+    "mid": "Clear enough",
+    "low": "Scattered",
+    "deep": "Soft focus"
+   },
+   "mood": {
+    "peak": "Sunlit",
+    "high": "Lifted",
+    "mid": "Level",
+    "low": "Muted",
+    "deep": "Heavy"
+   }
+  },
+  "why_recognition": {
+   "money": {
+    "peak": {
+     "gentle": "If a money decision has been waiting for a clear-headed day, this is the one it was waiting for.",
+     "sharp": "You can feel the difference today — numbers add up faster, and the money call you have been circling looks suddenly simple.",
+     "steady": "The money picture sits still long enough to act on — what you decide now, you will not need to re-decide."
+    },
+    "high": {
+     "gentle": "Money moves your way today, quietly — a good stretch for the purchase or the ask you have already thought through.",
+     "sharp": "There is momentum behind money today; a negotiation or a follow-up on pending payments will meet less resistance than usual.",
+     "steady": "A dependable day for money — not a windfall kind of day, but the kind where sensible steps compound."
+    },
+    "mid": {
+     "gentle": "Money is neither pushing nor pulling today — routine payments and small calls are safe, and the big swing can wait.",
+     "sharp": "The money mood is transactional today — fine for errands and bills, less kind to leaps of faith.",
+     "steady": "An even day for money: nothing urgent, nothing blocked — a good time to simply know your numbers."
+    },
+    "low": {
+     "gentle": "Money asks for a slower hand today — nothing is going wrong, the day just favours checking over committing.",
+     "sharp": "If a purchase feels urgent today, that urgency is the thing to distrust — prices and promises read better tomorrow.",
+     "steady": "Hold your money where it is today — the deals are not disappearing, and a paused decision is still a decision."
+    },
+    "deep": {
+     "gentle": "Keep your wallet quiet today — this is a day for guarding what you have, not growing it.",
+     "sharp": "Spending can feel like relief today — notice that pull, and let the card stay in the pocket.",
+     "steady": "Sit out the money game today — review what went out this month and let that be the whole job."
+    }
+   },
+   "love": {
+    "peak": {
+     "gentle": "Hearts are unusually easy to reach today — the words you have been saving will land the way you meant them.",
+     "sharp": "There is a charge in your connections today — the honest conversation you have been postponing has a real opening.",
+     "steady": "Today holds space for the people who matter — presence will do more than any plan."
+    },
+    "high": {
+     "gentle": "Warmth comes easily today — a small gesture will carry further than you expect.",
+     "sharp": "People respond quickly to you today — reach out first and watch the difference.",
+     "steady": "A good day to tend a relationship the unglamorous way — time, attention, and one kept promise."
+    },
+    "mid": {
+     "gentle": "Connections run normal today — no fireworks needed, just do not let the day pass without one real exchange.",
+     "sharp": "Conversations may run a little brisk today — slow yours down and the tone around you softens.",
+     "steady": "An ordinary day for love, which is its own gift — share a meal, share the small news."
+    },
+    "low": {
+     "gentle": "Hearts bruise a little easier today — go softly with the people you love, and softer still with yourself.",
+     "sharp": "Small remarks can land bigger than intended today — give people one extra beat of patience before replying.",
+     "steady": "Closeness may feel a step away today — do not chase it with words; sit nearby and let it return."
+    },
+    "deep": {
+     "gentle": "Be extra gentle in your relationships today — hold the heavy topics for a kinder-weather day.",
+     "sharp": "Friction finds conversations quickly today — the kindest sentence available might be 'let us talk tomorrow'.",
+     "steady": "If someone feels distant today, it is not a verdict — some days simply sit quieter between people."
+    }
+   },
+   "career": {
+    "peak": {
+     "gentle": "Doors at work open with unusual ease today — the idea you have been sitting on deserves daylight.",
+     "sharp": "Your work gets noticed today — put your name on the thing you are proud of and let it travel.",
+     "steady": "Effort converts cleanly today — hours spent on the important task will show, not just add up."
+    },
+    "high": {
+     "gentle": "Work flows your way today — a good window to volunteer for the visible piece.",
+     "sharp": "Timing favours the bold move at work today — the pitch, the application, the raised hand.",
+     "steady": "A productive stretch — pick the one deliverable that matters and give it your best hours."
+    },
+    "mid": {
+     "gentle": "Work runs at normal speed today — reliable beats brilliant, and showing up counts double.",
+     "sharp": "Today rewards the unglamorous tasks — clear the backlog and tomorrow's bigger move gets easier.",
+     "steady": "A plain, honest workday — steady output, no theatrics, real progress."
+    },
+    "low": {
+     "gentle": "Work may feel like wading today — shorten the to-do list and call the day won at three items.",
+     "sharp": "Pushback comes easier than praise today — keep your head down and your drafts private a little longer.",
+     "steady": "Momentum rests today — use the lull to tidy the desk, the inbox, the plan."
+    },
+    "deep": {
+     "gentle": "Lie low at work today — protect your energy and let the ambitious moves wait for a louder day.",
+     "sharp": "This is not the day to force the career question — visibility works against you when the air is this charged.",
+     "steady": "Step back from the push today — regrouping is also a strategy, and today it is the right one."
+    }
+   },
+   "health": {
+    "peak": {
+     "gentle": "Your body feels cooperative today — a longer walk or a fuller practice will feel like a gift, not a task.",
+     "sharp": "Energy runs high in the body today — burn it on movement you enjoy before it turns into restlessness.",
+     "steady": "Strength is quietly available today — the routine you have been meaning to restart will stick better if it starts now."
+    },
+    "high": {
+     "gentle": "The body hums along today — feed it well and it will carry you happily.",
+     "sharp": "Good physical charge today — a brisk session will clear more than muscles.",
+     "steady": "A solid day in the body — keep the basics honest: water, meals on time, a real break."
+    },
+    "mid": {
+     "gentle": "The body is neutral today — it will follow whatever rhythm you set, so set a kind one.",
+     "sharp": "Energy arrives in bursts today — work with the surges and do not fight the dips.",
+     "steady": "An average-energy day — stretch what is stiff, walk after lunch, nothing heroic required."
+    },
+    "low": {
+     "gentle": "The body asks for an easier day — take the gentler option each time one is offered.",
+     "sharp": "Tiredness can masquerade as irritation today — before reacting, check when you last ate or rested.",
+     "steady": "Run at three-quarter speed today — the workout can shrink, the sleep should not."
+    },
+    "deep": {
+     "gentle": "Rest is the productive choice today — give the body the early evening it has been asking for.",
+     "sharp": "The tank reads low today — skip the push, keep meals warm and simple, and turn in early.",
+     "steady": "Today is for recovery, not performance — the training resumes stronger for the pause."
+    }
+   },
+   "mind": {
+    "peak": {
+     "gentle": "The mind is unusually clear today — the tangled problem will untangle if you give it one quiet hour.",
+     "sharp": "Thinking runs fast and clean today — write while it flows; these notes will feed weeks of work.",
+     "steady": "Deep focus is available today — guard one block of it fiercely and spend it on what matters most."
+    },
+    "high": {
+     "gentle": "Thoughts line up nicely today — a fine day for planning, studying, or finally answering properly.",
+     "sharp": "The mind is quick today — aim it before it aims itself.",
+     "steady": "Concentration holds well today — batch the thinking work and let the shallow tasks queue."
+    },
+    "mid": {
+     "gentle": "Focus is workable in short stretches today — twenty good minutes beats two distracted hours.",
+     "sharp": "Attention flickers today — close the extra tabs, in the browser and in the head.",
+     "steady": "A middling day for focus — pair the hard thinking with your best hour and coast the rest."
+    },
+    "low": {
+     "gentle": "The mind scatters easily today — one thing at a time is not a productivity tip, it is the day's rule.",
+     "sharp": "Thoughts run loud but not straight today — decisions can wait, notes cannot; write things down.",
+     "steady": "Focus drifts today — anchor it with lists and small finishes rather than willpower."
+    },
+    "deep": {
+     "gentle": "The mind wants soft focus today — let it wander on a walk instead of forcing it to a desk.",
+     "sharp": "Mental static sits high today — postpone the fine print and the final answers.",
+     "steady": "Thinking runs slow today — respect that: read, absorb, and let conclusions arrive tomorrow."
+    }
+   },
+   "mood": {
+    "peak": {
+     "gentle": "The heart sits light today — notice it out loud; naming a good day doubles it.",
+     "sharp": "Spirits run high and bright today — spend the shine on something you will remember.",
+     "steady": "Contentment comes easily today — no need to improve the day, just do not miss it."
+    },
+    "high": {
+     "gentle": "The mood is warm today — a good day to be generous with your good humour.",
+     "sharp": "There is a lift in you today — ride it into the thing you have been dreading; it will feel smaller.",
+     "steady": "Emotionally even and quietly upbeat — the kind of day that makes no headlines and leaves no bruises."
+    },
+    "mid": {
+     "gentle": "Feelings run flat-normal today — that is not a problem to fix, just a day to live.",
+     "sharp": "The mood swings on small hinges today — choose your inputs: music, company, and news all count.",
+     "steady": "An even-keeled day inside — let it be plain; plain is restful."
+    },
+    "low": {
+     "gentle": "The mood runs muted today — lower the bar, keep the self-talk kind, and let small comforts count.",
+     "sharp": "Irritation sits close to the surface today — name it as weather, not truth, and it passes quicker.",
+     "steady": "Feelings sit low-key today — do not audit your life from this seat; the view improves in a day or two."
+    },
+    "deep": {
+     "gentle": "The heart feels heavy today — carry less, cancel one thing, and be as kind to yourself as you would be to a friend.",
+     "sharp": "Everything can feel personal today — it mostly is not; give the big feelings room without handing them the wheel.",
+     "steady": "A heavy-weather day inside — it says nothing about your life, only about today; warmth and patience are the whole plan."
+    }
+   }
+  },
+  "why_cause": {
+   "money": {
+    "0": {
+     "waxing": "Monday belongs to the Moon, and while it gathers light the fortnight leans towards adding — savings first, then the wishlist.",
+     "waning": "Monday belongs to the Moon, and as its light recedes the fortnight leans towards trimming — a natural day to cut a cost, not add one."
+    },
+    "1": {
+     "waxing": "Tuesday runs on Mars, which heats up money talk — with the Moon on the rise, channel that heat into asking for what is owed.",
+     "waning": "Tuesday runs on Mars, which can rush a purchase — and in this quieter lunar stretch the smarter energy is clearing dues, not adding new ones."
+    },
+    "2": {
+     "waxing": "Wednesday is Mercury's day — counting, comparing and negotiating all sharpen — and the brightening Moon favours building the plan.",
+     "waning": "Wednesday is Mercury's day, made for checking numbers line by line, and the fading Moon supports closing accounts rather than opening them."
+    },
+    "3": {
+     "waxing": "Thursday carries Jupiter's expansive hand, and with the Moon filling out it is the classic day for the long game over the quick win.",
+     "waning": "Thursday carries Jupiter's generous eye, but the ebbing Moon tempers it — review the long-term plan rather than enlarging it."
+    },
+    "4": {
+     "waxing": "Friday is Venus's day, when money wants to be enjoyed — the swelling Moon makes room for the planned treat, not the impulse one.",
+     "waning": "Friday is Venus's day, fond of comfort purchases — under a dimming Moon, satisfaction comes cheaper: use what you already own."
+    },
+    "5": {
+     "waxing": "Saturday answers to Saturn, the strict accountant — even on a brightening Moon it rewards discipline over daring.",
+     "waning": "Saturday answers to Saturn, and with the Moon winding down as well, the day is built for restraint — budgets written today get kept."
+    },
+    "6": {
+     "waxing": "Sunday belongs to the Sun — clear light for the big financial picture — and the waxing Moon supports setting the month's goal.",
+     "waning": "Sunday belongs to the Sun — honest light for seeing where money actually went — while the waning Moon helps you release one bad buy."
+    }
+   },
+   "love": {
+    "0": {
+     "waxing": "Monday is the Moon's own day — feelings sit close to the surface, and its growing light favours reaching out and beginning.",
+     "waning": "Monday is the Moon's own day — feelings run deep, and as its light softens the day favours listening over declaring."
+    },
+    "1": {
+     "waxing": "Tuesday carries Mars — passion and friction share a wire — and the brightening Moon tips it towards passion if you move kindly.",
+     "waning": "Tuesday carries Mars, which can strike sparks in close quarters — in this fading lunar phase the win is letting an old irritation go."
+    },
+    "2": {
+     "waxing": "Wednesday is ruled by Mercury, the talker — words connect easily, and the swelling Moon favours the conversation that opens something.",
+     "waning": "Wednesday is ruled by Mercury — a day for clearing the air — and the receding Moon helps close a loop that has been dangling."
+    },
+    "3": {
+     "waxing": "Thursday belongs to Jupiter, generous with warmth — under a filling Moon, plans made together tend to grow well.",
+     "waning": "Thursday belongs to Jupiter, warm even as the Moon ebbs — a day better spent on gratitude for what is than plans for what is next."
+    },
+    "4": {
+     "waxing": "Friday is Venus's day, the most romantic patch of the week — and the rising Moon says make the gesture bigger than usual.",
+     "waning": "Friday is Venus's day, affectionate by design — the quietening Moon keeps it low-key: comfort, familiarity, early nights together."
+    },
+    "5": {
+     "waxing": "Saturday runs on Saturn, reserved with feelings — the growing Moon softens it, favouring steadiness over sweet talk.",
+     "waning": "Saturn rules Saturday and keeps hearts formal — with the Moon dimming too, love today looks like duty done without being asked."
+    },
+    "6": {
+     "waxing": "Sunday carries the Sun's warmth into the home — the brightening Moon makes it a natural day for family and for being seen.",
+     "waning": "Sunday carries the Sun's warmth — with the Moon receding, keep the circle small; one honest hour beats a full house."
+    }
+   },
+   "career": {
+    "0": {
+     "waxing": "Monday opens the week under the Moon — moods steer meetings — and its gathering light favours starting the important thing.",
+     "waning": "Monday opens the week under the Moon — energy collects slowly, and its ebbing light favours finishing over launching."
+    },
+    "1": {
+     "waxing": "Tuesday is Mars's day — drive comes cheap and plentiful — and a rising Moon backs the bold professional move.",
+     "waning": "Tuesday is Mars's day, full of push — but the receding Moon redirects it: fight the backlog, not the colleague."
+    },
+    "2": {
+     "waxing": "Wednesday belongs to Mercury — mails, pitches and paperwork all flow — and the filling Moon favours sending, not just drafting.",
+     "waning": "Wednesday belongs to Mercury, sharp for details, and the dimming Moon makes it the week's best day for edits and clean-ups."
+    },
+    "3": {
+     "waxing": "Thursday runs on Jupiter, the mentor planet — under a brightening Moon, asking for guidance or scope tends to be answered well.",
+     "waning": "Thursday runs on Jupiter — wisdom over hustle — and in this waning stretch, reflection on direction beats another sprint."
+    },
+    "4": {
+     "waxing": "Friday is Venus's day — charm counts at work — and the swelling Moon favours the presentation and the relationship-building lunch.",
+     "waning": "Friday is Venus's day, smoothing rough edges, and the softening Moon suggests ending the week gracefully rather than starting anew."
+    },
+    "5": {
+     "waxing": "Saturday belongs to Saturn, patron of slow mastery — the waxing Moon supports building the skill nobody sees yet.",
+     "waning": "Saturday belongs to Saturn, the long-game planet — and with the Moon fading, quiet unglamorous groundwork is exactly on time."
+    },
+    "6": {
+     "waxing": "Sunday is the Sun's day — good for the wide-angle view of your path — and the growing Moon favours planning the week's one big swing.",
+     "waning": "Sunday is the Sun's day, made for stepping back to survey, while the thinning Moon helps you drop one commitment that no longer earns its place."
+    }
+   },
+   "health": {
+    "0": {
+     "waxing": "Monday is governed by the Moon, keeper of rhythms and rest — as it fills, the body responds well to building routines.",
+     "waning": "Monday is governed by the Moon — the body runs on tides today — and the dimming light favours winding down earlier than usual."
+    },
+    "1": {
+     "waxing": "Tuesday burns with Mars, the muscle planet — a growing Moon backs harder training, provided the form stays honest.",
+     "waning": "Tuesday burns with Mars — energy spikes fast — but in a waning phase, spend it in one strong session and then genuinely stop."
+    },
+    "2": {
+     "waxing": "Wednesday is Mercury's — nerves and breath respond today — and the brightening Moon favours starting the practice that needs consistency.",
+     "waning": "Wednesday is Mercury's day, good for tuning the small systems — breath, posture, screen breaks — while the ebbing Moon eases the pace."
+    },
+    "3": {
+     "waxing": "Thursday expands under Jupiter, appetite included, and the filling Moon says feed the body generously but not heavily.",
+     "waning": "Thursday sits under Jupiter, which loves excess — the receding Moon is the counterweight: lighter plates digest better today."
+    },
+    "4": {
+     "waxing": "Friday belongs to Venus, the body's pleasure planet — with the Moon on the rise, enjoyment is the best medicine: dance, stretch, savour.",
+     "waning": "Friday belongs to Venus — comfort rules — and under a softening Moon, guilt-free rest is the prescription, not the indulgence."
+    },
+    "5": {
+     "waxing": "Saturday is Saturn's, planet of joints and limits — the swelling Moon supports patient structural work: walking, stretching, sleep on time.",
+     "waning": "Saturday is Saturn's day — it shows where the body keeps its debts — and the quietening Moon favours paying them with rest."
+    },
+    "6": {
+     "waxing": "Sunday draws on the Sun, the source of vitality — morning light and movement charge the whole week, more so while the Moon fills.",
+     "waning": "Sunday draws on the Sun, vitality's own day, and with the Moon easing off, gentle sunshine and an unhurried pace restore more than effort would."
+    }
+   },
+   "mind": {
+    "0": {
+     "waxing": "Monday's Moon pulls thought towards feeling — with its light increasing, imagination is the day's sharpest tool.",
+     "waning": "Monday's Moon pulls thought inward — and as its light settles, the mind sorts and files better than it invents."
+    },
+    "1": {
+     "waxing": "Tuesday's Mars speeds thinking up — a rising Moon channels it well into problems that need attack, not patience.",
+     "waning": "Tuesday's Mars makes the mind quick to argue — in this fading phase, point that blade at your own to-do list instead."
+    },
+    "2": {
+     "waxing": "Wednesday is Mercury's home ground, the thinking day of the week, and the brightening Moon favours learning something new.",
+     "waning": "Wednesday is Mercury's home ground — precise and quick — and the ebbing Moon suits reviewing and correcting over fresh starts."
+    },
+    "3": {
+     "waxing": "Thursday's Jupiter widens the lens — big-picture thinking flows — and with the Moon filling out, it is a fine day to set direction.",
+     "waning": "Thursday's Jupiter favours wisdom over information — the dimming Moon agrees: reread the good notes instead of collecting more."
+    },
+    "4": {
+     "waxing": "Friday's Venus tilts the mind towards beauty and ease — a swelling Moon makes it a natural day for creative work.",
+     "waning": "Friday's Venus softens concentration — pleasant, not piercing — and under a receding Moon, light reading beats heavy analysis."
+    },
+    "5": {
+     "waxing": "Saturday's Saturn brings weight and rigour to thought — a filling Moon helps it hold long, structured work.",
+     "waning": "Saturday's Saturn slows the mind to walking pace — thorough, not fast — and the waning Moon suits pruning ideas down to the few that matter."
+    },
+    "6": {
+     "waxing": "Sunday's Sun clarifies — priorities show in daylight terms — and the growing Moon favours mapping the week ahead.",
+     "waning": "Sunday's Sun gives honest light for reflection — with the Moon easing, reviewing the week behind teaches more than planning the next."
+    }
+   },
+   "mood": {
+    "0": {
+     "waxing": "The Moon rules both Monday and your inner weather — as it gains light, moods naturally lift towards evening.",
+     "waning": "The Moon rules both Monday and your inner weather — as its light lowers, feelings run quieter, which is not the same as worse."
+    },
+    "1": {
+     "waxing": "Tuesday's Mars adds voltage to feelings — a brightening Moon turns it into enthusiasm if you give it something to do.",
+     "waning": "Tuesday's Mars can turn spark into temper — in a waning phase the excess burns off fastest through movement, not words."
+    },
+    "2": {
+     "waxing": "Wednesday's Mercury makes the mood talkative — with the Moon filling, good conversation is the day's fastest lift.",
+     "waning": "Wednesday's Mercury turns feelings into commentary — the settling Moon says write it out; the page is a patient listener."
+    },
+    "3": {
+     "waxing": "Thursday's Jupiter is the sky's optimist — with the Moon rising through the month, hope comes easier than usual.",
+     "waning": "Thursday's Jupiter keeps its warmth even as the Moon recedes — gratitude, its favourite exercise, works especially well today."
+    },
+    "4": {
+     "waxing": "Friday's Venus sweetens the emotional air — the growing Moon says share the mood; joy multiplies in company.",
+     "waning": "Friday's Venus favours soft pleasures — under an easing Moon, comfort over stimulation is the mood's best friend."
+    },
+    "5": {
+     "waxing": "Saturday's Saturn brings a serious note to feelings — a swelling Moon steadies it into calm rather than gloom.",
+     "waning": "Saturday's Saturn plus a lowering Moon makes the day introspective by design — solitude today is structure, not sadness."
+    },
+    "6": {
+     "waxing": "Sunday's Sun warms the spirit from the outside in — daylight hours are the mood's allies while the Moon brightens.",
+     "waning": "Sunday's Sun still shines on the mood — with the Moon quieting, the recharge comes from slowness: late breakfast, open window, no rush."
+    }
+   }
+  }
+ }
+}

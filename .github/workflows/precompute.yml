@@ -18,6 +18,11 @@ jobs:
       - name: Sync dependencies
         run: uv sync
 
+      # The content diversity gate + determinism tests must pass before this
+      # job is allowed to seed rules or write guidance rows.
+      - name: Tests (gate the seed)
+        run: uv run pytest -q
+
       - name: Apply migrations + seed rules
         env:
           NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}

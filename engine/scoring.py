@@ -1,9 +1,9 @@
-"""content_v2 scoring + copy composition: (natal nakshatra × today's sky) → daily guidance.
+"""content_v3 scoring + copy composition: (natal nakshatra × today's sky) → daily guidance.
 
 This module is the deterministic *engine* that applies a rules dict. It holds no
 magic numbers and no copy of its own — every tunable value and every line of
 user-visible text lives in the `score_rules` table (seeded from
-db/seed/score_rules_content_v2.json). Load the rules with `load_rules_from_db`
+db/seed/score_rules_content_v3.json). Load the rules with `load_rules_from_db`
 (job) or `load_rules_from_json` (tests), then call `all_guidance(sky, rules)`.
 
 Vedic basis (unchanged from v1): **Tarabala** — the 9-fold auspiciousness cycle
@@ -11,16 +11,19 @@ counted from the natal (janma) nakshatra to the day's Moon nakshatra — sets th
 base energy. The weekday (hora) lord and paksha modulate it per life-area; lucky
 colour/number/direction come from the day lord (dik + Vedic numerology).
 
-content_v2 additions composed here from the seed's content library:
-  • `scores` now use the USER-FACING six areas — Love, Money, Career, Mind,
-    Health, Mood — matching the app screens key-for-key.
-  • `area_lines` — one warm, actionable line per area from the 54-cell
-    (area × tara) library, variant-rotated by date so consecutive days differ.
-  • `narrative` — the two-sentence "story of your day" (energy band opener +
-    best-area / caution-area closer).
-  • `opportunity` / `warning` (+ `_detail`) — rewritten generators, same voice.
-  • `why` — the "why this reading" credibility line; the ONLY field where
-    tara/nakshatra jargon leads. Headline copy stays jargon-free.
+content_v2 (carried over): user-facing six areas — Love, Money, Career, Mind,
+Health, Mood; `area_lines` (54-cell area × tara library, date-rotated);
+`narrative`; rewritten `opportunity`/`warning`; the jargon-carrying `why`.
+
+content_v3 additions (see docs/CONTENT_KEYS.md for the key scheme):
+  • `band_labels` — per-area score-band label from a 6 × 5 vocabulary in which
+    no label is shared between two areas.
+  • `score_why` — the score-detail "why today", composed per area as
+    RECOGNITION (area × band × moon_group) + CAUSE (area × day-lord × paksha).
+    CAUSE lines are band-neutral so every pairing reads coherently. Two areas
+    can never render the same copy: the corpora are disjoint per area and CI
+    (tests/test_content_diversity.py) fails on any shared label, line or
+    sentence skeleton.
 
 Determinism: pure integer arithmetic with fixed rounding, stable tie-breaks and
 date-ordinal variant rotation — no `now()` / randomness. Same `sky` + same
@@ -35,9 +38,9 @@ from pathlib import Path
 
 from .vimshottari import NAKSHATRAS, TOTAL_NAKSHATRAS
 
-SCORE_RULES_VERSION = "content_v2"
+SCORE_RULES_VERSION = "content_v3"
 SEED_PATH = (
-    Path(__file__).resolve().parent.parent / "db" / "seed" / "score_rules_content_v2.json"
+    Path(__file__).resolve().parent.parent / "db" / "seed" / "score_rules_content_v3.json"
 )
 
 # The nine taras (1-indexed), in cycle order from the natal nakshatra.
@@ -65,6 +68,15 @@ def _band(energy: int) -> str:
         if energy >= threshold:
             return name
     return "tender"
+
+
+def _score_band(score: int, bands: dict) -> str:
+    """An area score → its content_v3 band id (peak/high/mid/low/deep)."""
+    thresholds = bands["thresholds"]
+    for name in bands["order"]:
+        if name in thresholds and score >= thresholds[name]:
+            return name
+    return bands["order"][-1]
 
 
 def _pick(variants: list, day_ordinal: int, natal_index: int, salt: int):
@@ -103,6 +115,21 @@ def guidance_for_nakshatra(natal_index: int, sky: dict, rules: dict) -> dict:
         for i, a in enumerate(order)
     }
 
+    # content_v3: per-area band labels + the two-sentence score-detail "why".
+    # Key scheme (docs/CONTENT_KEYS.md): band from the area's own score,
+    # RECOGNITION from (area, band, day-Moon texture group), CAUSE from
+    # (area, weekday day lord, paksha) — fully determined by date + natal.
+    moon_group = rules["moon_groups"][str(sky["day_nakshatra_index"])]
+    paksha_key = "waxing" if sky["waxing"] else "waning"
+    band_labels = {}
+    score_why = {}
+    for a in order:
+        band = _score_band(scores[a], rules["score_bands"])
+        band_labels[labels[a]] = rules["band_labels"][a][band]
+        recognition = rules["why_recognition"][a][band][moon_group]
+        cause = rules["why_cause"][a][wd][paksha_key]
+        score_why[labels[a]] = f"{recognition} {cause}"
+
     # Two-sentence "story of your day": energy-band opener + best/caution closer.
     narrative_conf = rules["narrative"]
     focus = narrative_conf["focus"]
@@ -127,6 +154,8 @@ def guidance_for_nakshatra(natal_index: int, sky: dict, rules: dict) -> dict:
         "energy": energy,
         "scores": {labels[a]: scores[a] for a in order},
         "area_lines": area_lines,
+        "band_labels": band_labels,
+        "score_why": score_why,
         "narrative": narrative,
         "why": why,
         "lucky": {
