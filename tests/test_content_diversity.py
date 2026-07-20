@@ -30,7 +30,7 @@ import re
 from collections import Counter
 from pathlib import Path
 
-SEED = Path(__file__).resolve().parent.parent / "db" / "seed" / "score_rules_content_v3_1.json"
+SEED = Path(__file__).resolve().parent.parent / "db" / "seed" / "score_rules_content_v3_2.json"
 RULES = json.loads(SEED.read_text())["rules"]
 
 MAX_WORD_SHARE = 0.06

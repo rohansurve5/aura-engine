@@ -1,0 +1,461 @@
+{
+  "version": "dasha_content_v2",
+  "_about": "dasha_content_v2 — the human interpretation layer for the Vimshottari timeline, subject to astrologer review. The maths (period dates) comes from /v1/dasha and never changes; every user-visible WORD about what a period means lives here as data, seeded into the dasha_content table so it can be reworded without a code change or an app release. v1 rows are kept in the table for rollback. WHAT CHANGED IN v2: v1 was authored before the per-area voice specs and the distinctness gates existed, and it showed — every essence opened with the planet as its grammatical subject ('Ketu asks…', 'Venus turns up…', 'Mars hands you…'), which is one template with the name swapped in, the exact failure content_v3 was built to kill. Testers read the nine eras as nine versions of one card. v2 follows the v3 shape: RECOGNITION first — name what a person living through this period may actually be experiencing, in their own terms — then a plain CAUSE only where it earns its place. The planet is named as the explanation, never as the opening subject. READ PATTERN (why the gates differ from v3's): the failure here is not per-day. A user sees all nine maha essences together on the timeline screen, and all nine antars of one maha together on the detail screen. So distinctness is asserted over those two units by tests/test_dasha_content_seed.py. Voice rules: warm second person, simple English an Indian 25-40yo non-expert relates to, concrete not mystical, no fatalism, no fear-selling, no predictions of death/illness/divorce, no medical, financial or legal advice claims, no promised outcomes. Every period — including Saturn, Rahu, Ketu and Mars — is weather to dress for, never destiny to fear; the reader always keeps agency.",
+  "maha": {
+    "Ketu": {
+      "title": "The years things fall quiet",
+      "essence": "Something you used to care about has stopped holding your attention, and you cannot quite manufacture the old enthusiasm for it. Rooms get emptier, mostly by your own choosing, and you find you mind that less than you expected to. This period thins things out instead of adding to them — what is still standing at the end of it is usually what was actually yours.",
+      "favours": [
+        "inner work",
+        "clearing out what you have outgrown",
+        "deep study",
+        "practice and retreat"
+      ],
+      "watch": [
+        "drifting from practical goals",
+        "pulling away from people who are still holding on"
+      ]
+    },
+    "Venus": {
+      "title": "The years life gets sweeter",
+      "essence": "The parts of life that are not work start asking for room — someone to come home to, a place that feels like yours, food and music and comfort you have stopped apologising for. Money matters here mostly for what it buys in ordinary happiness. Enjoyment is not a distraction in this period, it is the actual assignment, and the relationships you build now tend to set the shape of the decades after.",
+      "favours": [
+        "love and partnership",
+        "making a home",
+        "creative work",
+        "growing what you earn"
+      ],
+      "watch": [
+        "comfort quietly becoming avoidance",
+        "spending to keep the feeling going"
+      ]
+    },
+    "Sun": {
+      "title": "The years you stop hiding",
+      "essence": "Being in the background has started to chafe, and work you did quietly is finally getting your name attached to it. Seniors, fathers and authority figures take up more room in your life than usual, for better and for worse. What this period asks is that you be visible and carry responsibility in your own name — the discomfort of that is the point, not a sign you have overreached.",
+      "favours": [
+        "taking the lead",
+        "putting your name on the work",
+        "visibility where it counts",
+        "getting your health in order"
+      ],
+      "watch": [
+        "pride arriving before the results do",
+        "friction with bosses and elders"
+      ]
+    },
+    "Moon": {
+      "title": "The years feeling comes first",
+      "essence": "Your moods have more say than they used to, and you notice things about people you would have walked straight past a few years ago. Home, family and the question of where you actually belong keep coming up, and you find you want to be there. Feeling is information in this period rather than interference — the work is to listen to it without letting it drive.",
+      "favours": [
+        "family and home",
+        "saying the honest thing",
+        "work that looks after people",
+        "your own peace of mind"
+      ],
+      "watch": [
+        "mood steering decisions that need a clear head",
+        "taking every small distance personally"
+      ]
+    },
+    "Mars": {
+      "title": "The years you have the fight in you",
+      "essence": "There is more energy in you than your life currently has a use for, and sitting still has become genuinely uncomfortable. You are readier to compete, to push a stalled thing through, to say the blunt sentence you would once have softened. Courage costs less in this period than it usually does, and so does friction — so the only real question is what you point the heat at.",
+      "favours": [
+        "bold moves at work",
+        "strength and fitness",
+        "property and paperwork you must push through",
+        "competing on purpose"
+      ],
+      "watch": [
+        "a short fuse with people who did not earn it",
+        "deciding fast because waiting feels bad",
+        "fights that cost more than they win"
+      ]
+    },
+    "Rahu": {
+      "title": "The years of wanting more",
+      "essence": "You want a bigger life than the one you were handed, and the wanting has an edge to it that is hard to explain to family. New places, new industries, people your parents would never have introduced you to — the pull is towards whatever is unfamiliar. Appetite is what this period gives you; aiming it is the whole job, because it will chase anything you point it at, including the wrong thing.",
+      "favours": [
+        "ambitious bets",
+        "unfamiliar industries and skills",
+        "moving cities or countries",
+        "reinventing how you earn"
+      ],
+      "watch": [
+        "shortcuts dressed up as opportunities",
+        "starting the next thing before finishing this one",
+        "believing your own pitch"
+      ]
+    },
+    "Jupiter": {
+      "title": "The years the doors open",
+      "essence": "Chances arrive faster than you can take them, and the people who can open things for you keep turning up — a teacher, a senior, someone who simply says yes. Life feels roomier than it did, and saying yes has been working. The risk in a generous period is not scarcity but sprawl: this one hands you more than you can hold, so what you decline matters as much as what you accept.",
+      "favours": [
+        "studying something properly",
+        "teaching and mentoring",
+        "family milestones",
+        "building for the long term"
+      ],
+      "watch": [
+        "saying yes to everything at once",
+        "assuming the shine lasts without effort"
+      ]
+    },
+    "Saturn": {
+      "title": "The years that make you earn it",
+      "essence": "Things take longer than they should, and the work you are putting in has not shown up in your life yet. You may be quietly wondering whether you backed the wrong thing, while people around you seem to be moving faster on less. This is the slowest of the nine periods and the one that pays last — what you build here is load-bearing, and it holds long after these years are done.",
+      "favours": [
+        "work nobody has noticed yet",
+        "learning a craft properly",
+        "long commitments",
+        "putting real structure in place"
+      ],
+      "watch": [
+        "carrying all of it alone",
+        "being harder on yourself than anyone else is",
+        "reading slow as stuck"
+      ]
+    },
+    "Mercury": {
+      "title": "The years you talk your way through",
+      "essence": "You are picking things up quickly and explaining them well, and people have started coming to you to make sense of something. Deals, messages, negotiations and side projects multiply, and most of them begin with a conversation. Curiosity and contact are what this period runs on — the more questions you ask and the more rooms you are in, the more it gives back.",
+      "favours": [
+        "new skills and study",
+        "business and negotiation",
+        "writing and speaking",
+        "building your network"
+      ],
+      "watch": [
+        "five projects at forty per cent",
+        "thinking a simple decision into the ground"
+      ]
+    }
+  },
+  "maha_antar": {
+    "Ketu-Ketu": {
+      "line": "Life strips down to essentials, and the quiet gets very quiet indeed.",
+      "now": "Simplify one corner completely — a room, a routine, a commitment — and notice how much lighter you feel."
+    },
+    "Ketu-Venus": {
+      "line": "Warmth finds its way back in, and someone gets close without disturbing the peace.",
+      "now": "Let one person in on what you have been working through alone; it will not cost you your quiet."
+    },
+    "Ketu-Sun": {
+      "line": "A push to be seen arrives in the middle of a period that wants nothing to do with visibility.",
+      "now": "Put your name on one cause you believe in, and let the rest of your life stay private."
+    },
+    "Ketu-Moon": {
+      "line": "Feelings the quiet years have been holding start surfacing, usually around family.",
+      "now": "Say it out loud to someone who loves you — naming it settles more than another month of solitude."
+    },
+    "Ketu-Mars": {
+      "line": "Restlessness with nowhere to go: energy arrives in a period built for stillness.",
+      "now": "Work the extra charge out through your body or a physical project so it does not turn into irritation."
+    },
+    "Ketu-Rahu": {
+      "line": "Two opposite pulls at once — the urge to let go, and the urge to chase what is new.",
+      "now": "Before you start the shiny thing, check whether it fits the simpler life you have been quietly building."
+    },
+    "Ketu-Jupiter": {
+      "line": "The lessons of the quiet years finally start making sense, often through a teacher.",
+      "now": "Find the book, the course or the person that matches the questions you are actually asking."
+    },
+    "Ketu-Saturn": {
+      "line": "Something demanding lands in an already spare period — slow, unglamorous and necessary.",
+      "now": "Commit to one small routine and keep it small; consistency beats intensity through these months."
+    },
+    "Ketu-Mercury": {
+      "line": "Words come back, and thinking, writing and planning sharpen after a foggy spell.",
+      "now": "Put the reflection into language — journal it, plan it, or talk it through with someone."
+    },
+    "Venus-Ketu": {
+      "line": "Something you enjoyed loses its flavour, and you find you do not miss it much.",
+      "now": "Let the pleasure that has gone flat fall away without a ceremony — the room it leaves is the point."
+    },
+    "Venus-Venus": {
+      "line": "This is the heart of the era, with love, beauty and comfort at full volume.",
+      "now": "Give real time to what delights you; here, enjoyment counts as productive."
+    },
+    "Venus-Sun": {
+      "line": "What you have made and who you are with both step into the light.",
+      "now": "Show what you made, or bring the person — being seen suits these months."
+    },
+    "Venus-Moon": {
+      "line": "Closeness doubles, and home becomes the thing everything else gets measured against.",
+      "now": "Prioritise the people who feel like home; a small act of care lands bigger than usual now."
+    },
+    "Venus-Mars": {
+      "line": "Desire and friction arrive together in a comfortable era, and things get less polite.",
+      "now": "Say what you actually want, in love or at work, and burn the surplus through movement instead of argument."
+    },
+    "Venus-Rahu": {
+      "line": "Appetite grows a size — for luxury, for excitement, for a more glamorous version of this life.",
+      "now": "Enjoy wanting it, then sleep on the big purchase; wanting is free and buying is not."
+    },
+    "Venus-Jupiter": {
+      "line": "One of the warmest stretches there is, where affection, money and meaning grow together.",
+      "now": "Say yes to the celebration, the commitment and the generous gesture — these months expand whatever you feed."
+    },
+    "Venus-Saturn": {
+      "line": "The sweetness has to be built now rather than simply enjoyed, and one bond asks for commitment.",
+      "now": "Put steady work into the one relationship or project you mean to keep; effort is the love language here."
+    },
+    "Venus-Mercury": {
+      "line": "Conversation becomes the pleasure — messages, plans, and people who are good company.",
+      "now": "Arrange the meeting, send the message, make the plan; connection travels through words now."
+    },
+    "Sun-Ketu": {
+      "line": "The appetite for being seen quietly fades, and applause stops doing much for you.",
+      "now": "Do one thing nobody will ever know about, and notice that it still satisfies."
+    },
+    "Sun-Venus": {
+      "line": "Warmth softens the spotlight, and being liked matters as much as being respected.",
+      "now": "Bring others with you rather than leaving them behind; the relationships built now outlast the position."
+    },
+    "Sun-Sun": {
+      "line": "This is the centre of the era: most visible, most exposed, most yours.",
+      "now": "Take the lead on what you would normally wait to be offered."
+    },
+    "Sun-Moon": {
+      "line": "Public duty and private feeling pull in different directions for a while.",
+      "now": "Protect one part of your week that nobody gets to see; visibility is cheaper with somewhere to retreat."
+    },
+    "Sun-Mars": {
+      "line": "Ambition gets teeth, and you are willing to fight for the position you want.",
+      "now": "Make the competitive move you have been circling, and keep the aggression pointed at the goal."
+    },
+    "Sun-Rahu": {
+      "line": "The hunger for recognition outruns the recognition itself for a while.",
+      "now": "Earn the attention before chasing the attention — the order matters here."
+    },
+    "Sun-Jupiter": {
+      "line": "Standing and respect grow together, often through someone senior who backs you.",
+      "now": "Accept the introduction, the platform or the responsibility being offered; it is a real one."
+    },
+    "Sun-Saturn": {
+      "line": "Recognition comes slowly here and has to be earned twice over.",
+      "now": "Keep showing up on the thing nobody has praised yet; credit here arrives late, not never."
+    },
+    "Sun-Mercury": {
+      "line": "Your voice is the instrument — what you say, and how you say it, carries.",
+      "now": "Speak, write or present; put your thinking somewhere people can actually see it."
+    },
+    "Moon-Ketu": {
+      "line": "A quiet distance opens between you and things that used to move you.",
+      "now": "Let the flatness be temporary rather than a verdict, and keep one small routine running through it."
+    },
+    "Moon-Venus": {
+      "line": "Home gets softer, and comfort, company and small beauties matter more than usual.",
+      "now": "Make the place you live somewhere you actually want to be; it does more for you now than it normally would."
+    },
+    "Moon-Sun": {
+      "line": "Private life meets public demand, and you are asked to stand up in front of a room that knows you.",
+      "now": "Take the visible role in the family or the group — you are steadier under attention than you think."
+    },
+    "Moon-Moon": {
+      "line": "This is the most feeling-led part of a feeling-led era, and everything registers.",
+      "now": "Give your moods somewhere to go — a person, a page, a walk — before they start making decisions for you."
+    },
+    "Moon-Mars": {
+      "line": "Feelings get sharp edges, and something you have been patient about stops being tolerable.",
+      "now": "Say the hard sentence while you still have the nerve, and say it to the person, not about them."
+    },
+    "Moon-Rahu": {
+      "line": "Restlessness reaches home, and the familiar starts to feel small.",
+      "now": "Change something real about your surroundings rather than concluding the problem is whoever is in them."
+    },
+    "Moon-Jupiter": {
+      "line": "Family and faith both widen out, and there is more room and more generosity in it.",
+      "now": "Accept the family gathering, the celebration or the responsibility; it pays you back more than usual now."
+    },
+    "Moon-Saturn": {
+      "line": "Heaviness settles in, and duty starts outweighing warmth at home.",
+      "now": "Do the kindness you promised even when the feeling is not there — here the feeling follows the act."
+    },
+    "Moon-Mercury": {
+      "line": "Feelings find words, and something unsayable becomes sayable.",
+      "now": "Have the conversation you have been rehearsing; you have the language for it now."
+    },
+    "Mars-Ketu": {
+      "line": "The fight goes out of a fight you were certain you wanted.",
+      "now": "Let the battle you have lost interest in end quietly — withdrawing is a decision, not a defeat."
+    },
+    "Mars-Venus": {
+      "line": "Heat and warmth together: passion, attraction, and the odd flare of temper.",
+      "now": "Spend the intensity on someone or something you love, not on the nearest available conflict."
+    },
+    "Mars-Sun": {
+      "line": "Courage and visibility line up, and stepping forward stops feeling risky.",
+      "now": "Claim the role, the credit or the responsibility openly; the direct approach is backed here."
+    },
+    "Mars-Moon": {
+      "line": "Temper and feeling get tangled, and reactions arrive faster than thought.",
+      "now": "Put a gap between the feeling and the reply, even a short one, and answer from the other side of it."
+    },
+    "Mars-Mars": {
+      "line": "Full throttle: the most driven and most combustible stretch of the era.",
+      "now": "Point the energy at one hard target and let the small irritations go unanswered."
+    },
+    "Mars-Rahu": {
+      "line": "Ambition goes up a gear and starts taking risks that used to look reckless.",
+      "now": "Take the bold shot, but write down beforehand what you will do if it misses."
+    },
+    "Mars-Jupiter": {
+      "line": "Force meets judgement — you are still driven, but much better aimed.",
+      "now": "Make the big move now, while you can still see the whole board."
+    },
+    "Mars-Saturn": {
+      "line": "Drive runs into a wall, and effort stops paying out immediately.",
+      "now": "Slow the pace deliberately instead of pushing harder; force is punished here and persistence rewarded."
+    },
+    "Mars-Mercury": {
+      "line": "Argument gets skilful, and you can win exchanges you would previously have lost.",
+      "now": "Use the sharpness for a negotiation, not for proving a point you have already won."
+    },
+    "Rahu-Ketu": {
+      "line": "The chase suddenly feels hollow, and what you wanted stops looking like enough.",
+      "now": "Ask what you actually wanted from what you were chasing, before you replace it with another one."
+    },
+    "Rahu-Venus": {
+      "line": "Appetite turns towards pleasure: the upgrade, the image, the good life.",
+      "now": "Enjoy the taste for nicer things, and keep one number in your head before you commit to it."
+    },
+    "Rahu-Sun": {
+      "line": "You want the recognition and you want it now, in a stretch that happens to reward nerve.",
+      "now": "Put yourself forward for what you are not quite qualified for; the gap closes faster than you think."
+    },
+    "Rahu-Moon": {
+      "line": "Ambition unsettles the household, and restlessness follows you into private hours.",
+      "now": "Tell the people closest to you what you are chasing and why — the distance here is usually unexplained, not real."
+    },
+    "Rahu-Mars": {
+      "line": "Hunger picks up force, and patience becomes almost impossible.",
+      "now": "Move on the opportunity, but decide the exit and the budget rather than letting the adrenaline choose."
+    },
+    "Rahu-Rahu": {
+      "line": "Maximum appetite — the stretch where the era's hunger is loudest and least patient.",
+      "now": "Choose one ambition to actually pursue, and let the other four stay fantasies for now."
+    },
+    "Rahu-Jupiter": {
+      "line": "The wanting finds a direction, and someone credible takes the ambition seriously.",
+      "now": "Get the plan in front of a person with more experience than you; guidance sticks now in a way it usually does not."
+    },
+    "Rahu-Saturn": {
+      "line": "The bill arrives for the fast growth, and everything starts asking for structure.",
+      "now": "Build the boring foundation under what you have started — this is where unsupported things fall over."
+    },
+    "Rahu-Mercury": {
+      "line": "The pitch gets good, and you can sell the vision, including to yourself.",
+      "now": "Use the persuasiveness on a deal that is real, and check your own story for the parts you never verified."
+    },
+    "Jupiter-Ketu": {
+      "line": "The meaning goes quiet, and the growth stops feeling like it is for anything.",
+      "now": "Step back from the expansion for a stretch, and let the question of why sit unanswered a while."
+    },
+    "Jupiter-Venus": {
+      "line": "Good fortune and good living arrive together, in one of the easier passages you get.",
+      "now": "Enjoy this properly and share it outward; generosity compounds from here."
+    },
+    "Jupiter-Sun": {
+      "line": "Recognition catches up with growth, and your standing rises where it counts.",
+      "now": "Accept the visible role — you have more credibility right now than you are using."
+    },
+    "Jupiter-Moon": {
+      "line": "Growth turns personal, and family, home and belonging expand rather than career.",
+      "now": "Invest in the family matter: the house, the milestone, the relationship that needed time."
+    },
+    "Jupiter-Mars": {
+      "line": "Optimism gets legs, and the plan finally turns into action.",
+      "now": "Start what you have been researching; the reading is finished and the doing is not."
+    },
+    "Jupiter-Rahu": {
+      "line": "Ambition inflates, and a good stretch tempts you to bet bigger than you need to.",
+      "now": "Take the growth already in your hands before reaching for the version that needs everything to go right."
+    },
+    "Jupiter-Jupiter": {
+      "line": "This is the most generous stretch of a generous era, and everything has room in it.",
+      "now": "Commit to the biggest sensible version of what you are planning; this stretch supports scale."
+    },
+    "Jupiter-Saturn": {
+      "line": "Growth meets its limits, and the expansion asks to be consolidated.",
+      "now": "Finish and secure what you have already started before agreeing to anything new."
+    },
+    "Jupiter-Mercury": {
+      "line": "Learning turns practical, and knowledge starts converting into earnings.",
+      "now": "Turn what you know into something usable — the course, the document, the offer."
+    },
+    "Saturn-Ketu": {
+      "line": "Even the discipline stops feeling meaningful for a while, and you question what you are building towards.",
+      "now": "Keep the routine going at half size while the meaning is missing — it comes back before the habit does."
+    },
+    "Saturn-Venus": {
+      "line": "A softer stretch inside a hard era: company, comfort and a little pleasure get back in.",
+      "now": "Let something enjoyable back into the week without calling it a reward you had to earn."
+    },
+    "Saturn-Sun": {
+      "line": "What you built finally has your name on it, and someone senior is actually looking.",
+      "now": "Say plainly what you have built, to the person whose opinion moves things; modesty costs you here."
+    },
+    "Saturn-Moon": {
+      "line": "The load turns emotional rather than practical, and tiredness shows up as mood before it shows up as fatigue.",
+      "now": "Tell one person how heavy it has been — carrying it silently is the expensive option here."
+    },
+    "Saturn-Mars": {
+      "line": "Impatience arrives in a period built for patience, and you want to kick the whole thing loose.",
+      "now": "Put the extra heat into something physical, or into the one job that is stuck, and not into the people slowing you down."
+    },
+    "Saturn-Rahu": {
+      "line": "A faster route appears, and it is genuinely tempting right when the slow one is at its dullest.",
+      "now": "Test the shortcut against the plan you made when you were thinking clearly, then decide."
+    },
+    "Saturn-Jupiter": {
+      "line": "Pressure eases a notch, and someone with more experience takes an interest in what you are doing.",
+      "now": "Ask the person who is further along the question you have been slightly embarrassed to ask."
+    },
+    "Saturn-Saturn": {
+      "line": "This is the core of the era — most demanding, most productive, and the stretch that decides what stands.",
+      "now": "Choose the one thing that matters most and protect the hours for it; everything else can be done adequately."
+    },
+    "Saturn-Mercury": {
+      "line": "Enough fog clears to organise the work: plans, papers and conversations start moving again.",
+      "now": "Spend a day putting the admin, the documents and the pending replies in order — it unblocks more than it costs."
+    },
+    "Mercury-Ketu": {
+      "line": "The noise stops appealing, and you want fewer conversations rather than more.",
+      "now": "Cut the contacts and channels you maintain out of habit; quiet is not a loss here."
+    },
+    "Mercury-Venus": {
+      "line": "Words turn charming, negotiations feel like conversations, and the answer comes back yes.",
+      "now": "Ask for it now, whether it is the rate, the date or the favour — the delivery is working."
+    },
+    "Mercury-Sun": {
+      "line": "What you know becomes what you are known for.",
+      "now": "Publish, present or teach it; your expertise needs a public form now."
+    },
+    "Mercury-Moon": {
+      "line": "Thinking and feeling mix, and intuition starts arriving in words.",
+      "now": "Trust the read you cannot fully justify, then check it before you act on it."
+    },
+    "Mercury-Mars": {
+      "line": "Speech gets sharp, and debates turn into contests.",
+      "now": "Aim the argument at the problem — the same edge that wins a point can cost you a relationship."
+    },
+    "Mercury-Rahu": {
+      "line": "Ideas outrun capacity: a dozen possibilities, none of them finished.",
+      "now": "Drop four of the ideas on purpose so the remaining one gets what it needs."
+    },
+    "Mercury-Jupiter": {
+      "line": "Understanding deepens, and the scattered knowledge starts forming a shape.",
+      "now": "Take the formal step — the qualification, the teacher, the structured course."
+    },
+    "Mercury-Saturn": {
+      "line": "Thinking slows and gets heavier, and the easy fluency deserts you for a while.",
+      "now": "Write it down and reason it through slowly; this stretch rewards the careful draft over the quick one."
+    },
+    "Mercury-Mercury": {
+      "line": "Peak clarity and peak busyness — messages, deals and ideas all at once.",
+      "now": "Pick the three things worth finishing, and let the rest of the inbox stay open."
+    }
+  }
+}

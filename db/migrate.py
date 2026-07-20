@@ -3,9 +3,11 @@
 
 Applies every `db/migrations/*.sql` in filename order exactly once (tracked in a
 `schema_migrations` table), then seeds `score_rules` from
-`db/seed/score_rules_content_v3_1.json` and `dasha_content` from
-`db/seed/dasha_content_v1.json` with idempotent upserts. Older versions keep
-their rows — versions are additive, enabling rollback.
+`db/seed/score_rules_content_v3_2.json` and `dasha_content` from
+`db/seed/dasha_content_v2.json` with idempotent upserts. Older versions keep
+their rows — versions are additive, enabling rollback: `dasha_content_v1` stays
+in the table, and `/v1/dasha/content` serves `max(version)`, so a rollback is a
+delete of the newer rows rather than a code change.
 
     NEON_DATABASE_URL=postgres://... uv run python db/migrate.py
     ...                              uv run python db/migrate.py --seed-only
@@ -27,8 +29,8 @@ from psycopg.types.json import Json
 
 ROOT = Path(__file__).resolve().parent
 MIGRATIONS = ROOT / "migrations"
-SEED = ROOT / "seed" / "score_rules_content_v3_1.json"
-DASHA_SEED = ROOT / "seed" / "dasha_content_v1.json"
+SEED = ROOT / "seed" / "score_rules_content_v3_2.json"
+DASHA_SEED = ROOT / "seed" / "dasha_content_v2.json"
 
 
 def _dsn() -> str:

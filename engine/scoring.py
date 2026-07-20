@@ -49,7 +49,7 @@ from .vimshottari import NAKSHATRAS, TOTAL_NAKSHATRAS
 
 SCORE_RULES_VERSION = "content_v3_1"
 SEED_PATH = (
-    Path(__file__).resolve().parent.parent / "db" / "seed" / "score_rules_content_v3_1.json"
+    Path(__file__).resolve().parent.parent / "db" / "seed" / "score_rules_content_v3_2.json"
 )
 
 # The nine taras (1-indexed), in cycle order from the natal nakshatra.

@@ -81,12 +81,28 @@ Rotation period is 12; the weekday period is 7 and coprime, so a given
 
 Cell counts overall: recognition 6×5×3 = **90**, cause **264** across five
 corpora, band labels 6×5 = **30**. All live in
-`db/seed/score_rules_content_v3_1.json` → the `score_rules` table — tunable
+`db/seed/score_rules_content_v3_2.json` → the `score_rules` table — tunable
 without a code change.
 
-## Two gates, two denominators
+## What content_v3_2 fixed
 
-Both run in CI *and* gate the nightly pre-seed (`.github/workflows/`):
+One thing in v3_1 was left weak: the `tara` corpus. Tara is the **only
+per-reader signal in the whole scheme** — it is counted from the reader's own
+birth star — so it should read as the most personal line on the card. Instead it
+hedged, with vague distance language that named nothing: *"Some distance out
+from the star you were born under"*, *"some way round from"*, *"this far on
+from"*. The most personal source was writing the haziest sentences.
+
+v3_2 rewrites all 54 cells to name the relationship **exactly and plainly**:
+which of the nine positions today's Moon occupies counting from your birth star,
+and what that position actually is — the gathering one, the one that pushes
+back, the one that will not take a direct push, the friendliest of the nine.
+Nothing else changed, so `content_v3_1` remains on disk and in the table for
+rollback.
+
+## Three gates, three denominators
+
+All run in CI *and* gate the nightly pre-seed (`.github/workflows/`):
 
 * `tests/test_content_diversity.py` — the **corpus** gate. Protects the library:
   no signature word above a 6% share, no band label shared between areas, no
@@ -98,10 +114,54 @@ Both run in CI *and* gate the nightly pre-seed (`.github/workflows/`):
   (first four words) or a sentence skeleton — for the cause halves and for the
   fully rendered cards.
 
+* `tests/test_dasha_content_seed.py` — the **dasha** gate, over
+  `db/seed/dasha_content_v2.json`. Same principle, different reading unit (see
+  below).
+
 The distinction is the lesson worth keeping: **a corpus can be perfectly diverse
 and still render six identical-feeling cards**, because diversity measured over
 the library says nothing about the slice one reader sees at once. Any future
 content variable needs a gate at the rendering unit, not just the corpus.
+
+## The dasha library (`dasha_content_v2`) and its reading unit
+
+`dasha_content_v1` was authored *before* the voice specs and these gates existed,
+and it repeated the v2-era failure in a new place: every one of the nine essences
+opened with the planet as its grammatical subject — *"Ketu asks…", "Venus turns
+up…", "The Sun's period puts…", "Mars hands you…"* — which is one template with
+the name swapped in. Testers reported the same symptom that produced content_v3:
+the timeline "doesn't connect".
+
+v2 re-authors all 90 entries (9 mahadasha + 81 maha–antar) in the v3 shape:
+**RECOGNITION** first — name what a person living through this period may
+actually be experiencing, in their own terms — then a plain **CAUSE** only where
+it earns its place. The planet is named as the explanation, never as the opening
+subject; `test_essence_never_opens_with_the_lord` encodes that regression
+directly.
+
+**The reading unit is not the day.** Copying v3_1's per-day gate would have
+proved nothing here, because nobody reads dasha content one line at a time:
+
+| Screen | What is on it at once | What the gate asserts |
+|---|---|---|
+| `astro-dasha-timeline` | all **9** mahadasha entries | no two eras share an opening frame or a sentence skeleton |
+| `astro-dasha-current` / `astro-dasha-detail` | all **9** antars of **one** maha | within each maha, no two antars share a frame or skeleton — asserted for `line` and `now` independently |
+| the library as a whole | — | no content word above a 6% share (as in v3) |
+
+One deliberate carve-out: the nine **titles** are gated on exact distinctness and
+a distinct opening frame, but not on skeleton. They are five- and six-word era
+labels read as a parallel set down the timeline, where the shared "The years…"
+stem is what makes them scannable as one family; every such title reduces to the
+skeleton `the _ _ _ _`, so a skeleton gate there would fail correct design while
+catching nothing real. All the substantive prose — the 9 essences and all 162
+antar strings — carries the full gate.
+
+**The frame-word exemption is narrow.** `period`, `years` and `era` are exempt
+from the share cap for the same reason `day`/`moon`/`star` are in the score-card
+gate: they name the unit every entry is *about*, so their frequency measures what
+the library is, not how repetitive the writing is. Nothing else is exempt — and
+the gate earned its keep immediately: the first v2 draft used `stretch`, a filler
+synonym for "period", in **26 of 237 lines**, and the cap caught it.
 
 ## The variables
 
