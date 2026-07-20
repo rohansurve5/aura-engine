@@ -24,8 +24,10 @@ import pytest
 
 from engine.content import (
     ACTIVE_DASHA_CONTENT_VERSION,
+    ACTIVE_IDENTITY_CONTENT_VERSION,
     ACTIVE_SCORE_RULES_VERSION,
     DASHA_SEED_PATH,
+    IDENTITY_SEED_PATH,
     SEED_PATH,
     declared_version,
 )
@@ -243,3 +245,159 @@ def test_lexical_max_would_pick_the_wrong_dasha_version():
     assert max(versions) == "dasha_content_v2", (
         "lexical max no longer picks v2 over v10 — re-examine why active_content exists"
     )
+
+
+# ── identity_content: the same mechanism again, from version ONE ─────────────
+#
+# score_rules and dasha_content both reached the marker table by incident —
+# each shipped on an inferred version first and had to be migrated off it. This
+# corpus starts on the marker, so there is no max(version) phase to remove
+# later. These tests exist to keep it that way: the cheapest moment to hold a
+# new corpus to the contract is before anything depends on it.
+
+
+def test_active_identity_seed_file_exists():
+    assert IDENTITY_SEED_PATH.is_file(), f"active identity seed missing: {IDENTITY_SEED_PATH}"
+
+
+def test_active_identity_version_matches_seed_filename():
+    expected = f"{ACTIVE_IDENTITY_CONTENT_VERSION}.json"
+    assert IDENTITY_SEED_PATH.name == expected, (
+        f"identity seed {IDENTITY_SEED_PATH.name} declares version "
+        f"{ACTIVE_IDENTITY_CONTENT_VERSION!r}; expected the file named {expected}"
+    )
+
+
+def test_migrate_seeds_the_exact_identity_file_content_py_activates():
+    """One declaration of the identity seed path, not two."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "_migrate_identity", Path(__file__).resolve().parent.parent / "db" / "migrate.py"
+    )
+    migrate = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(migrate)
+    assert migrate.IDENTITY_SEED == IDENTITY_SEED_PATH, (
+        f"db/migrate.py seeds {migrate.IDENTITY_SEED} but engine/content.py "
+        f"activates {IDENTITY_SEED_PATH}. Two declarations is how seeded and "
+        "served diverge."
+    )
+
+
+def test_seeding_identity_content_also_marks_it_active():
+    """Seed-without-activate must not be expressible for this corpus either."""
+    import importlib.util
+    import inspect
+
+    spec = importlib.util.spec_from_file_location(
+        "_migrate_identity_active",
+        Path(__file__).resolve().parent.parent / "db" / "migrate.py",
+    )
+    migrate = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(migrate)
+    src = inspect.getsource(migrate.seed_identity_content)
+    assert "active_content" in src and "'identity_content'" in src, (
+        "seed_identity_content does not stamp active_content. Seeding and "
+        "activating must be one act."
+    )
+
+
+def _code_only(fn) -> str:
+    """A function's source with its docstring and comment lines removed.
+
+    These seeders are heavily commented, and the comments necessarily *name* the
+    things the tests below forbid — `seed_dasha_content`'s docstring explains the
+    `max(version)` bug at length. A naive substring check over the raw source
+    therefore fails on the explanation rather than on the code, which is the same
+    trap `test_precompute_takes_no_rules_version_override` avoids by asserting
+    through argparse. Same discipline, different mechanism: strip the prose, then
+    look at what the function actually does.
+    """
+    import ast
+    import inspect
+    import textwrap
+
+    src = textwrap.dedent(inspect.getsource(fn))
+    tree = ast.parse(src)
+    node = tree.body[0]
+    if (
+        node.body
+        and isinstance(node.body[0], ast.Expr)
+        and isinstance(node.body[0].value, ast.Constant)
+        and isinstance(node.body[0].value.value, str)
+    ):
+        node.body = node.body[1:]  # drop the docstring
+    return ast.unparse(node)
+
+
+def _migrate_module():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "_migrate_probe", Path(__file__).resolve().parent.parent / "db" / "migrate.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_identity_seeds_both_halves_in_one_transaction():
+    """The cross-corpus collision gate is only meaningful over a MATCHED pair of
+    halves. A seeder that wrote nakshatra and moon_sign under different versions
+    would produce a screen whose two paragraphs were never gated against each
+    other — so both key types must be written by the one function that stamps
+    the one marker."""
+    code = _code_only(_migrate_module().seed_identity_content)
+    assert "'nakshatra', 'moon_sign'" in code, (
+        "seed_identity_content must write both key types in the same transaction "
+        "as the marker"
+    )
+    assert code.count("active_content") == 1, (
+        "exactly one activation write, covering both halves"
+    )
+
+
+def test_every_identity_seed_file_declares_a_version_matching_its_name():
+    for path in sorted(SEED_DIR.glob("identity_content_v*.json")):
+        version = json.loads(path.read_text()).get("version")
+        assert path.name == f"{version}.json", (
+            f"{path.name} declares version {version!r}; name and version disagree"
+        )
+
+
+def test_active_identity_version_is_the_newest_seed():
+    """Numeric ordering, as for the other two kinds."""
+    def key(name: str) -> tuple[int, ...]:
+        stem = name.removesuffix(".json").removeprefix("identity_content_v")
+        return tuple(int(p) for p in stem.split("_") if p.isdigit())
+
+    names = [p.name for p in SEED_DIR.glob("identity_content_v*.json")]
+    newest = max(names, key=key)
+    assert IDENTITY_SEED_PATH.name == newest, (
+        f"the newest identity seed is {newest} but engine/content.py activates "
+        f"{IDENTITY_SEED_PATH.name}. If that is a deliberate rollback, update "
+        "this test's expectation in the same commit."
+    )
+
+
+def test_no_kind_selects_its_version_by_inference():
+    """The regression that has now been closed twice, asserted as a property of
+    the source rather than of any one route: no seeder may derive a version from
+    the data. `max(version)` and `ORDER BY version` are both lexical over TEXT.
+    """
+    migrate = _migrate_module()
+    for fn in (migrate.seed, migrate.seed_dasha_content, migrate.seed_identity_content):
+        code = _code_only(fn).lower()
+        assert "max(version)" not in code, f"{fn.__name__} infers a version via max()"
+        assert "order by version" not in code, (
+            f"{fn.__name__} infers a version by sorting"
+        )
+        # The positive half: each seeder must READ its version from the seed
+        # file's own declaration. Banning the bad shapes is not the same as
+        # requiring the good one — a seeder with neither would pass the checks
+        # above while activating nothing.
+        # `ast.unparse` normalises string quoting, so this is the canonical form
+        # regardless of how the seeder was written.
+        assert "data['version']" in code, (
+            f"{fn.__name__} does not take its version from the seed file"
+        )

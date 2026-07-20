@@ -40,6 +40,7 @@ from psycopg.types.json import Json
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine.content import DASHA_SEED_PATH as CONTENT_DASHA_SEED_PATH
+from engine.content import IDENTITY_SEED_PATH as CONTENT_IDENTITY_SEED_PATH
 from engine.content import SEED_PATH as CONTENT_SEED_PATH  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
@@ -51,6 +52,7 @@ MIGRATIONS = ROOT / "migrations"
 # construction rather than by two people remembering to edit two constants.
 SEED = CONTENT_SEED_PATH
 DASHA_SEED = CONTENT_DASHA_SEED_PATH
+IDENTITY_SEED = CONTENT_IDENTITY_SEED_PATH
 
 
 def _dsn() -> str:
@@ -154,9 +156,48 @@ def seed_dasha_content(conn: psycopg.Connection) -> None:
     print(f"seeded {count} dasha_content entries and marked ACTIVE (version {version})")
 
 
+def seed_identity_content(conn: psycopg.Connection) -> None:
+    """Seed the active identity_content corpus AND mark it active, atomically.
+
+    Same contract as the two above. This corpus uses the `active_content` marker
+    from its FIRST version — it never had a max(version) phase to migrate off,
+    which is the whole point: the lexical-sort bug (`'..._v10' < '..._v2'` in
+    Postgres) has now been closed twice in this repo, and the cheapest place to
+    close it a third time is before any code depends on the wrong thing.
+
+    Both key types are written in one transaction with the marker, because the
+    cross-corpus collision gate (IDENTITY.md §6d) is only meaningful over a
+    matched pair of halves. A state where the nakshatra half is v2 and the
+    moon-sign half is v1 would be a screen whose two paragraphs were never gated
+    against each other — so that state is made unreachable rather than detected.
+    """
+    data = json.loads(IDENTITY_SEED.read_text())
+    version = data["version"]
+    count = 0
+    with conn.cursor() as cur:
+        for key_type in ("nakshatra", "moon_sign"):
+            for key, payload in data[key_type].items():
+                cur.execute(
+                    "INSERT INTO identity_content (version, key_type, key, payload) "
+                    "VALUES (%s, %s, %s, %s) "
+                    "ON CONFLICT (version, key_type, key) "
+                    "DO UPDATE SET payload = EXCLUDED.payload",
+                    (version, key_type, key, Json(payload)),
+                )
+                count += 1
+        cur.execute(
+            "INSERT INTO active_content (kind, version) VALUES ('identity_content', %s) "
+            "ON CONFLICT (kind) DO UPDATE SET "
+            "version = EXCLUDED.version, updated_at = now()",
+            (version,),
+        )
+    conn.commit()
+    print(f"seeded {count} identity_content entries and marked ACTIVE (version {version})")
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
-        description="apply migrations and seed score_rules + dasha_content"
+        description="apply migrations and seed score_rules + dasha_content + identity_content"
     )
     ap.add_argument("--seed-only", action="store_true", help="skip migrations")
     ap.add_argument("--no-seed", action="store_true", help="skip seeding")
@@ -168,6 +209,7 @@ def main(argv: list[str] | None = None) -> int:
         if not args.no_seed:
             seed(conn)
             seed_dasha_content(conn)
+            seed_identity_content(conn)
     return 0
 
 

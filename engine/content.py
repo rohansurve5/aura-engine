@@ -44,6 +44,8 @@ _SEED_DIR = Path(__file__).resolve().parent.parent / "db" / "seed"
 SEED_PATH = _SEED_DIR / "score_rules_content_v3_2.json"
 # ── THE ONE LINE THAT SETS THE ACTIVE dasha_content VERSION ──────────────────
 DASHA_SEED_PATH = _SEED_DIR / "dasha_content_v2.json"
+# ── THE ONE LINE THAT SETS THE ACTIVE identity_content VERSION ───────────────
+IDENTITY_SEED_PATH = _SEED_DIR / "identity_content_v1.json"
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -63,3 +65,12 @@ ACTIVE_SCORE_RULES_VERSION = declared_version(SEED_PATH)
 #: The active dasha interpretation library version — derived, never typed.
 #: Written to `active_content` by migrate; served by /v1/dasha/content.
 ACTIVE_DASHA_CONTENT_VERSION = declared_version(DASHA_SEED_PATH)
+
+#: The active "About your star" corpus version — derived, never typed.
+#: Written to `active_content` by migrate; served by /v1/identity/content.
+#: Uses the marker from its FIRST version rather than retrofitting one later:
+#: score_rules and dasha_content both had to be migrated off max(version) after
+#: the fact, and the second of those was a lexical-sort bug that would have
+#: silently rolled the library back eight versions at v10. Starting here costs
+#: nothing and makes that class of bug unreachable for this corpus.
+ACTIVE_IDENTITY_CONTENT_VERSION = declared_version(IDENTITY_SEED_PATH)

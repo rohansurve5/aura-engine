@@ -1,0 +1,84 @@
+{
+  "version": "identity_content_v1",
+  "_about": {
+    "spec": "docs/voice/IDENTITY.md",
+    "status": "PILOT — 3 of 27 nakshatra entries, 4 of 12 moon-sign entries. The pipeline, the gates and the endpoint are complete; the corpus is not. C3 authors the remaining 24 + 8.",
+    "axis": "One root, two outputs. Each entry names ONE governing disposition, then shows that same disposition paying off (core) and costing (cost). Not a good trait and a bad trait — one trait read twice. No entry may read as a worse star to be born under.",
+    "why_these_three": "The three pilot entries were chosen to STRESS the gates, not to be easy. (1) Krittika straddles the Aries/Taurus boundary, so it co-occurs with TWO moon signs and takes the cross-corpus collision gate at double width. (2+3) Purva Ashadha and Uttara Ashadha are the closest pair of traditional meanings in the whole corpus — both names are literally the same word, ashadha, 'the unsubdued/invincible', split only into earlier and later. If the distinctness gates can separate these two, they can separate any pair. Uttara Ashadha ALSO straddles Sagittarius/Capricorn, so it is a second boundary case for free.",
+    "how_they_are_separated": "The traditional distinction between the two Ashadhas is the one the copy uses: Purva Ashadha is early, declared, unconquered-in-spirit victory — it wins by conviction that carries other people. Uttara Ashadha is late, permanent, alliance-backed victory — it wins by still being there. Declaring vs outlasting. That is a real difference a reader can feel, not a synonym, which is what the contrast fields have to prove.",
+    "moon_signs_seeded": "Aries and Taurus (both co-occur with Krittika), Sagittarius (co-occurs with both Ashadhas) and Capricorn (co-occurs with Uttara Ashadha). Together these are 5 of the 36 real co-occurring pairs, so the cross-corpus gate runs against genuine screen combinations rather than a synthetic one.",
+    "contrast": "Authoring scaffolding and audit trail, seeded but NOT rendered at v1 (IDENTITY.md §2). Excluded from the word-share and cross-corpus gates because it is not shipped prose and never shares a screen with anything; still checked for banned vocabulary."
+  },
+  "nakshatra": {
+    "Krittika": {
+      "title": "The eye that lands on the flaw",
+      "core": "You see the flaw before you see the whole, and you name it out loud while everyone else is still being encouraging. Handed something half-built, your instinct is subtraction — what should leave, not what should be added.",
+      "cost": "People stop showing you work before it is finished, so you get handed decisions instead of drafts and wonder why nobody wanted your eye earlier. The room goes careful around you.",
+      "misread": "Read as harshness, when what is actually happening is that you cannot unsee the one part that is wrong.",
+      "contrast": [
+        {
+          "nakshatra": "Purva Ashadha",
+          "because": "wins the room over; you take the flaw out of it"
+        },
+        {
+          "nakshatra": "Revati",
+          "because": "ends things gently; you end them exactly"
+        }
+      ]
+    },
+    "Purva Ashadha": {
+      "title": "Certain long before the proof arrives",
+      "core": "You decide you are right early, and then you talk people into it — not by arguing them down but by sounding so sure that doubting you feels like the harder position. Momentum is your instrument, and you play it before the evidence is fully in.",
+      "cost": "Some of what you carried the room into was wrong, and you learned it late because nobody near you wanted to be the one slowing it down. You are expensive to disagree with.",
+      "misread": "Taken for arrogance, when the truth is you commit early and would rather be corrected than be slow.",
+      "contrast": [
+        {
+          "nakshatra": "Uttara Ashadha",
+          "because": "outlasts the argument; you win it in the first hour"
+        },
+        {
+          "nakshatra": "Krittika",
+          "because": "removes what is wrong; you carry the room past it"
+        }
+      ]
+    },
+    "Uttara Ashadha": {
+      "title": "Still standing when the others left",
+      "core": "You stay with things past the point where staying stops being interesting, and that is usually what decides them. Where others arrive loud and leave, you are the one still there in month nine, which is when the thing finally moves.",
+      "cost": "You are still carrying commitments that stopped being worth it years ago, because leaving would feel like losing. What reads as loyalty from outside is nearer to refusal.",
+      "misread": "Mistaken for patience, when it is closer to a refusal to be the one who left.",
+      "contrast": [
+        {
+          "nakshatra": "Purva Ashadha",
+          "because": "convinces early; you are simply the last one there"
+        },
+        {
+          "nakshatra": "Krittika",
+          "because": "cuts a thing short; you refuse to"
+        }
+      ]
+    }
+  },
+  "moon_sign": {
+    "Aries": {
+      "title": "Steady only while moving",
+      "need": "Rest arrives for you in motion, not in stillness — a body with somewhere to be will settle in a way a free afternoon never manages. Waiting is where your calm quietly falls apart.",
+      "unsettles": "An open week with nothing in it, and the expectation that you should enjoy the emptiness."
+    },
+    "Taurus": {
+      "title": "Calm built on sameness",
+      "need": "You feel steady when tomorrow looks like today — the same bed, the same route, the same faces in the same order. Comfort for you is physical and repetitive, and it is not a small thing to lose.",
+      "unsettles": "Being moved — house, team, timetable — by someone who assumed you would not mind, because you rarely say so."
+    },
+    "Sagittarius": {
+      "title": "Breathing space, always",
+      "need": "Somewhere further ahead has to exist for you — a next place, a next idea, an unbooked weekend — or the present one closes in. Being able to picture the exit is what lets you sit still at all.",
+      "unsettles": "A calendar already spoken for, with every free evening allocated before you had any part in it."
+    },
+    "Capricorn": {
+      "title": "Steadied by visible progress",
+      "need": "You settle when effort turns into something countable — a number that shifted, a box ticked, a figure you can show later. Reassurance that is not attached to evidence does very little for you.",
+      "unsettles": "Long stretches where the work is real but nothing has visibly changed, and nobody has said so."
+    }
+  }
+}
