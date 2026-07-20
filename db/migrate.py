@@ -2,12 +2,16 @@
 """Tiny migration + seed runner for Neon (no ORM).
 
 Applies every `db/migrations/*.sql` in filename order exactly once (tracked in a
-`schema_migrations` table), then seeds `score_rules` from
-`db/seed/score_rules_content_v3_2.json` and `dasha_content` from
+`schema_migrations` table), then seeds `score_rules` from the active seed file
+named by `engine/content.py` and `dasha_content` from
 `db/seed/dasha_content_v2.json` with idempotent upserts. Older versions keep
 their rows — versions are additive, enabling rollback: `dasha_content_v1` stays
 in the table, and `/v1/dasha/content` serves `max(version)`, so a rollback is a
 delete of the newer rows rather than a code change.
+
+Seeding score_rules also stamps `active_content` with the seed file's declared
+version, in the same transaction — seeding a corpus and activating it are one
+act, never two.
 
     NEON_DATABASE_URL=postgres://... uv run python db/migrate.py
     ...                              uv run python db/migrate.py --seed-only
@@ -27,9 +31,16 @@ from pathlib import Path
 import psycopg
 from psycopg.types.json import Json
 
+from engine.content import SEED_PATH as CONTENT_SEED_PATH
+
 ROOT = Path(__file__).resolve().parent
 MIGRATIONS = ROOT / "migrations"
-SEED = ROOT / "seed" / "score_rules_content_v3_2.json"
+
+# The score_rules seed path is NOT declared here — it comes from
+# engine/content.py, the single place the active content version is set, so
+# that what gets seeded and what precompute reads back are the same file by
+# construction rather than by two people remembering to edit two constants.
+SEED = CONTENT_SEED_PATH
 DASHA_SEED = ROOT / "seed" / "dasha_content_v2.json"
 
 
@@ -75,6 +86,12 @@ def migrate(conn: psycopg.Connection) -> None:
 
 
 def seed(conn: psycopg.Connection) -> None:
+    """Seed the active score_rules corpus AND mark it active, atomically.
+
+    Both facts come from the same file and are committed together, so the
+    database can never be left holding a corpus nobody activated (the
+    content_v3_2 failure) or an activation marker with no corpus behind it.
+    """
     data = json.loads(SEED.read_text())
     version = data["version"]
     with conn.cursor() as cur:
@@ -85,8 +102,14 @@ def seed(conn: psycopg.Connection) -> None:
                 "ON CONFLICT (version, rule_key) DO UPDATE SET params = EXCLUDED.params",
                 (version, rule_key, Json(params)),
             )
+        cur.execute(
+            "INSERT INTO active_content (kind, version) VALUES ('score_rules', %s) "
+            "ON CONFLICT (kind) DO UPDATE SET "
+            "version = EXCLUDED.version, updated_at = now()",
+            (version,),
+        )
     conn.commit()
-    print(f"seeded {len(data['rules'])} score_rules (version {version})")
+    print(f"seeded {len(data['rules'])} score_rules and marked ACTIVE (version {version})")
 
 
 def seed_dasha_content(conn: psycopg.Connection) -> None:

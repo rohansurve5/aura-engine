@@ -45,12 +45,13 @@ import json
 from datetime import date
 from pathlib import Path
 
+from .content import ACTIVE_SCORE_RULES_VERSION, SEED_PATH
 from .vimshottari import NAKSHATRAS, TOTAL_NAKSHATRAS
 
-SCORE_RULES_VERSION = "content_v3_1"
-SEED_PATH = (
-    Path(__file__).resolve().parent.parent / "db" / "seed" / "score_rules_content_v3_2.json"
-)
+# Both derived from engine/content.py — the single place the active version is
+# set. Never hand-type a version here: a constant that can drift from SEED_PATH
+# is exactly how content_v3_2 was seeded but never served.
+SCORE_RULES_VERSION = ACTIVE_SCORE_RULES_VERSION
 
 # The nine taras (1-indexed), in cycle order from the natal nakshatra.
 TARA_NAMES = (

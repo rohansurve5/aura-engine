@@ -10,7 +10,9 @@ overwrites with byte-identical payloads.
     ...  uv run python -m engine.jobs.precompute --start 2026-07-18 --days 14
 
 Rules are read from the score_rules table (see db/migrate.py) — the job holds no
-scoring constants of its own.
+scoring constants of its own. The version read is the one `engine/content.py`
+declares active, and the job refuses to run if the database disagrees, so
+guidance rows can never be stamped with a version nobody activated.
 """
 
 from __future__ import annotations
@@ -43,12 +45,36 @@ _GUIDANCE_SQL = (
 )
 
 
+def _assert_version_is_active(conn, version: str) -> None:
+    """Refuse to write guidance stamped with a version the DB says is not active.
+
+    The `content_v3_2` failure was silent because nothing ever compared what was
+    seeded against what precompute was about to write. This is that comparison,
+    at the only moment where acting on it still prevents bad rows.
+    """
+    with conn.cursor() as cur:
+        cur.execute("SELECT version FROM active_content WHERE kind = 'score_rules'")
+        row = cur.fetchone()
+    if row is None:
+        raise SystemExit(
+            "active_content has no 'score_rules' row — run db/migrate.py first"
+        )
+    active = row[0]
+    if active != version:
+        raise SystemExit(
+            f"REFUSING TO PRECOMPUTE: about to write rules_version={version!r} but "
+            f"the database says the active version is {active!r}. These must match. "
+            f"Run db/migrate.py to seed+activate the version named in engine/content.py."
+        )
+
+
 def precompute(conn, start: date, days: int, version: str = SCORE_RULES_VERSION) -> int:
     """Upsert sky + guidance for `days` dates from `start`. Returns rows written.
 
     Rows are collected and sent as two batched `executemany` calls (psycopg
     pipelines them) so the job is not bottlenecked on per-row network latency.
     """
+    _assert_version_is_active(conn, version)
     rules = load_rules_from_db(conn, version)
     sky_rows: list[tuple] = []
     guidance_rows: list[tuple] = []
@@ -72,12 +98,15 @@ def main(argv: list[str] | None = None) -> int:
                     help="first date YYYY-MM-DD (default: today)")
     ap.add_argument("--days", type=int, default=LOOKAHEAD_DAYS,
                     help=f"number of dates (default: {LOOKAHEAD_DAYS})")
-    ap.add_argument("--rules-version", default=SCORE_RULES_VERSION)
     args = ap.parse_args(argv)
 
+    # No --rules-version flag by design. The active version has exactly one
+    # source (engine/content.py → the seed file's own `version`), and a flag
+    # here would be a second one — which is precisely how content_v3_2 came to
+    # be seeded but never served.
     start = args.start or date.today()
     with connect() as conn:
-        rows = precompute(conn, start, args.days, args.rules_version)
+        rows = precompute(conn, start, args.days, SCORE_RULES_VERSION)
     end = start + timedelta(days=args.days - 1)
     print(f"precomputed {start}..{end} ({args.days} days) — {rows} rows upserted")
     return 0
