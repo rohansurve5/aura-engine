@@ -100,10 +100,10 @@ are no houses, and none of those four can be computed as claimed.
 | 1 | **Weekly** | ✅ **Buildable now** | Built — this document's prototype |
 | 2 | **Monthly** | ✅ **Built** | Done — see § the monthly report. Window widened 14 → 40, thresholds re-derived at month scale |
 | 3 | **Yearly** | ❌ **Cut** | Reframe attempted and measured in § the yearly audit. Not from daily aggregates (no signal); not from Vimshottari either (N ≈ 1.7 periods/year — no second-order feature exists, and the dasha timeline already ships every claim) |
-| 4 | **Career** | ⚠️ **Reframe or defer** | No 10th house. Shippable only as an honest "period outlook for Career", never as a natal career reading |
+| 4 | **Career** | ❌ **Cut** | No 10th house. The "period outlook" reframe was measured in § the area-outlook audit and does not survive: an area score is a deterministic function of (energy, weekday) |
 | 5 | **Marriage** | ❌ **Cut for launch** | No 7th house, no D9, no Venus analysis — *and* highest reputational liability of the ten |
-| 6 | **Finance** | ⚠️ **Reframe or defer** | No 2nd/11th house. `docs/voice/money.md` already bans instrument advice and outcome guarantees — the report's own name overpromises |
-| 7 | **Business** | ⚠️ **Reframe or defer** | Same as career; the weakest distinct case of the four |
+| 6 | **Finance** | ❌ **Cut** | No 2nd/11th house. Same measurement, and it is the 94.4% Barnum leader on top of it. `docs/voice/money.md` already bans instrument advice — the report's own name overpromises |
+| 7 | **Business** | ❌ **Cut** | Same as career, and weaker: there is **no scored `business` area at all**, so the reframe has no input whatsoever |
 | 8 | **Transit** | ✅ **Buildable — but NOT as a report** | Confirmed: no new maths. Audited in full in § the transit audit, where the "report" framing is withdrawn |
 | 9 | **KP** | ❌ **Cut** | Ascendant + 12 Placidus cusps + 249 sub-divisions + the Krishnamurti ayanamsa. Nothing exists |
 | 10 | **PDF** | ⏸ **Not a content problem** | A rendering concern. Defer until there is content worth exporting |
@@ -945,6 +945,156 @@ finance / business ⚠️ blocked on the Block 8 houses engine. **Every report t
 can be built without houses is now built.** Block 3 is closed on content; what
 remains in it is gated on an engine capability, not on authoring.
 
+> **Superseded 2026-07-21 for the three ⚠️ rows.** "Blocked on the Block 8
+> houses engine" was the right verdict for a *house reading*, but it left open
+> the reframe § 2 offered — an honest per-area **period outlook** built on the
+> six daily area scores we already ship. That reframe was measured before it was
+> authored and it is **CUT**. See § the area-outlook audit.
+
+---
+
+## 7A · The area-outlook audit — and why career / finance / business are CUT
+
+§ 2 gave career, finance and business a **reframe or defer** verdict: without an
+ascendant they cannot be house readings, but they might survive as honest
+"period outlook for Career" artefacts built on the six life-area scores
+`daily_guidance` already carries. This section measures that reframing. **It
+does not survive**, and for a sharper reason than yearly's.
+
+`tests/test_area_outlook_verdict.py` (6 gates) pins every number below.
+
+> **VERDICT: CUT** — as *period outlooks*. The daily area lines, the six scores
+> on the score-detail screen, and the Block 6 Life hub are untouched and remain
+> the right home for area content. What is cut is the periodic artefact.
+> No corpus was authored, no migration written, no route added.
+
+### 7A.1 · The measurement — and the structural fact behind it
+
+Read off `engine/scoring.py` rather than inferred:
+
+    score(area, date) = clamp(base(natal, date) + weekday_area_mod[wd][area])
+    energy(date)      = clamp(base(natal, date) + weekday_energy_mod[wd])
+
+`base` is the tara + paksha term. **It is identical for all six areas** — it
+*is* the energy series the weekly and monthly reports are already built on. The
+only area-dependent term is `weekday_area_mod`, a fixed 7 × 6 integer table:
+the same for every user, every month, every year, forever.
+
+27 natals × 24 months of real sky (2026–2027):
+
+| | |
+|---|---|
+| area scores reproduced **exactly** from (energy, weekday) alone | **59,130 / 59,130 = 100.00%** |
+| corr(area daily series, energy daily series), worst of 6 areas | **+0.978** |
+| corr(area monthly mean, energy monthly mean), worst of 6 | **+0.984** |
+| distinct areas that ever **lead** a month, across all 648 months | **2 of 6** |
+| share of months led by `money` | **94.4%** |
+| consecutive month pairs with an identical (leader, per-area band) headline | **63.3%** |
+
+The first row is the kill shot, and it is worth stating precisely: this is not
+"highly correlated". An area score is a **deterministic function of the energy
+value and the day of the week** — it carries zero independent information. An
+outlook composed from these scores cannot make a claim that the energy series
+plus a lookup table does not already make.
+
+### 7A.2 · It is the aliasing artefact, promoted to the headline
+
+The brief asked whether this is the 9-day tara sawtooth aliased again. It is
+worse than aliasing — it is a **7-periodic constant**, which the monthly audit
+already rejected twice under different names:
+
+* **week-over-week trajectory** — rejected in § the monthly report as the tara
+  sawtooth aliased through a 7-day window;
+* **recurring weekday patterns** ("your Thursdays run strong") — measured real
+  in 46% of months, recorded but **not authored**, because each weekday has 4–5
+  samples against a 9-day cycle: true this month, false as the generalisation.
+
+"Career runs strong over the next month" is that second rejected claim with the
+weekday name deleted and a period cadence attached. The generalisation the
+reader takes from it is *more* wrong than the weekday version, not less,
+because it drops the one qualifier that made it checkable.
+
+### 7A.3 · Standing is Barnum, mechanically
+
+Standing — which area leads, lags, steadies — is the one genuinely second-order
+area feature, and it is the one weekly and monthly reports already carry. At
+month scale it collapses: **only two of six areas ever lead, and `money` leads
+94.4% of months**. Every user is told the same thing in the same month, and
+nearly the same thing every month.
+
+This is § 6.3's Rahu-retrograde finding in another key. There, "Rahu is
+retrograde" was cut because the mean node is retrograde by construction, so the
+line is true in every reading ever composed — Barnum in its purest mechanical
+form. "Money leads your month" is true in 94% of them. Same verdict, same
+reason.
+
+The 63.3% consecutive-repeat rate is the § 6.2 / § 7.3 test one more time: the
+state outlives the report that would describe it, and rotation cannot rescue it
+because rotating words while the claim stands still is decorative variety.
+
+### 7A.4 · Cross-kind, the fourth way — the collision is with the DAILY lines
+
+The brief flagged the daily area lines as the real collision risk. Correct, and
+it is where the gate would have to sit — but there is no gate to write, because
+the collision is total rather than adjacent:
+
+> **Weekly owns DAYS. Monthly owns WEEKS. Transit owns PASSAGES.
+> An area outlook owns NOTHING that the daily area lines, weekly standing and
+> the Life hub do not already own.**
+
+| candidate area-outlook claim | already shipped by |
+|---|---|
+| what Career is like today, and why | `score_why` (RECOGNITION + CAUSE, six different sources per date) · `area_lines` |
+| where Career sits on a scale | `band_labels` — a 6 × 5 vocabulary, no label shared between areas |
+| which area leads / lags this week | weekly report **standing** movement |
+| which area leads / lags this month | monthly report **standing** movement |
+| Career's shape over a period | the energy shape — measured above at r > 0.98, so this is the weekly/monthly report with one noun swapped |
+| a durable, per-area home to browse | Block 6 **Life hub** + the ten area screens |
+
+Weekly vs monthly needed a mechanical referee because they were adjacent claims
+that could be worded into each other. An area outlook is not adjacent to the
+daily lines — it is **the same scores, summed**. There is no division of labour
+to write down because there is no labour left to divide.
+
+### 7A.5 · It does not differ by area — and two have no input at all
+
+The brief asked whether the answer is uniform across the ten. It is not, but
+not in the direction that would help:
+
+* **career** → the `career` score exists. Emptied by 7A.1.
+* **finance** → maps to `money`. Emptied by 7A.1, and it is the 94.4% Barnum
+  leader on top of that — the *worst* of the six, not the best.
+* **business** → **no scored area exists.** There is no input whatsoever.
+* **marriage** → **no scored area exists.** `love` is not marriage, and
+  conflating them is precisely the reputational liability § 2 cut marriage for.
+
+So the reframe could at most have covered two of the four, and the measurement
+empties exactly those two.
+
+### 7A.6 · What would change this verdict
+
+Stated so the cut is revisitable rather than permanent:
+
+* **`test_an_area_score_is_fully_determined_by_energy_and_weekday` failing** —
+  if an area ever gains an input that energy does not have. The Block 8 houses
+  engine is that input: a 10th-lord term would make career genuinely
+  area-specific, and this audit would be re-run rather than assumed.
+* **A retune of `weekday_area_mod`** that made standing vary by natal — but note
+  that a fixed table *cannot* do this by construction, so this needs a new term,
+  not new numbers.
+* **Areas keyed on something other than the daily scores** — a house-based
+  reading is a different artefact with a different input, not this one.
+
+### 7A.7 · What this leaves in Block 3 — final
+
+Of the ten: weekly ✅ · monthly ✅ · transit ✅ (passage reading) · yearly ❌ ·
+**career ❌ · finance ❌ · business ❌** (as period outlooks; revisitable on the
+Block 8 houses engine) · marriage ❌ · KP ❌ · PDF ⏸.
+
+**Block 3 is closed.** Three reports ship. Nothing in it is waiting on
+authoring; what remains is waiting on an engine capability that is not in the
+launch sequence.
+
 ---
 
 ## 8 · The premium boundary
@@ -998,8 +1148,15 @@ hardening the route.
 
 ## What is deliberately not here
 
-The life-area outlooks (career / finance / business — blocked on the Block 8
-houses engine) · any UI or screens · PDF rendering · billing · language work.
+Any UI or screens · PDF rendering · billing · language work.
+
+**The life-area outlooks specifically.** § the area-outlook audit ships the
+*measurement and its gates* (`tests/test_area_outlook_verdict.py`) and the
+design record. It deliberately ships **no** corpus, migration, composition code
+or route, because the measurement argued against the structure before authoring
+began — the § 6 lesson applied a third time. The daily area lines, the six
+score-detail areas and the Block 6 Life hub are untouched; what is cut is the
+periodic artefact, not area content.
 
 **Yearly specifically.** § the yearly audit ships the *measurement and its
 gates* (`tests/test_yearly_verdict.py`) and the design record. It deliberately
