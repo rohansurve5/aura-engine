@@ -8,6 +8,16 @@ selected by weekday.
 Sequences and part-numbers below were verified against the DrikPanchang golden
 tables for a Saturday and a Friday (day + night, all 16 slots each) and the
 kaal windows across all 10 golden days — see tests/golden/drik_panchang.json.
+
+PASS NAIVE DATETIMES, OR AWARE ONES ONLY IN A ZONE WITHOUT DST.
+`_split` does `start + step * i`. On a zone-AWARE datetime Python defines that
+as WALL-CLOCK arithmetic, so a night that crosses a DST transition would be cut
+into 8 equal wall-clock parts, silently swallowing the repeated or skipped hour
+— but a choghadiya is 1/8 of the REAL elapsed night. This never bites the
+precompute, which is IST-only (no DST), which is why the functions still take
+plain datetimes. Callers outside IST must convert to a fixed-offset local time
+first; scripts/crossval_window.py does exactly that and documents the method.
+Auckland on the night NZ daylight saving ends is the case that exposes it.
 """
 
 from __future__ import annotations
