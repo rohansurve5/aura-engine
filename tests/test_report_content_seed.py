@@ -34,6 +34,12 @@ import pytest
 from engine.content import REPORT_SEED_PATH
 from engine.reports import (
     CLOSE_VARIANTS,
+    MONTH_CLOSE_VARIANTS,
+    MONTH_OPENING_VARIANTS,
+    MONTH_SHAPES,
+    MONTH_STANDING_VARIANTS,
+    MONTH_TURN_KINDS,
+    MONTH_TURN_VARIANTS,
     OPENING_VARIANTS,
     ROLES,
     SHAPES,
@@ -355,5 +361,232 @@ def test_lines_are_within_length_bounds():
     """8-40 words. The floor stops a cell degenerating into a label; the ceiling
     stops one movement swallowing the report."""
     for line in _all_lines(_load()):
+        n = len(_words(line))
+        assert 8 <= n <= 40, f"{n} words: {line!r}"
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# THE MONTHLY CORPUS (report_kind = 'monthly', v3)
+#
+# Same gate battery as the weekly corpus above, with two deliberate differences:
+#
+#   * SEPARATE SHARE DENOMINATOR. The monthly corpus is 208 lines to weekly's
+#     257. IDENTITY.md §6a records why the denominators must not be pooled: a
+#     shared one lets the larger corpus's headroom mask repetition in the
+#     smaller. Each kind is capped over its own line count.
+#   * DIFFERENT FRAME WORDS. Monthly copy is unavoidably about months, weeks
+#     and halves — its units. `day` is NOT a monthly frame word; monthly copy
+#     that needs day vocabulary is trespassing on the weekly report's unit,
+#     which tests/test_report_cross_kind.py bans outright.
+#
+# The cross-kind gates (weekly x monthly collisions, the §5 division of labour)
+# live in tests/test_report_cross_kind.py, because their reading unit — one
+# subscriber holding both reports in one sitting — spans the two corpora that
+# this module checks one at a time.
+# ═════════════════════════════════════════════════════════════════════════════
+
+#: Unit words the MONTHLY corpus is unavoidably about. `week`/`weeks` are frame
+#: words here too: the monthly report's claims are AT WEEK GRANULARITY (which
+#: week carries the month), so the week-nouns measure what the corpus is, not
+#: how repetitive the writing is. Day-nouns are deliberately absent — they are
+#: not monthly frame words, they are monthly contraband (see the cross-kind
+#: division-of-labour gate). `month's` is the possessive of the unit noun —
+#: the same morphological-variant class as the weekly set's `weeks`/`weekly`,
+#: NOT a new exemption: WORD_RE keeps the apostrophe, so the possessive is its
+#: own token and would otherwise be capped as if it were an ordinary word.
+MONTH_FRAME_WORDS = {
+    "month", "months", "monthly", "month's", "week", "weeks", "half", "halves",
+}
+
+
+def _load_monthly() -> dict:
+    """The MONTHLY corpus — a separate loader so the falsification suite can
+    mutate one kind without touching the other's gates."""
+    return json.loads(SEED_PATH.read_text())["monthly"]
+
+
+def _content_words_monthly(line: str) -> set[str]:
+    return {w for w in _words(line)} - STOPWORDS - MONTH_FRAME_WORDS
+
+
+def check_word_share_monthly(data: dict) -> dict[str, int]:
+    """Document frequency over the monthly corpus's own lines — its own
+    denominator, per the §6a lesson."""
+    lines = _all_lines(data)
+    seen_in: Counter[str] = Counter()
+    for line in lines:
+        for word in _content_words_monthly(line):
+            seen_in[word] += 1
+    limit = _share_limit(len(lines))
+    return {w: n for w, n in seen_in.items() if n > limit and len(w) > 2}
+
+
+# ── structure ────────────────────────────────────────────────────────────────
+
+def test_monthly_every_shape_has_exactly_the_declared_openings():
+    data = _load_monthly()
+    assert set(data["shape"]) == set(MONTH_SHAPES)
+    for shape, cell in data["shape"].items():
+        assert len(cell["openings"]) == MONTH_OPENING_VARIANTS, shape
+        assert len(set(cell["openings"])) == MONTH_OPENING_VARIANTS, f"{shape} repeats an opening"
+
+
+def test_monthly_every_turn_kind_has_exactly_the_declared_lines():
+    data = _load_monthly()
+    assert set(data["turn"]) == set(MONTH_TURN_KINDS)
+    for kind, cell in data["turn"].items():
+        assert len(cell["lines"]) == MONTH_TURN_VARIANTS, kind
+        assert len(set(cell["lines"])) == MONTH_TURN_VARIANTS, f"{kind} repeats a line"
+
+
+def test_monthly_every_area_role_pair_is_authored():
+    data = _load_monthly()
+    expected = {f"{a}.{r}" for a in AREAS for r in ROLES}
+    assert set(data["standing"]) == expected
+    for key, cell in data["standing"].items():
+        assert len(cell["lines"]) == MONTH_STANDING_VARIANTS, key
+        assert len(set(cell["lines"])) == MONTH_STANDING_VARIANTS, f"{key} repeats a line"
+
+
+def test_monthly_every_shape_has_a_close():
+    data = _load_monthly()
+    assert set(data["close"]) == set(MONTH_SHAPES)
+    for shape, cell in data["close"].items():
+        assert len(cell["lines"]) == MONTH_CLOSE_VARIANTS, shape
+        assert len(set(cell["lines"])) == MONTH_CLOSE_VARIANTS, f"{shape} repeats a close"
+
+
+def test_monthly_corpus_is_the_declared_size():
+    """65 + 28 + 90 + 25 = 208."""
+    lines = _all_lines(_load_monthly())
+    expected = (
+        len(MONTH_SHAPES) * MONTH_OPENING_VARIANTS
+        + len(MONTH_TURN_KINDS) * MONTH_TURN_VARIANTS
+        + len(AREAS) * len(ROLES) * MONTH_STANDING_VARIANTS
+        + len(MONTH_SHAPES) * MONTH_CLOSE_VARIANTS
+    )
+    assert len(lines) == expected == 208
+
+
+def test_no_line_repeats_across_the_entire_seed_file_both_kinds():
+    """Verbatim uniqueness over ALL 465 lines, weekly and monthly together.
+
+    The per-kind uniqueness gates cannot see a monthly line pasted from the
+    weekly corpus, which is the laziest possible cross-kind collision.
+    """
+    lines = _all_lines(_load()) + _all_lines(_load_monthly())
+    assert len(lines) == 465
+    dupes = [line for line, n in Counter(lines).items() if n > 1]
+    assert dupes == [], f"repeated verbatim across kinds: {dupes}"
+
+
+# ── share ────────────────────────────────────────────────────────────────────
+
+def test_monthly_share_threshold_matches_the_spec():
+    """int() truncation over the MONTHLY denominator: 208 * 0.06 = 12.48 → a
+    word may sit in 12 lines and fails at 13. Pinned so a later re-count cannot
+    silently move the gate."""
+    assert _share_limit(208) == 12
+
+
+def test_monthly_no_content_word_dominates():
+    offenders = check_word_share_monthly(_load_monthly())
+    assert offenders == {}, f"over {_share_limit(208)} lines: {offenders}"
+
+
+def test_monthly_frame_exemption_is_narrow():
+    """`month`/`week` may saturate; an ordinary word at the same rate may not."""
+    data = _load_monthly()
+    assert check_word_share_monthly(data) == {}
+
+    monthy = sum(1 for line in _all_lines(data) if "month" in _words(line))
+    assert monthy > _share_limit(208), "fixture: 'month' should saturate the corpus"
+
+    over = _share_limit(len(_all_lines(data))) + 1
+    poisoned = json.loads(SEED_PATH.read_text())["monthly"]
+    shapes = list(poisoned["shape"])
+    for i in range(over):
+        shape = shapes[i % len(shapes)]
+        idx = i // len(shapes)
+        poisoned["shape"][shape]["openings"][idx] += " Momentum."
+    assert "momentum" in check_word_share_monthly(poisoned)
+
+
+# ── distinctness ─────────────────────────────────────────────────────────────
+
+def test_monthly_no_two_shapes_share_an_opening_frame():
+    data = _load_monthly()
+    seen: dict[str, str] = {}
+    for shape, cell in data["shape"].items():
+        for line in cell["openings"]:
+            frame = _frame(line)
+            assert frame not in seen, f"{shape} and {seen[frame]} share opening {frame!r}"
+            seen[frame] = shape
+
+
+def test_monthly_no_two_shapes_share_an_opening_skeleton():
+    data = _load_monthly()
+    seen: dict[str, str] = {}
+    for shape, cell in data["shape"].items():
+        for line in cell["openings"]:
+            skel = _skeleton(line)
+            if len(_words(line)) < 6:
+                continue
+            assert skel not in seen, f"{shape} and {seen[skel]} share skeleton {skel!r}"
+            seen[skel] = shape
+
+
+@pytest.mark.parametrize("role", ROLES)
+def test_monthly_no_two_areas_share_a_standing_skeleton_in_the_same_role(role):
+    data = _load_monthly()
+    seen: dict[str, str] = {}
+    for area in AREAS:
+        for line in data["standing"][f"{area}.{role}"]["lines"]:
+            if len(_words(line)) < 6:
+                continue
+            skel = _skeleton(line)
+            assert skel not in seen, f"{area} and {seen[skel]} share {role} skeleton {skel!r}"
+            seen[skel] = area
+
+
+def test_monthly_no_two_areas_share_a_standing_frame_in_the_same_role():
+    data = _load_monthly()
+    for role in ROLES:
+        seen: dict[str, str] = {}
+        for area in AREAS:
+            for line in data["standing"][f"{area}.{role}"]["lines"]:
+                frame = _frame(line)
+                assert frame not in seen, (
+                    f"{area} and {seen[frame]} share {role} frame {frame!r}"
+                )
+                seen[frame] = area
+
+
+# ── safety ───────────────────────────────────────────────────────────────────
+
+def test_monthly_no_banned_vocabulary():
+    offenders = [
+        (line, sorted(set(_words(line)) & BANNED_WORDS))
+        for line in _all_lines(_load_monthly())
+        if set(_words(line)) & BANNED_WORDS
+    ]
+    assert offenders == [], offenders
+
+
+@pytest.mark.parametrize("pattern", FORTUNE_PATTERNS)
+def test_monthly_no_outcome_promises(pattern):
+    rx = re.compile(pattern, re.IGNORECASE)
+    offenders = [line for line in _all_lines(_load_monthly()) if rx.search(line)]
+    assert offenders == [], f"{pattern}: {offenders}"
+
+
+def test_monthly_every_line_is_second_person_or_impersonal_never_third():
+    rx = re.compile(r"\b(he|she|his|hers)\b", re.IGNORECASE)
+    offenders = [line for line in _all_lines(_load_monthly()) if rx.search(line)]
+    assert offenders == [], offenders
+
+
+def test_monthly_lines_are_within_length_bounds():
+    for line in _all_lines(_load_monthly()):
         n = len(_words(line))
         assert 8 <= n <= 40, f"{n} words: {line!r}"

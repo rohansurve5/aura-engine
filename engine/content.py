@@ -47,7 +47,7 @@ DASHA_SEED_PATH = _SEED_DIR / "dasha_content_v2.json"
 # ── THE ONE LINE THAT SETS THE ACTIVE identity_content VERSION ───────────────
 IDENTITY_SEED_PATH = _SEED_DIR / "identity_content_v2.json"
 # ── THE ONE LINE THAT SETS THE ACTIVE report_content VERSION ─────────────────
-REPORT_SEED_PATH = _SEED_DIR / "report_content_v2.json"
+REPORT_SEED_PATH = _SEED_DIR / "report_content_v3.json"
 # ─────────────────────────────────────────────────────────────────────────────
 
 

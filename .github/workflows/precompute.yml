@@ -30,7 +30,11 @@ jobs:
           NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
         run: uv run python db/migrate.py
 
-      - name: Precompute 14-day sky + guidance
+      # 40 days: the monthly report needs the whole current calendar month
+      # precomputed (worst case 31 days, asked on the 1st); 40 keeps the same
+      # missed-night headroom the old 14 gave /v1/today. Measured cost of the
+      # widening: ~0.13 s compute, ~3 MB/night of writes.
+      - name: Precompute 40-day sky + guidance
         env:
           NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
         run: uv run python -m engine.jobs.precompute

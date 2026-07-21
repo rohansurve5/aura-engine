@@ -1,13 +1,23 @@
 """Nightly precompute: seed daily_sky + 27 daily_guidance rows into Neon.
 
-For each date in `[start .. start + days)` (default: today through today+13, a
-14-day lookahead so one missed night never blanks the app) this computes the
-canonical daily_sky payload and the 27 per-nakshatra guidance payloads, then
-upserts them idempotently. Re-running is safe: same date + same rules version
-overwrites with byte-identical payloads.
+For each date in `[start .. start + days)` (default: today through today+39, a
+40-day lookahead) this computes the canonical daily_sky payload and the 27
+per-nakshatra guidance payloads, then upserts them idempotently. Re-running is
+safe: same date + same rules version overwrites with byte-identical payloads.
 
     NEON_DATABASE_URL=postgres://... uv run python -m engine.jobs.precompute
-    ...  uv run python -m engine.jobs.precompute --start 2026-07-18 --days 14
+    ...  uv run python -m engine.jobs.precompute --start 2026-07-18 --days 40
+
+WHY 40. The window was 14 (a missed-night buffer for /v1/today). The MONTHLY
+report serves only when EVERY day of the requested calendar month has rows,
+and the worst case — asked on the 1st of a 31-day month — needs 31 days of
+lookahead; 40 covers that with the same missed-night headroom the 14 gave the
+dashboard. Measured before widening (Block 3A): 14 → 40 days adds ~0.13 s of
+compute and ~3 MB/night of writes — no Actions or Neon limit is approached.
+ROLLBACK is this one constant back to 14 (plus the workflow step name): the
+widened dates are a strict superset, upserts are idempotent, and surplus
+future rows are inert, so a failed widened run cannot leave the old 14-day
+buffer worse than it was.
 
 Rules are read from the score_rules table (see db/migrate.py) — the job holds no
 scoring constants of its own. The version read is the one `engine/content.py`
@@ -25,7 +35,7 @@ from ..daily import build_daily_sky
 from ..scoring import SCORE_RULES_VERSION, all_guidance, load_rules_from_db
 from .db import connect
 
-LOOKAHEAD_DAYS = 14
+LOOKAHEAD_DAYS = 40
 
 
 def _canonical(payload: dict | list) -> str:

@@ -68,6 +68,7 @@ were drawn.
 
 from __future__ import annotations
 
+from calendar import monthrange
 from datetime import date, timedelta
 
 from .daily import build_daily_sky
@@ -338,6 +339,332 @@ def build_weekly_report(
         "energies": energies,
         "energy_mean": round(_mean(energies)),
         "energy_spread": max(energies) - min(energies),
+        "standing": {labels[a]: r for a, r in standing.items()},
+        "anchors": anchors,
+        "opening": opening,
+        "turn_line": turn_line,
+        "standing_lines": standing_lines,
+        "close": close_line,
+    }
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# THE MONTHLY REPORT — the same engine at month scale, NOT the weekly over 30
+# days. docs/REPORTS.md § the monthly report carries the full design; the load-
+# bearing decisions are summarised here because the code below enforces them.
+#
+# WHAT IS SECOND-ORDER AT MONTH SCALE. The weekly report's unit of claim is the
+# DAY: where the strong days fall inside seven of them. Running that arithmetic
+# over 30 days would produce the same kind of claim over a longer list — a
+# longer report, not a different one. The features that exist at month scale
+# and at no smaller scale are claims about WEEKS:
+#
+#     carrier    which week carries the month — the week-level distribution
+#     halves     do the month's two halves genuinely differ, and which way
+#     hinge      are the best and worst WEEKS adjacent — a mid-month pivot
+#     standing   which area leads/lags/steadies across the whole month
+#
+# Candidates measured on real sky (144 months x 6 natals) and REJECTED:
+#
+#   * week-over-week TRAJECTORY ("the month rises") — the weekly means of a
+#     month are the tara sawtooth aliased through a 7-day window (9 and 7 are
+#     coprime, so the phase slides by two days each week). A monotone run of
+#     4-5 such means is an artefact of that aliasing, exactly the smoothing
+#     artefact the weekly taxonomy already rejected at day scale ("the week
+#     rises"). Same trap, one level up; same verdict.
+#   * recurring WEEKDAY patterns ("your Thursdays run strong") — real in 46% of
+#     sampled months, but each weekday has only 4-5 samples against a 9-day
+#     cycle, so the pattern is phase coincidence that a reader will extrapolate
+#     to next month, where it will be false. A claim that is true this month
+#     and invites a false generalisation fails the falsifiability bar in
+#     spirit even when it passes it in letter. Recorded, not authored.
+#
+# WEEK-GRANULARITY IS ALSO THE CROSS-KIND DIVISION OF LABOUR. A subscriber
+# reads the weekly and the monthly in the same sitting (IDENTITY.md §5 is the
+# precedent: nakshatra owns what you DO, moon sign owns what you NEED). Here:
+#
+#     WEEKLY OWNS DAYS. MONTHLY OWNS WEEKS.
+#
+#     weekly   names dated days, weekday names, day-scale advice
+#     monthly  names weeks and month-halves; NEVER names a day or a weekday
+#
+# tests/test_report_cross_kind.py makes that mechanical: monthly copy may not
+# contain a day-scale token, weekly copy may not contain a month-scale token,
+# and no weekly/monthly pair in the same movement may share a frame or a
+# skeleton. The monthly anchors are WEEKS (their Monday dates), so the two
+# reports corroborate instead of repeating: the monthly names the carrier
+# week, the weekly for that week names its days.
+# ═════════════════════════════════════════════════════════════════════════════
+
+#: Monthly variant-list lengths. THE COPRIMALITY CONSTRAINT IS DERIVED FROM 12,
+#: NOT COPIED FROM 52 — a monthly rotation locks to the CALENDAR YEAR, so the
+#: cycle to clear is 12 (reports per year), and a count sharing a factor with
+#: 12 hands some month-of-year the same cell on a short anniversary cycle.
+#:
+#: 13 — the one prime that could NOT work at week scale (13 divides 52) — is
+#: exactly right here: gcd(13, 12) = 1, and it is the smallest count above 12
+#: at all, which matters because a reader sees 12 reports a year and the
+#: consecutive-distinct guarantee should outlast a full year. Anniversary
+#: months advance 12 ≡ -1 (mod 13) per year, so the same calendar month
+#: repeats an opening cell only after 13 years.
+#:
+#: 13 / 7 / 5 are pairwise coprime and each is coprime with 12, so the full
+#: skeleton recurs only every lcm = 455 months (~38 years), and no movement
+#: can advance in step with another. Pinned in
+#: tests/test_report_monthly_composition.py.
+MONTH_OPENING_VARIANTS = 13
+MONTH_TURN_VARIANTS = 7
+MONTH_STANDING_VARIANTS = 5
+MONTH_CLOSE_VARIANTS = 5
+
+#: The five month shapes — WHICH WEEK CARRIES THE MONTH, in classification
+#: precedence order. A distribution claim over weeks, exactly as the weekly
+#: shape is a distribution claim over days, and for the same reason: measured
+#: on real sky there is no month-scale trend, but there really is a strongest
+#: week. Distribution measured over 144 real months: core 62%, closing 15%,
+#: opening 11%, twin 7%, level 4% — all five reachable, unlike the weekly
+#: taxonomy's dead `even` class.
+MONTH_SHAPES = ("level", "twin", "opening", "closing", "core")
+
+#: The four month turn kinds — the month's pivot, at week granularity.
+#: `hinge` (best and worst weeks adjacent — the month turns hard at one week
+#: boundary) outranks the halves comparison for the same reason weekly
+#: `whiplash` outranks peak position: adjacency of the extremes is the fact
+#: that changes what a reader schedules. Measured: hinge 33%, steady 25%,
+#: lifts 23%, settles 19%.
+MONTH_TURN_KINDS = ("lifts", "settles", "hinge", "steady")
+
+# Month-scale classification thresholds. DERIVED FROM REAL DATA, not copied
+# from the weekly constants: weekly means regress toward the mean, so the
+# spread of a month's weekly means (measured min 1.4, median 13.7, max 30.3)
+# lives on a completely different scale from the spread of a week's daily
+# energies (measured 48-70). Each is pinned at both edges in
+# tests/test_report_monthly_composition.py.
+LEVEL_SPREAD = 6     # weekly-mean spread below this → no week stands out
+TWIN_MARGIN = 2      # top two weeks within this margin → a genuine near-tie
+HALF_MARGIN = 4      # half means must differ by this for a lifts/settles claim
+FIRST_HALF_LAST_DAY = 15  # calendar halves: days 1-15 vs 16-end
+
+#: An ISO week must hold this many of the month's days to be nameable in the
+#: report. A 1-3 day fragment at a month edge still counts toward the halves
+#: and the standing (every day of the month is aggregated), but it cannot be
+#: the "carrier week" — naming a week on a 2-day sample would be the report
+#: inventing a week-level claim from day-level noise. Every calendar month has
+#: 4 or 5 qualifying weeks.
+QUALIFYING_WEEK_MIN_DAYS = 4
+
+
+def month_index(year: int, month: int) -> int:
+    """A monotone epoch month number — advances by exactly 1 per month,
+    including across year boundaries, which is what lets the coprime monthly
+    variant periods walk cleanly. The monthly analogue of `week_index`."""
+    return year * 12 + (month - 1)
+
+
+def month_weeks(year: int, month: int) -> list[tuple[date, list[date]]]:
+    """The month's qualifying ISO weeks: (monday, in-month days), ordered.
+
+    Weeks are ISO weeks — the same weeks the weekly report is keyed by — so a
+    monthly anchor names a week the reader can open a weekly report for. Only
+    weeks holding at least `QUALIFYING_WEEK_MIN_DAYS` of the month's days
+    qualify; edge fragments belong to a neighbouring month's story.
+    """
+    n_days = monthrange(year, month)[1]
+    by_week: dict[date, list[date]] = {}
+    for i in range(n_days):
+        d = date(year, month, i + 1)
+        by_week.setdefault(week_start(d), []).append(d)
+    return [
+        (monday, days)
+        for monday, days in sorted(by_week.items())
+        if len(days) >= QUALIFYING_WEEK_MIN_DAYS
+    ]
+
+
+def _argmax(values: list[float]) -> int:
+    """First index of the maximum. Explicit so the tie-break (earliest week)
+    is pinned and mirrored exactly by the Worker implementation."""
+    best = 0
+    for i, v in enumerate(values):
+        if v > values[best]:
+            best = i
+    return best
+
+
+def _argmin(values: list[float]) -> int:
+    worst = 0
+    for i, v in enumerate(values):
+        if v < values[worst]:
+            worst = i
+    return worst
+
+
+def month_shape_of(week_means: list[float]) -> str:
+    """Classify a month by WHICH WEEK CARRIES IT — see `MONTH_SHAPES`.
+
+    Precedence mirrors `shape_of`'s logic one level up. `level` is the floor:
+    under `LEVEL_SPREAD` no week stands out and a carrier claim would invent
+    structure — and unlike the weekly `even`, `level` is REACHABLE on real
+    data (4% of sampled months), because weekly means regress toward the mean
+    while daily energies saw across their full range. `twin` outranks the
+    position classes because "two separated strong weeks" is the more specific
+    claim when both are true; a near-tie between ADJACENT weeks is just a wide
+    carrier and falls through to its position.
+    """
+    if len(week_means) < 2:
+        raise ValueError(f"a month shape needs at least 2 week means, got {len(week_means)}")
+
+    if max(week_means) - min(week_means) < LEVEL_SPREAD:
+        return "level"
+
+    best = _argmax(week_means)
+    second = -1
+    for i, v in enumerate(week_means):
+        if i == best:
+            continue
+        if second == -1 or v > week_means[second]:
+            second = i
+    if week_means[best] - week_means[second] <= TWIN_MARGIN and abs(best - second) > 1:
+        return "twin"
+    if best == 0:
+        return "opening"
+    if best == len(week_means) - 1:
+        return "closing"
+    return "core"
+
+
+def month_turn_of(
+    week_means: list[float], first_half_mean: float, second_half_mean: float, shape: str
+) -> str:
+    """The month's pivot — see `MONTH_TURN_KINDS`.
+
+    A `level` month is the one shape with no pivot to report: its weekly means
+    sit within `LEVEL_SPREAD` of each other, so naming a hinge or a directional
+    half would be drama the data does not contain — the month-scale version of
+    `even` → `no_turn`. `hinge` (best and worst weeks adjacent) outranks the
+    halves comparison; `lifts`/`settles` require the halves to differ by
+    `HALF_MARGIN`, else the honest answer is `steady`.
+    """
+    if shape == "level":
+        return "steady"
+    best = _argmax(week_means)
+    worst = _argmin(week_means)
+    if abs(best - worst) == 1:
+        return "hinge"
+    if second_half_mean - first_half_mean >= HALF_MARGIN:
+        return "lifts"
+    if first_half_mean - second_half_mean >= HALF_MARGIN:
+        return "settles"
+    return "steady"
+
+
+def build_monthly_report(
+    natal_index: int,
+    year: int,
+    month: int,
+    rules: dict,
+    content: dict,
+) -> dict:
+    """The monthly report payload for one natal nakshatra and one calendar
+    month. Pure function of its arguments, like `build_weekly_report`.
+    `content` is the MONTHLY corpus (`load_report_content_from_json(
+    report_kind="monthly")`).
+
+    The report's claims are at WEEK granularity throughout: the anchors are
+    the carrier week and the thin week (as their Monday dates — the same keys
+    the weekly report is fetched by), never a single day. That is the
+    division of labour with the weekly report, enforced mechanically by
+    tests/test_report_cross_kind.py.
+    """
+    if not 1 <= month <= 12:
+        raise ValueError(f"month must be 1-12, got {month}")
+
+    n_days = monthrange(year, month)[1]
+    days = [date(year, month, i + 1) for i in range(n_days)]
+    skies = [build_daily_sky(d) for d in days]
+    guidance = [guidance_for_nakshatra(natal_index, s, rules) for s in skies]
+
+    energies = [g["energy"] for g in guidance]
+    labels = rules["areas"]["labels"]
+    order = rules["areas"]["order"]
+    area_scores = {a: [g["scores"][labels[a]] for g in guidance] for a in order}
+
+    weeks = month_weeks(year, month)
+    by_day = {d: e for d, e in zip(days, energies, strict=True)}
+    week_means = [_mean([by_day[d] for d in ds]) for _, ds in weeks]
+
+    first_half = [e for d, e in zip(days, energies, strict=True) if d.day <= FIRST_HALF_LAST_DAY]
+    second_half = [e for d, e in zip(days, energies, strict=True) if d.day > FIRST_HALF_LAST_DAY]
+    h1, h2 = _mean(first_half), _mean(second_half)
+
+    shape = month_shape_of(week_means)
+    turn = month_turn_of(week_means, h1, h2, shape)
+    standing = area_standing(area_scores)
+    mi = month_index(year, month)
+
+    carrier_i = _argmax(week_means)
+    thin_i = _argmin(week_means)
+
+    opening = content["shape"][shape]["openings"][
+        _variant(MONTH_OPENING_VARIANTS, mi, natal_index, stride=1)
+    ]
+    turn_line = content["turn"][turn]["lines"][
+        _variant(MONTH_TURN_VARIANTS, mi, natal_index, stride=3, salt=1)
+    ]
+    close_line = content["close"][shape]["lines"][
+        _variant(MONTH_CLOSE_VARIANTS, mi, natal_index, stride=2, salt=2)
+    ]
+
+    standing_lines = {}
+    for i, area in enumerate(order):
+        role = standing.get(area)
+        if role is None:
+            continue
+        cell = content["standing"][f"{area}.{role}"]["lines"]
+        standing_lines[labels[area]] = cell[
+            _variant(MONTH_STANDING_VARIANTS, mi, natal_index, stride=2, salt=3 + i)
+        ]
+
+    # Anchors are WEEKS. tests/test_report_monthly_composition.py asserts the
+    # carrier really is the argmax of the weekly means and the thin week the
+    # argmin — the monthly instance of "a report may not contradict its own
+    # data". Their Monday dates are the weekly report's own keys, so the two
+    # kinds corroborate rather than repeat.
+    anchors = {
+        "carrier_week": {
+            "week_start": weeks[carrier_i][0].isoformat(),
+            "energy_mean": week_means[carrier_i],
+        },
+        "thin_week": {
+            "week_start": weeks[thin_i][0].isoformat(),
+            "energy_mean": week_means[thin_i],
+        },
+    }
+
+    return {
+        "kind": "monthly",
+        "month": f"{year:04d}-{month:02d}",
+        "month_start": days[0].isoformat(),
+        "month_end": days[-1].isoformat(),
+        "month_index": mi,
+        "nakshatra_index": natal_index,
+        "nakshatra": NAKSHATRAS[natal_index],
+        "shape": shape,
+        "turn": turn,
+        "weeks": [
+            {
+                "week_start": monday.isoformat(),
+                "days_in_month": len(ds),
+                "energy_mean": mean,
+            }
+            for (monday, ds), mean in zip(weeks, week_means, strict=True)
+        ],
+        # int(x + 0.5) rather than round(): Python round() is banker's
+        # (half-to-even) and JS Math.round is floor(x + 0.5); over a 28-31 day
+        # mean an exact .5 is reachable, so the engine uses the Worker's
+        # semantics — the crossval golden would catch any disagreement.
+        "energy_mean": int(_mean(energies) + 0.5),
+        "half_means": {"first": h1, "second": h2},
         "standing": {labels[a]: r for a, r in standing.items()},
         "anchors": anchors,
         "opening": opening,

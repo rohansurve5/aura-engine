@@ -403,3 +403,254 @@ def test_reader_desync_gate_catches_a_natal_independent_rotation(monkeypatch):
         C.test_two_natals_in_the_same_week_do_not_receive_the_same_opening()
     monkeypatch.setattr(R, "_variant", real)
     C.test_two_natals_in_the_same_week_do_not_receive_the_same_opening()
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# CROSS-KIND GATES (tests/test_report_cross_kind.py)
+#
+# Same method: mutate a deep copy, call the REAL gate, pair every red with a
+# green. The signature that matters most here is the VACUOUS PASS: every
+# cross-kind gate iterates a work-list built from BOTH corpora, and a monthly
+# corpus that fails to load would empty that list and turn every comparison
+# into a no-comparison. That shape gets its own falsifications.
+# ═════════════════════════════════════════════════════════════════════════════
+
+import tests.test_report_cross_kind as X  # noqa: E402
+
+
+def _monthly() -> dict:
+    return json.loads(G.SEED_PATH.read_text())["monthly"]
+
+
+def _patch_monthly(monkeypatch, data: dict) -> None:
+    monkeypatch.setattr(G, "_load_monthly", lambda: data)
+
+
+def test_cross_kind_frame_gate_fires_on_a_shared_frame(monkeypatch):
+    """A monthly opening that opens with a weekly opening's first four words."""
+    weekly_line = G._load()["shape"]["front"]["openings"][0]
+    data = _monthly()
+    words = G._words(weekly_line)[:4]
+    data["shape"]["core"]["openings"][0] = (
+        " ".join(words) + " month carrier week claim for the falsification."
+    )
+    _patch_monthly(monkeypatch, data)
+    with pytest.raises(AssertionError):
+        X.test_no_weekly_and_monthly_line_share_a_frame_in_the_same_slot("opening")
+    monkeypatch.setattr(G, "_load_monthly", lambda: _monthly())
+    X.test_no_weekly_and_monthly_line_share_a_frame_in_the_same_slot("opening")
+
+
+def test_cross_kind_skeleton_gate_fires_on_a_skeleton_twin(monkeypatch):
+    """The padded-pair failure itself: one sentence shape across two kinds."""
+    weekly_line = G._load()["standing"]["money.leads"]["lines"][0]
+    twin = _skeleton_twin(weekly_line)
+    assert G._skeleton(twin) == G._skeleton(weekly_line), "fixture is not skeleton-equal"
+    data = _monthly()
+    data["standing"]["money.leads"]["lines"][0] = twin
+    _patch_monthly(monkeypatch, data)
+    with pytest.raises(AssertionError):
+        X.test_no_weekly_and_monthly_line_share_a_skeleton_in_the_same_slot("standing")
+    monkeypatch.setattr(G, "_load_monthly", lambda: _monthly())
+    X.test_no_weekly_and_monthly_line_share_a_skeleton_in_the_same_slot("standing")
+
+
+@pytest.mark.parametrize("token", ["Thursday", "tomorrow", "morning", "days"])
+def test_division_gate_fires_when_monthly_copy_names_a_day(monkeypatch, token):
+    data = _monthly()
+    data["turn"]["hinge"]["lines"][0] = (
+        f"The month pivots and {token} is when the pivot in question lands."
+    )
+    _patch_monthly(monkeypatch, data)
+    with pytest.raises(AssertionError):
+        X.test_monthly_copy_never_speaks_in_days()
+    monkeypatch.setattr(G, "_load_monthly", lambda: _monthly())
+    X.test_monthly_copy_never_speaks_in_days()
+
+
+def test_division_gate_fires_when_weekly_copy_names_the_month(monkeypatch):
+    data = _data()
+    data["close"]["front"]["lines"][0] = (
+        "Close the week early and let the month absorb whatever remains open."
+    )
+    monkeypatch.setattr(G, "_load", lambda: data)
+    with pytest.raises(AssertionError):
+        X.test_weekly_copy_never_speaks_in_months()
+    monkeypatch.setattr(G, "_load", lambda: json.loads(G.SEED_PATH.read_text())["weekly"])
+    X.test_weekly_copy_never_speaks_in_months()
+
+
+def test_unit_anchoring_gate_fires_on_a_bare_halves_claim(monkeypatch):
+    """A monthly turn line that never names the month could sit in either
+    report — the exact ambiguity the positive obligation exists to prevent."""
+    data = _monthly()
+    data["turn"]["lifts"]["lines"][0] = (
+        "The second half runs stronger than the first, so move what can move."
+    )
+    _patch_monthly(monkeypatch, data)
+    with pytest.raises(AssertionError):
+        X.test_monthly_openings_and_turns_name_the_month()
+    monkeypatch.setattr(G, "_load_monthly", lambda: _monthly())
+    X.test_monthly_openings_and_turns_name_the_month()
+
+
+def test_standing_overlap_gate_fires_at_four_shared_content_words(monkeypatch):
+    """BOTH edges of the ≤3 cap, built from the real weekly line's own words."""
+    weekly_line = G._load()["standing"]["love.leads"]["lines"][0]
+    content = sorted(G._content_words(weekly_line) - {"love"})
+    assert len(content) >= 4, "fixture needs four content words to borrow"
+    data = _monthly()
+    data["standing"]["love.leads"]["lines"][0] = (
+        "For the month " + " ".join(content[:4]) + " in a sentence long enough to pass."
+    )
+    _patch_monthly(monkeypatch, data)
+    with pytest.raises(AssertionError):
+        X.test_same_key_standing_pairs_differ_beyond_the_area_noun()
+
+    data2 = _monthly()
+    data2["standing"]["love.leads"]["lines"][0] = (
+        "For the month " + " ".join(content[:3]) + " in a sentence long enough to pass."
+    )
+    _patch_monthly(monkeypatch, data2)
+    X.test_same_key_standing_pairs_differ_beyond_the_area_noun()  # 3 shared: at the cap
+
+    monkeypatch.setattr(G, "_load_monthly", lambda: _monthly())
+    X.test_same_key_standing_pairs_differ_beyond_the_area_noun()
+
+
+def test_cross_kind_gates_cannot_pass_on_an_empty_work_list(monkeypatch):
+    """THE VACUOUS-PASS SHAPE, in both of its guards.
+
+    If the monthly corpus fails to load as empty cells, (1) the declared-size
+    pin fails loudly, and (2) each comparison gate's own non-empty assert
+    fails rather than iterating nothing to a green. Both reds are proven, so
+    an empty work-list has no path to a pass."""
+    hollow = {
+        "shape": {s: {"openings": []} for s in _monthly()["shape"]},
+        "turn": {t: {"lines": []} for t in _monthly()["turn"]},
+        "standing": {k: {"lines": []} for k in _monthly()["standing"]},
+        "close": {s: {"lines": []} for s in _monthly()["close"]},
+    }
+    _patch_monthly(monkeypatch, hollow)
+    with pytest.raises(AssertionError):
+        X.test_the_work_lists_are_the_declared_sizes()
+    with pytest.raises(AssertionError) as exc:
+        X.test_no_weekly_and_monthly_line_share_a_frame_in_the_same_slot("opening")
+    assert "vacuous" in str(exc.value)
+    with pytest.raises(AssertionError):
+        X.test_monthly_copy_never_speaks_in_days()
+
+    monkeypatch.setattr(G, "_load_monthly", lambda: _monthly())
+    X.test_the_work_lists_are_the_declared_sizes()
+
+
+def test_monthly_share_gate_fires_at_over_limit_and_passes_at_the_limit():
+    """The monthly denominator is its own: 208 lines → limit 12. A synthetic
+    corpus with a filler in exactly 12 lines passes; 13 fires."""
+    import tests.test_report_content_seed as S
+
+    def synthetic(repeat_in: int) -> dict:
+        data = _monthly()
+        i = 0
+        cells = (
+            [c["openings"] for c in data["shape"].values()]
+            + [c["lines"] for c in data["turn"].values()]
+            + [c["lines"] for c in data["standing"].values()]
+            + [c["lines"] for c in data["close"].values()]
+        )
+        for cell in cells:
+            for j in range(len(cell)):
+                body = " ".join(_token(i, k) for k in range(9))
+                cell[j] = f"template {body}." if i < repeat_in else f"{body}."
+                i += 1
+        assert i == 208
+        return data
+
+    limit = S._share_limit(208)
+    assert limit == 12
+    assert S.check_word_share_monthly(synthetic(limit)) == {}
+    assert S.check_word_share_monthly(synthetic(limit + 1)) == {"template": limit + 1}
+
+
+# ── monthly composition sabotage ─────────────────────────────────────────────
+
+import tests.test_report_monthly_composition as M  # noqa: E402
+
+
+@pytest.fixture()
+def _fresh_monthly_cache(monkeypatch):
+    """M._mreport memoises composed reports; a sabotage that leaves stale
+    entries behind would leak into later tests (or be masked by them)."""
+    from functools import lru_cache
+    monkeypatch.setattr(R, "build_daily_sky", lru_cache(maxsize=None)(R.build_daily_sky))
+    M._mreport.cache_clear()
+    yield
+    M._mreport.cache_clear()
+
+
+def test_monthly_anchor_gate_catches_a_mispointed_carrier_week(
+    monkeypatch, _fresh_monthly_cache
+):
+    real = R.build_monthly_report
+
+    def sabotaged(natal, year, month, rules, content):
+        rep = real(natal, year, month, rules, content)
+        weeks = rep["weeks"]
+        means = [w["energy_mean"] for w in weeks]
+        wrong = (means.index(max(means)) + 1) % len(weeks)
+        rep["anchors"]["carrier_week"] = {
+            "week_start": weeks[wrong]["week_start"],
+            "energy_mean": weeks[wrong]["energy_mean"],
+        }
+        return rep
+
+    monkeypatch.setattr(M, "build_monthly_report", sabotaged)
+    with pytest.raises(AssertionError):
+        M.test_anchors_name_the_actual_extreme_weeks(0)
+
+    M._mreport.cache_clear()
+    monkeypatch.setattr(M, "build_monthly_report", real)
+    M.test_anchors_name_the_actual_extreme_weeks(0)
+
+
+def test_monthly_window_gate_catches_a_collapsed_rotation(
+    monkeypatch, _fresh_monthly_cache
+):
+    """Stride ≡ 0 mod 13 is the monthly 12-row trap: the opening index stops
+    advancing and every month of a shape draws one cell."""
+    real = R._variant
+
+    def collapsed(count, wk, natal_index, stride, salt=0):
+        if count == R.MONTH_OPENING_VARIANTS:
+            return (wk * R.MONTH_OPENING_VARIANTS + natal_index * 3 + salt) % count
+        return real(count, wk, natal_index, stride, salt)
+
+    monkeypatch.setattr(R, "_variant", collapsed)
+    with pytest.raises(AssertionError) as exc:
+        M.test_no_repeated_opening_inside_thirteen_consecutive_months(0)
+    assert "repeat" in str(exc.value)
+
+    M._mreport.cache_clear()
+    monkeypatch.setattr(R, "_variant", real)
+    M.test_no_repeated_opening_inside_thirteen_consecutive_months(0)
+
+
+def test_monthly_degeneracy_gate_catches_a_collapsed_classifier(
+    monkeypatch, _fresh_monthly_cache
+):
+    real = R.month_shape_of
+    monkeypatch.setattr(R, "month_shape_of", lambda means: "core")
+    with pytest.raises(AssertionError) as exc:
+        M.test_all_five_shapes_occur_across_a_realistic_span()
+    assert "degenerate" in str(exc.value)
+
+    M._mreport.cache_clear()
+    monkeypatch.setattr(R, "month_shape_of", real)
+    M.test_all_five_shapes_occur_across_a_realistic_span()
+
+
+def test_monthly_window_gate_would_not_pass_vacuously():
+    """The span must exceed the window or the sliding range is empty and the
+    gate greens having compared nothing."""
+    assert M.MONTHS_SPAN >= R.MONTH_OPENING_VARIANTS
+    assert M.MONTHS_SPAN - R.MONTH_OPENING_VARIANTS + 1 >= 2

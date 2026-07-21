@@ -98,7 +98,7 @@ are no houses, and none of those four can be computed as claimed.
 | # | Report | Verdict | What it needs |
 |---|---|---|---|
 | 1 | **Weekly** | ✅ **Buildable now** | Built — this document's prototype |
-| 2 | **Monthly** | ✅ **Buildable** | Extend the precompute window 14 → ~40 days; re-derive the shape thresholds at month scale |
+| 2 | **Monthly** | ✅ **Built** | Done — see § the monthly report. Window widened 14 → 40, thresholds re-derived at month scale |
 | 3 | **Yearly** | ⚠️ **Reframe** | Not from daily aggregates — see below. Rebuild on Vimshottari, which we already have and have gated |
 | 4 | **Career** | ⚠️ **Reframe or defer** | No 10th house. Shippable only as an honest "period outlook for Career", never as a natal career reading |
 | 5 | **Marriage** | ❌ **Cut for launch** | No 7th house, no D9, no Venus analysis — *and* highest reputational liability of the ten |
@@ -335,7 +335,145 @@ catches that, which is why the golden carries `week_index` per case.
 
 ---
 
-## 5 · The premium boundary
+## 5 · The monthly report
+
+The second report, built on the same range-aggregate engine. The design
+question it had to answer first: **what is second-order at month scale that is
+not second-order at week scale?** Running the weekly arithmetic over 30 days
+would produce the same kind of claim over a longer list — a longer report, not
+a different one.
+
+### What monthly claims are made of: weeks
+
+The weekly report's unit of claim is the day. The monthly report's unit of
+claim is the **week** — the features below exist only once you hold 4–5 weeks
+at once, and none of them exists inside any single week:
+
+    carrier    which ISO week carries the month (shape: level / twin /
+               opening / closing / core)
+    hinge      whether the best and worst WEEKS are adjacent — a hard
+               mid-month pivot (turn: hinge)
+    halves     whether the month's two calendar halves genuinely differ
+               (turn: lifts / settles / steady)
+    standing   which area leads/lags/steadies across the whole month
+
+Candidates measured on real sky (144 months × 6 natals) and **rejected**:
+
+* **Week-over-week trajectory** ("the month rises"). The weekly means of a
+  month are the tara sawtooth aliased through a 7-day window (9 and 7 are
+  coprime; the phase slides two days per week). A monotone run of 4–5 such
+  means describes the aliasing, not the month — the same smoothing artefact
+  the weekly taxonomy already rejected at day scale. Same trap, same verdict.
+* **Recurring weekday patterns** ("your Thursdays run strong"). Real in 46%
+  of sampled months, but each weekday has only 4–5 samples against a 9-day
+  cycle: true this month, false as the generalisation a reader will
+  inevitably take from it. Recorded, not authored.
+
+### Cross-kind collision — the central risk, and the division of labour
+
+A subscriber reads BOTH reports, often in one sitting. If the weekly and the
+monthly say "scattered, with a whiplash turn" in similar words, the pair reads
+as one claim padded into two — the failure IDENTITY.md §5 solved for
+nakshatra vs moon sign, one level up. The division of labour:
+
+> **Weekly owns DAYS. Monthly owns WEEKS.**
+
+Weekly names dated days and weekday names. Monthly names ISO weeks and
+month-halves and **never names a day** — its anchors (`carrier_week`,
+`thin_week`) are the weekly report's own keys, so the two kinds corroborate
+instead of repeating: the monthly names the carrier week, the weekly for that
+week names its days.
+
+`tests/test_report_cross_kind.py` makes this mechanical, over the pairs that
+can actually co-occur (same-movement slots; 6,630 opening pairs, 980 turn,
+750 close, 450 same-key standing):
+
+* no weekly/monthly pair in the same movement slot may share a frame or a
+  skeleton;
+* monthly copy may not contain a day-scale token, weekly copy may not contain
+  a month-scale token (the v2 weekly corpus already satisfied this untouched);
+* every monthly opening and turn line must NAME the month — both kinds speak
+  of "halves", so a bare "the first half holds the better ground" could sit
+  in either report, which is exactly the padding ambiguity;
+* same-key standing pairs (weekly money.leads vs monthly money.leads — the
+  sharpest surface) may share at most 3 content words beyond stopwords,
+  frame words and the area noun.
+
+Falsified in `tests/test_report_gates_falsify.py` with multiple signatures,
+including the **vacuous pass**: an emptied monthly corpus fails the
+declared-size pin AND each comparison gate's own non-empty assert — an empty
+work-list has no path to a green.
+
+### Rotation — derived from 12, not copied from 52
+
+A monthly rotation locks to the **calendar year**: the reader's natural
+comparison is this July vs last July, twelve reports apart. So the cycle to
+clear is 12 — and the weekly answer inverts: **13, the one prime that could
+not work at week scale (13 | 52), is the monthly optimum** — gcd(13, 12) = 1
+and it is the smallest count above 12, so 13 consecutive monthly openings are
+distinct (outlasting a full year) and an anniversary month repeats an opening
+only every 13 years (12 ≡ −1 mod 13). Counts: 13 openings / 7 turns / 5
+standings / 5 closes — pairwise coprime, each coprime with 12; the full
+skeleton recurs every lcm(13,7,5) = 455 months (~38 years). One honest
+pigeonhole, pinned in a docstring: 27 natal stars into 13 slots means natal
+pairs congruent mod 13 share the rotation offset; they are separated by the
+data instead (shape is computed per natal), exactly as weekly pairs congruent
+mod 17 are.
+
+### Thresholds — re-derived on real data
+
+Aggregates regress to the mean: daily energies inside a week spread 48–70,
+but the weekly means inside a month spread only 1.4–30.3 (median 13.7).
+`LEVEL_SPREAD = 6`, `TWIN_MARGIN = 2`, `HALF_MARGIN = 4`, qualifying week =
+≥ 4 in-month days. Measured distribution over 144 months: core 62%, closing
+15%, opening 11%, twin 7%, level 4%; turns hinge 33%, steady 25%, lifts 23%,
+settles 19%. **Every class is reachable** — unlike the weekly corpus's dead
+`even` cell — and `test_all_five_shapes_occur_across_a_realistic_span` keeps
+a score_rules retune from silently killing one.
+
+### The pieces
+
+| Piece | Where |
+|---|---|
+| Corpus | `db/seed/report_content_v3.json` — weekly byte-identical to v2, + 208 monthly lines (65 openings, 28 turns, 90 standings, 25 closes; 465 total) |
+| Composition | `engine/reports.py` (`build_monthly_report`, `month_shape_of`, `month_turn_of`, `month_index`, `month_weeks`) |
+| Corpus gates | `tests/test_report_content_seed.py` — monthly battery with its own share denominator (208 → cap 12) and frame words |
+| Cross-kind gates | `tests/test_report_cross_kind.py` — 13 tests |
+| Composition gates | `tests/test_report_monthly_composition.py` — 42 tests |
+| Falsification | `tests/test_report_gates_falsify.py` — +15 monthly/cross-kind reds |
+| Worker | `aura-api/src/report.ts` (`buildMonthlyReport`), `GET /v1/report/monthly?nakshatra=N&month=YYYY-MM` |
+| Cross-validation | `aura-api/test/reportMonthly.crossval.test.ts` — 72-case golden spanning a Dec→Jan boundary, so `month_index` is checked as an absolute value (the monthly analogue of the week_index origin bug) |
+
+The share gate fired on the first authored draft — 12 words over the cap
+(`across` ×22, `work` ×21, `first` ×19, …) — and the cross-kind gate caught 4
+frame collisions plus 1 content-overlap pair against the weekly corpus. All
+fixed in copy (49 rewrites); no threshold, stopword or frame list was touched.
+
+### The precompute window: 14 → 40 days
+
+The monthly route serves only when EVERY day of the month has rows, so the
+window had to cover the worst case (asked on the 1st of a 31-day month, 31
+days) plus the missed-night headroom the old 14 gave `/v1/today`. Measured
+before widening: +0.13 s compute, ~3 MB/night of writes. First widened run
+(2026-07-21): 1,120 rows upserted (40 sky + 1,080 guidance — exact
+projection), 8.7 s wall / 0.33 s CPU; `latest_sky_date` advanced 2026-08-03 →
+2026-08-29; `/v1/today` and `/v1/range` unaffected. July 1–17 (before the
+DB's first nightly) were backfilled with an explicit `--start`, so the current
+month is complete. **Rollback** is `LOOKAHEAD_DAYS` back to 14 plus the
+workflow step name: widened dates are a strict superset and upserts are
+idempotent, so a failed widened run cannot leave the 14-day buffer worse than
+it started.
+
+### Premium boundary
+
+Identical to weekly, deliberately: `/v1/report/monthly` is a paid artefact on
+an open route, flagged in the route comment and here, enforced by nothing
+until billing (Block 11) brings an identity the Worker can verify. Do not
+ship a paid report screen against it as it stands.
+
+---
+
+## 6 · The premium boundary
 
 **Recommendation, not implementation** — billing is Block 11.
 
