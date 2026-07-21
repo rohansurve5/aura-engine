@@ -1,4 +1,12 @@
-"""Period-report composition. v1: the WEEKLY report.
+"""The WEEKLY/MONTHLY report engine. v1 ships the weekly report.
+
+SCOPE — this module is NOT "all reports". It is the engine for reports that are
+RANGE AGGREGATES of daily_guidance rows: weekly today, monthly when its corpus
+is authored (report_content key_type rows are discriminated by `report_kind`,
+migration 010). A yearly report is deliberately NOT built here — averaging 365
+days of a 9-fold tara cycle is statistically empty (docs/REPORTS.md § the
+audit), so yearly is a Vimshottari composition over dasha_content, structurally
+a sibling of the dasha timeline, not of this engine.
 
 WHAT A REPORT IS (the design question this module answers)
 ==========================================================
@@ -51,10 +59,11 @@ compounding reasons documented in docs/REPORTS.md § determinism:
     averages out to the same middling numbers, so the underlying data really is
     more similar week-to-week than day-to-day.
 
-The answer is three-layered: shape is data-driven (a rising week genuinely
-should not read like a flat one), variant rotation uses mutually coprime prime
-periods (11/7/5, none sharing a factor with 52), and anchors name real dates and
-real areas that differ every single time regardless of which cells were drawn.
+The answer is three-layered: shape is data-driven (a front-loaded week genuinely
+should not read like a scattered one), variant rotation uses mutually coprime
+prime periods (17/7/5, none sharing a factor with 52), and anchors name real
+dates and real areas that differ every single time regardless of which cells
+were drawn.
 """
 
 from __future__ import annotations
@@ -69,8 +78,15 @@ WEEK_DAYS = 7
 
 #: Variant-list lengths, one per movement. Mutually coprime primes, and none
 #: shares a factor with 52 (weeks per year) — so no movement can lock to the
-#: calendar and no two movements can advance in step. lcm = 385 weeks.
-OPENING_VARIANTS = 11
+#: calendar and no two movements can advance in step. lcm = 595 weeks.
+#:
+#: Openings were 11 and are now 17, closing the reports-#1-and-#12 collision
+#: (11 guarantees only 11 distinct consecutive reports). 13 — the obvious next
+#: prime — is the one prime that CANNOT work here: 13 divides 52, so a 13-slot
+#: rotation advances 52 ≡ 0 (mod 13) across a 52-week year and hands every
+#: anniversary week the same opening. 17 is the smallest count above 12 that is
+#: coprime with 52, 7 and 5 at once.
+OPENING_VARIANTS = 17
 TURN_VARIANTS = 7
 STANDING_VARIANTS = 5
 CLOSE_VARIANTS = 5
@@ -331,27 +347,34 @@ def build_weekly_report(
     }
 
 
-def load_report_content_from_json(path=None) -> dict:
-    """The report corpus dict (key_type → key → payload) from the seed file."""
+def load_report_content_from_json(path=None, report_kind: str = "weekly") -> dict:
+    """One report_kind's corpus dict (key_type → key → payload) from the seed
+    file. The v2 seed nests corpora by kind so weekly and monthly can share one
+    version and one activation marker (see migration 010)."""
     import json
     from pathlib import Path
 
     from .content import REPORT_SEED_PATH
 
     data = json.loads(Path(path or REPORT_SEED_PATH).read_text())
-    return {kt: data[kt] for kt in ("shape", "turn", "standing", "close")}
+    corpus = data[report_kind]
+    return {kt: corpus[kt] for kt in ("shape", "turn", "standing", "close")}
 
 
-def load_report_content_from_db(conn, version: str) -> dict:
-    """The report corpus for `version` from the report_content table."""
+def load_report_content_from_db(conn, version: str, report_kind: str = "weekly") -> dict:
+    """One report_kind's corpus for `version` from the report_content table."""
     with conn.cursor() as cur:
         cur.execute(
-            "SELECT key_type, key, payload FROM report_content WHERE version = %s",
-            (version,),
+            "SELECT key_type, key, payload FROM report_content "
+            "WHERE version = %s AND report_kind = %s",
+            (version, report_kind),
         )
         rows = cur.fetchall()
     if not rows:
-        raise SystemExit(f"no report_content rows for version {version!r}; run db/migrate.py")
+        raise SystemExit(
+            f"no report_content rows for version {version!r} kind {report_kind!r}; "
+            "run db/migrate.py"
+        )
     out: dict[str, dict] = {}
     for key_type, key, payload in rows:
         out.setdefault(key_type, {})[key] = payload

@@ -12,15 +12,22 @@
 -- which is exactly the failure mode this corpus is shaped to avoid.
 --
 -- THE SHAPE OF THE CORPUS follows the four movements of the report arc
--- (docs/REPORTS.md § the arc), one key_type each:
+-- (docs/REPORTS.md § the arc), one key_type each. Shapes are DISTRIBUTION
+-- classes — where the strong days fall — not trend classes; the first
+-- rising/falling/cresting/dipping taxonomy described a trend the sawtooth
+-- energy data does not have and was replaced before shipping (see the SHAPES
+-- docstring in engine/reports.py):
 --
---   'shape'    → key is a shape id (rising|falling|cresting|dipping|
---                volatile|flat); payload {openings: [11 variants]}
+--   'shape'    → key is a shape id (even|split|front|back|centre|scattered);
+--                payload {openings: [...]}
 --   'turn'     → key is a turn kind (peak_early|peak_mid|peak_late|
---                trough_mid|no_turn); payload {lines: [7 variants]}
+--                whiplash|no_turn); payload {lines: [...]}
 --   'standing' → key is '<area>.<role>' where role is leads|lags|steadies;
---                payload {lines: [5 variants]}
---   'close'    → key is a shape id; payload {lines: [5 variants]}
+--                payload {lines: [...]}
+--   'close'    → key is a shape id; payload {lines: [...]}
+--
+-- Variant counts per cell are declared by the active seed file and pinned by
+-- the corpus gates (tests/test_report_content_seed.py), not by this schema.
 --
 -- ONE TABLE, following 008's reasoning exactly: the four key types are
 -- authored together, gated together (the consecutive-week distinctness gate
@@ -29,12 +36,15 @@
 -- expressible — a 'shape' half at v2 and a 'turn' half at v1, whose pairing
 -- was never gated — for no gain, since the payload is JSONB either way.
 --
--- VARIANT COUNTS ARE PRIME AND MUTUALLY COPRIME (11, 7, 5) BY DESIGN. A
--- report cadence is a *cycle*, and any rotation whose period shares a factor
--- with that cycle collapses: a 12-row table indexed by month would hand every
--- January the same row forever. 11 is coprime with 52 (weeks/year), and
--- lcm(11,7,5) = 385 weeks, so the variant triple a reader sees cannot recur
--- inside seven years of continuous reading. See docs/REPORTS.md § determinism.
+-- VARIANT COUNTS ARE PRIME AND MUTUALLY COPRIME BY DESIGN. A report cadence
+-- is a *cycle*, and any rotation whose period shares a factor with that cycle
+-- collapses: a 12-row table indexed by month would hand every January the
+-- same row forever. Every count is coprime with 52 (weeks/year) and with the
+-- others, so the variant tuple a reader sees cannot recur inside years of
+-- continuous reading. See docs/REPORTS.md § determinism.
+--
+-- (010 adds a report_kind discriminator so the weekly and monthly corpora
+-- coexist in this table; this file is left as it ran, comments aside.)
 --
 -- Versions are additive, as in score_rules / dasha_content / identity_content:
 -- rollback is repointing REPORT_SEED_PATH in engine/content.py and re-running

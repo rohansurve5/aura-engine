@@ -18,19 +18,21 @@ What a reader of reports actually experiences is **one report per week, in
 sequence**. The failure they can see is not "these four paragraphs rhyme", it
 is "this is the fourth week in a row that opened the same way". So the gate
 below is a SLIDING WINDOW over consecutive weeks, and the window widths are the
-exact periods the variant arithmetic guarantees (11 / 7 / 5).
+exact periods the variant arithmetic guarantees (17 / 7 / 5).
 
 That guarantee is worth stating precisely, because it is the answer to "how
 does this stay non-repetitive when the underlying data is similar":
 
-    opening variant = (wk * 1 + natal * 3) % 11
+    opening variant = (wk * 1 + natal * 3) % 17
 
-`wk` advances by exactly 1 per week, so over any 11 consecutive weeks the index
-takes 11 distinct values. If those weeks share a shape, the 11 openings drawn
+`wk` advances by exactly 1 per week, so over any 17 consecutive weeks the index
+takes 17 distinct values. If those weeks share a shape, the 17 openings drawn
 are distinct by that arithmetic; if they do not share a shape, they are drawn
 from disjoint corpora and are distinct anyway. Either way the reader cannot see
-a repeat inside 11 weeks — and the same argument gives 7 for turns and 5 for
-closes, with 11/7/5 mutually coprime so the triple recurs only every 385 weeks.
+a repeat inside 17 weeks — and the same argument gives 7 for turns and 5 for
+closes, with 17/7/5 mutually coprime so the triple recurs only every 595 weeks.
+(Openings were 11; reports #1 and #12 could then draw the same cell. 13 was NOT
+the fix: 13 divides 52, so a 13-slot rotation repeats on 52-week anniversaries.)
 
 REGRESSION TO THE MEAN is the other half of the problem and is why variety
 cannot come from rotation alone. The longer the range, the more its aggregate
@@ -69,8 +71,8 @@ from engine.scoring import load_rules_from_json
 RULES = load_rules_from_json()
 CONTENT = R.load_report_content_from_json()
 
-#: A fixed span so the suite is deterministic, long enough that the 11-week
-#: opening cycle completes twice over.
+#: A fixed span so the suite is deterministic, long enough that the 17-week
+#: opening cycle completes and slides through at least two windows.
 FIRST_MONDAY = date(2026, 7, 20)  # a Monday
 WEEKS = 26
 SAMPLE_NATALS = (0, 1, 7, 13, 20, 26)
@@ -261,7 +263,7 @@ def test_standing_names_three_distinct_areas_with_distinct_roles(natal):
 
 @pytest.mark.parametrize("natal", SAMPLE_NATALS)
 def test_no_repeated_opening_inside_the_guaranteed_window(natal):
-    """11 consecutive weeks, the exact period the variant arithmetic promises.
+    """17 consecutive weeks, the exact period the variant arithmetic promises.
 
     This is the assertion that would have caught a stride sharing a factor with
     the variant count — the report-cadence analogue of the 12-row table that
@@ -320,7 +322,7 @@ def test_variant_periods_are_mutually_coprime_and_clear_of_the_calendar():
     assert gcd(OPENING_VARIANTS, TURN_VARIANTS) == 1
     assert gcd(OPENING_VARIANTS, CLOSE_VARIANTS) == 1
     assert gcd(TURN_VARIANTS, CLOSE_VARIANTS) == 1
-    assert OPENING_VARIANTS * TURN_VARIANTS * CLOSE_VARIANTS == 385
+    assert OPENING_VARIANTS * TURN_VARIANTS * CLOSE_VARIANTS == 595
 
 
 # ── coverage: every authored cell is reachable ───────────────────────────────

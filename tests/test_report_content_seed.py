@@ -107,7 +107,10 @@ FORTUNE_PATTERNS = (
 
 
 def _load() -> dict:
-    return json.loads(SEED_PATH.read_text())
+    """The WEEKLY corpus. The v2 seed nests corpora by report_kind (migration
+    010) so weekly and monthly share one version and one activation marker;
+    the gates below run per kind, over the movements that render together."""
+    return json.loads(SEED_PATH.read_text())["weekly"]
 
 
 def _words(line: str) -> list[str]:
@@ -147,7 +150,7 @@ def _share_limit(n: int) -> int:
 # ── structure ────────────────────────────────────────────────────────────────
 
 def test_version_matches_filename():
-    data = _load()
+    data = json.loads(SEED_PATH.read_text())
     assert data["version"] == SEED_PATH.stem
 
 
@@ -185,7 +188,7 @@ def test_every_shape_has_a_close():
 
 
 def test_corpus_is_the_declared_size():
-    """66 + 35 + 90 + 30 = 221. A count assertion catches a half-authored seed
+    """102 + 35 + 90 + 30 = 257. A count assertion catches a half-authored seed
     that every per-cell check above would pass one cell at a time."""
     lines = _all_lines(_load())
     expected = (
@@ -194,7 +197,7 @@ def test_corpus_is_the_declared_size():
         + len(AREAS) * len(ROLES) * STANDING_VARIANTS
         + len(SHAPES) * CLOSE_VARIANTS
     )
-    assert len(lines) == expected == 221
+    assert len(lines) == expected == 257
 
 
 def test_every_line_is_exactly_unique_across_the_whole_corpus():
@@ -223,18 +226,18 @@ def check_word_share(data: dict) -> dict[str, int]:
 def test_share_threshold_matches_the_spec():
     """int(), not round() — pinned because the two disagree here.
 
-    221 * 0.06 = 13.26. int() gives 13 (fails at 14); round() would give 13 as
-    well, but at 217 lines they diverge (13.02 → 13 vs 13), and at 200 lines
-    (12.0) they agree while at 208 (12.48) they do not. Stating the choice is
-    what stops a later re-count from silently moving the gate.
+    257 * 0.06 = 15.42. int() gives 15 (fails at 16); round() agrees at 257 but
+    the two diverge on nearby counts (e.g. 259 * 0.06 = 15.54 → int 15, round
+    16). Stating the choice is what stops a later re-count from silently moving
+    the gate.
     """
-    assert _share_limit(221) == 13
+    assert _share_limit(257) == 15
     assert _share_limit(250) == 15
 
 
 def test_no_content_word_dominates():
     offenders = check_word_share(_load())
-    assert offenders == {}, f"over {_share_limit(221)} lines: {offenders}"
+    assert offenders == {}, f"over {_share_limit(257)} lines: {offenders}"
 
 
 def test_frame_exemption_is_narrow():
@@ -252,7 +255,7 @@ def test_frame_exemption_is_narrow():
     assert weeky > 0
     # ...while an ordinary word injected at over the limit must fail.
     over = _share_limit(n) + 1
-    poisoned = json.loads(SEED_PATH.read_text())
+    poisoned = json.loads(SEED_PATH.read_text())["weekly"]
     for i in range(over):
         shape = SHAPES[i % len(SHAPES)]
         idx = i // len(SHAPES)

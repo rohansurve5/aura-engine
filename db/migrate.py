@@ -206,26 +206,36 @@ def seed_report_content(conn: psycopg.Connection) -> None:
     (`'..._v10' < '..._v2'` in Postgres) has now been closed twice in this repo
     by retrofit; closing it up front costs nothing.
 
-    All four key types are written in ONE transaction with the marker, because
-    the four movements of a report are gated against each other as a set (the
-    consecutive-week distinctness gate spans all four). A state where `shape` is
-    v2 and `close` is v1 would be a report whose halves were never gated
-    together — made unreachable rather than merely detected.
+    EVERY report_kind in the seed file (weekly today, monthly when authored)
+    and all four key types are written in ONE transaction with ONE marker.
+    Within a kind, the four movements are gated as a set (the consecutive-week
+    distinctness gate spans all four); across kinds, the corpus gates run over
+    the whole seed file, so a weekly at v2 beside a monthly at v1 would be a
+    pairing no gate ever saw. Both halves of that argument are 008's — made
+    unreachable rather than merely detected. A kind present in the file but
+    unknown here fails loudly rather than seeding a partial corpus.
     """
     data = json.loads(REPORT_SEED.read_text())
     version = data["version"]
+    kinds = [k for k in ("weekly", "monthly") if k in data]
+    unknown = set(data) - {"version", "_about", "weekly", "monthly"}
+    if unknown:
+        raise SystemExit(f"report seed {REPORT_SEED.name} has unknown keys: {sorted(unknown)}")
     count = 0
     with conn.cursor() as cur:
-        for key_type in ("shape", "turn", "standing", "close"):
-            for key, payload in data[key_type].items():
-                cur.execute(
-                    "INSERT INTO report_content (version, key_type, key, payload) "
-                    "VALUES (%s, %s, %s, %s) "
-                    "ON CONFLICT (version, key_type, key) "
-                    "DO UPDATE SET payload = EXCLUDED.payload",
-                    (version, key_type, key, Json(payload)),
-                )
-                count += 1
+        for report_kind in kinds:
+            corpus = data[report_kind]
+            for key_type in ("shape", "turn", "standing", "close"):
+                for key, payload in corpus[key_type].items():
+                    cur.execute(
+                        "INSERT INTO report_content "
+                        "(version, report_kind, key_type, key, payload) "
+                        "VALUES (%s, %s, %s, %s, %s) "
+                        "ON CONFLICT (version, report_kind, key_type, key) "
+                        "DO UPDATE SET payload = EXCLUDED.payload",
+                        (version, report_kind, key_type, key, Json(payload)),
+                    )
+                    count += 1
         cur.execute(
             "INSERT INTO active_content (kind, version) VALUES ('report_content', %s) "
             "ON CONFLICT (kind) DO UPDATE SET "
@@ -233,7 +243,10 @@ def seed_report_content(conn: psycopg.Connection) -> None:
             (version,),
         )
     conn.commit()
-    print(f"seeded {count} report_content entries and marked ACTIVE (version {version})")
+    print(
+        f"seeded {count} report_content entries across kinds {kinds} "
+        f"and marked ACTIVE (version {version})"
+    )
 
 
 def main(argv: list[str] | None = None) -> int:

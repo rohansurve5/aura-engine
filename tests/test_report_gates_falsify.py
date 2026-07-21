@@ -36,7 +36,9 @@ import tests.test_report_content_seed as G
 
 
 def _data() -> dict:
-    return json.loads(G.SEED_PATH.read_text())
+    """The WEEKLY corpus, matching what G._load() returns — mutations land on
+    the same structure the gates read."""
+    return json.loads(G.SEED_PATH.read_text())["weekly"]
 
 
 def _expect_red(monkeypatch, data, gate, *args) -> str:
@@ -47,7 +49,7 @@ def _expect_red(monkeypatch, data, gate, *args) -> str:
 
 
 def _expect_green(monkeypatch, gate, *args) -> None:
-    monkeypatch.setattr(G, "_load", lambda: json.loads(G.SEED_PATH.read_text()))
+    monkeypatch.setattr(G, "_load", lambda: json.loads(G.SEED_PATH.read_text())["weekly"])
     gate(*args)
 
 
@@ -83,9 +85,9 @@ def _synthetic(n_lines: int, filler: str, repeat_in: int) -> dict:
 def test_share_gate_fires_at_over_limit_and_passes_at_the_limit():
     """BOTH edges. Firing only above proves *a* threshold; passing exactly at
     the limit proves it is THE threshold the spec states."""
-    n = 221
+    n = 257
     limit = G._share_limit(n)
-    assert limit == 13
+    assert limit == 15
 
     at = _synthetic(n, "template", limit)
     assert G.check_word_share(at) == {}, "the limit itself must pass"
@@ -100,7 +102,7 @@ def test_frame_exemption_is_load_bearing_in_both_directions(monkeypatch):
     Without both halves, FRAME_WORDS is an escape hatch that grows every time
     the cap is inconvenient.
     """
-    n = 221
+    n = 257
     over = G._share_limit(n) + 1
     assert G.check_word_share(_synthetic(n, "week", over)) == {}
     assert G.check_word_share(_synthetic(n, "momentum", over)) == {"momentum": over}
@@ -352,8 +354,12 @@ def test_the_coprimality_premise_is_itself_guarded():
     If any variant count shared a factor with 52, the rotation would lock to the
     calendar however carefully the strides were chosen.
     """
-    assert gcd(11, 52) == 1 and gcd(7, 52) == 1 and gcd(5, 52) == 1
+    assert gcd(17, 52) == 1 and gcd(7, 52) == 1 and gcd(5, 52) == 1
     assert gcd(12, 52) == 4, "12 is the trap: a monthly table would lock"
+    assert gcd(13, 52) == 13, (
+        "13 is the same trap one door down: prime, yet it divides 52, so a "
+        "13-slot rotation hands every 52-week anniversary the same cell"
+    )
     assert gcd(26, 52) == 26
 
 
