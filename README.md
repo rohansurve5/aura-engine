@@ -247,6 +247,84 @@ Conventions proven by the golden set:
   is a small Moon-theory/ΔT/display-truncation difference on their side).
   Inside tolerance; **accepted, not tuned away**.
 
+### Historical timezones and India's war-time DST (1941–45)
+
+Two timezone spec forms exist, and the distinction is deliberate
+(`engine/timezones.py`, mirrored in `aura-api/src/natal.ts`):
+
+* **`"+05:30"` — a fixed offset.** Means exactly that offset at *every* date,
+  forever. DST is never applied.
+* **`"Asia/Kolkata"` — an IANA zone id.** The offset is resolved **at the birth
+  instant**, so India's war-time DST applies: **+06:30** during
+  1941-10-01 → 1942-05-15 and 1942-09-01 → 1945-10-15, +05:30 otherwise.
+
+**Why both.** A 1943 Calcutta birth genuinely happened at +06:30, so the IANA
+path is the correct one and is what the app now sends. But the 1,001-case natal
+cross-validation goldens were all generated as `"+05:30"`, and `/v1/natal`
+responses are served `immutable, max-age=31536000` — so reinterpreting the
+existing spelling would both invalidate the goldens and leave CDN POPs serving a
+year-old answer alongside the new one. The fixed-offset form is therefore frozen
+and IANA was added as a separate input class with its own golden set
+(`scripts/crossval_natal_zone.py` → `aura-api/test/golden/natal_zone_crossval.json`).
+
+**Measured blast radius.** Of the 1,001 golden births, **40 (4.0%)** fall inside
+a war-time window. Applying the correct +06:30 moves the Moon by **−0.4934° to
+−0.6274° (mean −0.5549°, ≈33 arc-min)** — far outside the 1 arc-min
+cross-validation tolerance, which is why the two paths must be kept separate
+rather than merged. User-visible effect on those 40:
+
+| field | changes |
+| --- | --- |
+| nakshatra | 2 / 40 |
+| pada | 9 / 40 |
+| moon sign | 1 / 40 |
+| any visible field | 9 / 40 |
+
+The other 31 shift longitude only. Examples: `1945-09-18 06:05` and
+`1944-07-07 17:56` both move Shravana → Uttara Ashadha; `1945-01-18 14:46` moves
+Pisces → Aquarius.
+
+**Reference behaviour — this is a convergence, not a divergence.**
+
+* **DrikPanchang APPLIES war-time DST.** Verified empirically, not from docs:
+  Delhi sunrise on 15 June **1944 is 06:23**, on 15 June **1946 it is 05:23**.
+  Astronomy cannot move sunrise an hour between two mid-June dates; they are
+  computing 1944 at +06:30. Their Kundali form also exposes an explicit
+  "Olson Time Zone for DST Rules?" selector. Note the trap: their 1944 page
+  *labels* itself "Timezone Offset: +05:30" while computing in +06:30.
+* **AstroSage: UNDETERMINED — an open question, not a settled one.** Their birth
+  form has **no DST field at all** (no occurrence of "dst"/"daylight" in the
+  served HTML), and the timezone box is pre-filled from the *place* lookup,
+  which never sees the birth date — so it cannot encode war-time DST at that
+  stage. A hidden `timezoneid=Asia/Kolkata` field suggests server-side historical
+  resolution is *available*, but that is inference, not observation. The chart
+  generator requires a JS-driven POST with session validation, so it could not be
+  driven by URL fetching. **To settle it:** open
+  `astrosage.com/atlas/birthdetail.asp` in a browser, enter 15 June 1943 10:30
+  Kolkata, and read the Vimshottari balance — a one-hour shift moves it by
+  ~9 months on an 18-year maha, so the answer is unmistakable. Worth doing before
+  relying on the 1941-45 window commercially; it does **not** block launch,
+  because AstroSage is our dasha reference and no war-time case is in the dasha
+  golden set.
+* Wider practice is inconsistent: the correction is explicitly taught ("enter
+  6:30 E"), but applied by hand, and astro.com was observed returning +05:30 for
+  New Delhi yet +06:30 for Calcutta on the same 1947 date.
+
+**Verdict: apply it.** The IANA path matches DrikPanchang, the reference our
+panchang is already validated against, and matches what the clocks actually
+read. Unlike the 00:00 IST transit boundary (`docs/REPORTS.md`), this is not a
+deliberate deviation from a reference — it is a correction toward one.
+
+**Two edge cases worth knowing**, both pinned by tests:
+
+* A fall-back makes a wall-clock time **ambiguous**. Asia/Kolkata ended war-time
+  at 1945-10-15 00:00 by rewinding to 23:00, so every wall time in
+  1945-10-14 23:00–23:59 happened *twice*. Both sides resolve to the **first**
+  occurrence (Python `fold=0`); an early two-pass draft of the Worker silently
+  took the second, and the golden case `1945-10-14 23:30` is what caught it.
+* Britain ran **Double Summer Time (+02:00)** in 1943, not ordinary BST. Any
+  hardcoded "+01:00 in summer" assumption is wrong for the war years too.
+
 ## Tests
 
 ```bash

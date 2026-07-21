@@ -27,7 +27,7 @@ the same element type).
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import UTC, date, datetime, time, timedelta, timezone
+from datetime import UTC, date, datetime, time, timedelta, tzinfo
 
 import swisseph as swe
 
@@ -147,7 +147,7 @@ def _rise_set(jd_start: float, lat: float, lon: float, *, rise: bool) -> float:
     return times[0]
 
 
-def _jd_to_local(jd: float, tz: timezone) -> datetime:
+def _jd_to_local(jd: float, tz: tzinfo) -> datetime:
     y, m, d, h = swe.revjul(jd, swe.GREG_CAL)
     utc = datetime(y, m, d, tzinfo=UTC) + timedelta(hours=h)
     return utc.astimezone(tz).replace(tzinfo=None, microsecond=0)
@@ -187,7 +187,7 @@ class Panchang:
 
 def _elements(
     angle_fn, arc: float, name_fn, rate: float,
-    jd_sunrise: float, jd_next_sunrise: float, tz: timezone,
+    jd_sunrise: float, jd_next_sunrise: float, tz: tzinfo,
 ) -> tuple[Element, ...]:
     """Prevailing element at sunrise + all that start before next sunrise."""
     total = int(round(360 / arc))
@@ -209,7 +209,7 @@ def compute_panchang(
     lat: float,
     lon: float,
     *,
-    tz: timezone = IST,
+    tz: tzinfo = IST,
     ayanamsa: str = DRIKPANCHANG_AYANAMSA,
 ) -> Panchang:
     """Full panchang for the sunrise-day of `day` at (lat, lon)."""

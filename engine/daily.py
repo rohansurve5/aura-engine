@@ -25,6 +25,7 @@ from .choghadiya import (
     yamaganda_kaal,
 )
 from .panchang import Element, Panchang, compute_panchang
+from .timezones import resolve_tz
 
 # One canonical location for the whole app (see module docstring / migration).
 CANONICAL_LOCATION = {"name": "Pune, India", "lat": 18.5204, "lon": 73.8567, "tz": "+05:30"}
@@ -53,7 +54,12 @@ def _win(w: Window) -> dict:
 
 def build_daily_sky(day: date, *, location: dict = CANONICAL_LOCATION) -> dict:
     """The deterministic `daily_sky.payload` dict for `day` at `location`."""
-    p: Panchang = compute_panchang(day, location["lat"], location["lon"])
+    # location["tz"] is a spec string ("+05:30" or an IANA id); compute_panchang
+    # wants a tzinfo. Before this was plumbed through, every location formatted
+    # its times in IST regardless of where it actually was.
+    p: Panchang = compute_panchang(
+        day, location["lat"], location["lon"], tz=resolve_tz(location["tz"])
+    )
 
     elong = p.phase_fraction * 360.0
     illumination = round((1 - math.cos(math.radians(elong))) / 2, 4)
