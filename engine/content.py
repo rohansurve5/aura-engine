@@ -41,7 +41,7 @@ from pathlib import Path
 _SEED_DIR = Path(__file__).resolve().parent.parent / "db" / "seed"
 
 # ── THE ONE LINE THAT SETS THE ACTIVE score_rules VERSION ────────────────────
-SEED_PATH = _SEED_DIR / "score_rules_content_v3_2.json"
+SEED_PATH = _SEED_DIR / "score_rules_content_v4.json"
 # ── THE ONE LINE THAT SETS THE ACTIVE dasha_content VERSION ──────────────────
 DASHA_SEED_PATH = _SEED_DIR / "dasha_content_v2.json"
 # ── THE ONE LINE THAT SETS THE ACTIVE identity_content VERSION ───────────────

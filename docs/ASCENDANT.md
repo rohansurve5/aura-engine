@@ -114,7 +114,7 @@ None); southern hemisphere (Wellington); births at reference sunrise instants.
   defect. This is unlike the vp285 ayanamsa decision, where the choice was
   between equally-valid conventions.
 
-## Cross-validating a TS port — deliberately deferred
+## Cross-validating a TS port — deliberately deferred *(landed with A5, § below)*
 
 Natal and dasha have a 1,000+-birth engine-vs-Worker crossval gating every
 aura-api deploy. The ascendant has NO Worker port yet, deliberately: no Worker
@@ -251,7 +251,140 @@ The unknown-birth-time policy and the boundary-honesty design (±2 min
 ingress detection, payload field) move with the asc-visible surface —
 they land when the first app-visible ascendant lands, not before.
 
+## A5 — house-based area scores (content_v4). Measured GO, shipped
+
+The last Phase 0 task: make the six life-area scores carry real per-user
+information. A1 measured the v3_2 scores as a pure function of (energy,
+weekday) — 59,130/59,130 exact predictions, identical rank order for every
+user in the country. A4's verdict bound the fix to score-time arithmetic over
+the 27-row corpus. This section records the formula, the measurements that
+gated the build, the coherence design, the architecture, and the gates.
+
+### The formula (all tables tunable in score_rules `content_v4`)
+
+    h(p)     = ((sign(p, day) − asc_sign) mod 12) + 1     # transit Whole Sign
+                                                          # house from the lagna
+    T[area]  = Σ_(p ∈ significators[area]) w_p · G[p][h(p)]
+             + Σ_(q occupying the area's own house(s)) occ(q)
+    score[a] = clamp(tara_energy + paksha + weekday_area_mod + T[a])
+    energy   = UNCHANGED (27-row; the personal claim lives in the areas)
+
+Significators/houses (subject to astrologer review, like the v1 heuristic):
+Career → Saturn·5 + Sun·3, 10th · Money → Jupiter·5 + Venus·3, 2nd/11th ·
+Love → Venus·5 + Moon·3, 7th · Mind → Mercury·6, 5th · Health → Mars·4 +
+Sun·4, 6th · Mood → Moon·6, 4th. G is the classical gochara favourability
+table per planet (fav +1 / unfav −1 / extra-bad −2: Sade-Sati houses 1/8/12
+for Saturn, chandrashtama 8 for Moon, 8 for Mars); occupancy is
+benefic-positive (Jup +3 … Sat −3) with malefics flipped positive in the
+upachaya houses 3/6/10/11. Inputs at read time: the user's lagna sign (from
+/v1/natal, stored once) and the day's nine graha sign indices
+(`daily_sky.planet_signs`, precomputed at the 00:00 IST boundary).
+
+### Measured before building (scripts/measure_a5_scores.py — 20,000 seeded
+### births, 20 Indian cities pop-weighted, 90 days from 2026-07-21)
+
+* **A1's own prediction test collapses: 100.0% → 2.7%** (48,743/1,800,000
+  exact vector predictions from (energy, weekday); adding the asc to the
+  predictor key still only reaches 18.3% — the rest is the day's actual
+  planet configuration).
+* **Rank order across users, same day: 1 → mean 15.0 distinct orders**
+  (min 11, max 24), mean 4.6 distinct leading areas per day. Leader share of
+  user-days: Money 31.6%, Love 22.9%, Career 15.3%, Mind 15.2%, Mood 8.2%,
+  Health 6.8% (was: one leader for everyone, Money 94.4% of months).
+* **Birth sensitivity on the scores**: 4 min apart → differ on 3.6% of
+  user-days; 2 h apart → 95.1% (rank order 94.4%); same instant different
+  city → 17.6%. Birth time and birth place are now load-bearing in the
+  daily product.
+* **Fixed user across 90 days**: their most common leader holds 53.3% of
+  days; the leader changes on 54.6% of day-pairs — the Moon-speed terms keep
+  the ordering alive without churning it daily.
+* **Structure, disclosed honestly**: before clamping the score is additive —
+  f(nak, day) + g(asc, day), no nak × asc interaction term — so users
+  sharing a lagna sign mostly share a rank order (clamping at 0/100, hit by
+  5.4% of scores, is the only interaction). The 12 per-day T vectors are all
+  distinct every measured day. This is a 12-way personal ordering on top of
+  a 9-way daily cycle, not a 324-way reading — claimed accordingly.
+
+### Coherence (§2 of the task, binding): a number is never explained by a
+### cause that did not move it
+
+The 27 precomputed rows now carry a `compose` bundle — every
+(date, nakshatra)-determined piece: UNCLAMPED per-area base scores, the six
+rotated cause strings, the raw narrative opener/closer and
+opportunity/warning templates. At read time `apply_ascendant`
+(engine/scoring.py, reference) / `applyAscendant` (aura-api src/scores.ts,
+production) recomputes scores from the unclamped base + T, re-selects band
+labels and score-why RECOGNITION for the band actually shown, re-formats
+narrative/opportunity/warning from the actual best/worst, and swaps the CAUSE
+of the single area with the largest |T| to a `why_cause_house` line naming
+the primary significator's REAL transit house (72 authored lines, 6 frames ×
+12 houses, band-neutral, gated by the same diversity + per-day gates as every
+other corpus). The base half (tara/weekday/paksha) keeps its rotated cause —
+it did move the score; the house half is voiced where it mattered most.
+
+### Architecture (§3): option (b) with (a)'s cache shape
+
+The Worker computes per request — pure integer arithmetic + dictionary
+lookups over the row's compose bundle and the memoized score_rules tables
+(one Neon query per version per isolate). The `asc` query param joins the
+CDN cache key, so fan-out is bounded at 27 × 12 = **324 cache entries** per
+day (27 for the no-asc population), still until-IST-midnight. NOT (c): app
+local compute would be a third scoring implementation to cross-validate and
+would pin content changes to app releases. Offline behaviour is unchanged —
+the app caches the full merged payload once per day and repaints from cache.
+Content version changes behave exactly as before (rows are stamped; rollback
+is the marker repoint; degraded inputs — pre-v4 row or sky — serve the
+honest unadjusted reading flagged `ascendant.applied: false`, never a 500).
+The weekly/monthly/transit reports still aggregate the 27-row base scores —
+re-keying them is a recorded post-launch decision, not an accident.
+
+### Unknown birth time (§4)
+
+No time ⇒ no `asc` param ⇒ the 27-row reading served verbatim — same bytes
+as v3_2, no partial adjustment path, no noon lagna anywhere. /v1/natal with
+`lat`/`lon` but no `time` returns `ascendant: null` explicitly. The app-side
+unlock copy remains the A3 product recommendation (app work is post-launch).
+
+### The gates (§5): the deferred TS port landed here
+
+* **src/ascendant.ts** — GAST (astronomy-engine) + true obliquity (Vondrák
+  mean + 4-term nutation) + the closed horizon-intersection formula, reduced
+  by the same VP285 ayanamsa as natal. The mean/apparent asymmetry matches
+  Swiss' sidereal-houses convention deliberately.
+* **scripts/crossval_ascendant.py → test/ascendant.crossval.test.ts**:
+  1,001 births (1930–2025, 20 Indian cities pop-weighted + 8 world cities,
+  IANA zones at the birth instant incl. 1943 war-time Kolkata). Result:
+  **1000/1001 exact sign agreement, max Δ 18.79″** (≈1.2 s of birth time;
+  tolerance 60″), and **1 boundary birth** — both sides within 1′ of the
+  same Aries/Taurus ingress (0.6 s of clock time from it), flagged
+  `boundary: true` in the golden and asserted as such rather than
+  adjudicated: at sub-second precision the sign is genuinely contested
+  (the reference sites disagree by minutes there). The boundary-honesty
+  payload field ships with it: /v1/natal `ascendant.near_boundary` = within
+  0.5° (±2 min of birth time) of an ingress.
+* **scripts/crossval_scores.py → test/scores.crossval.test.ts**: 162
+  (date × nakshatra × asc) real composed readings, engine vs Worker,
+  **deep-equal on the whole adjusted payload** — numbers AND copy, because
+  numbers agreeing while sentences drift is exactly the §2 incoherence.
+* Both gates run in aura-api CI on every deploy, identical in kind to natal
+  and dasha. Every pre-existing golden regenerated sha256-identical (the two
+  report goldens' `rules_version` stamp moved to content_v4; all 144 case
+  bodies byte-identical — the v4 rules change no aggregate).
+
+### Rollback (§6)
+
+`content_v4` is additive: v3_2 keeps its rows, `tests/test_ascendant_scores.py::
+test_v4_without_ascendant_is_v32_plus_compose_only` proves a v4 no-asc payload
+is byte-identical to v3_2 plus the compose bundle, and rollback is repointing
+`engine/content.py` at the v3_2 seed + re-running migrate + precompute. An
+app that sends `asc` against a rolled-back database degrades to the honest
+unadjusted reading (`applied: false`) by the same guard that handles pre-v4
+rows.
+
 ## Re-running
 
-    uv run pytest tests/test_chart.py -q
+    uv run pytest tests/test_chart.py tests/test_ascendant_scores.py -q
     uv run python scripts/sensitivity_ascendant.py
+    uv run python scripts/measure_a5_scores.py
+    uv run python scripts/crossval_ascendant.py
+    uv run python scripts/crossval_scores.py

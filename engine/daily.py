@@ -25,6 +25,7 @@ from .choghadiya import (
     yamaganda_kaal,
 )
 from .panchang import Element, Panchang, compute_panchang
+from .positions import positions_from_ist
 from .timezones import resolve_tz
 
 # One canonical location for the whole app (see module docstring / migration).
@@ -65,6 +66,15 @@ def build_daily_sky(day: date, *, location: dict = CANONICAL_LOCATION) -> dict:
     illumination = round((1 - math.cos(math.radians(elong))) / 2, 4)
     phase_name = MOON_PHASES[int(round(p.phase_fraction * 8)) % 8]
 
+    # All 9 grahas' sidereal SIGN indices at the 00:00 IST day boundary — the
+    # same instant convention engine/transits.py reads by. Geocentric, so
+    # location-independent (unlike the solar times above). This is the input
+    # the A5 ascendant-aware score arithmetic needs at read time: the Worker
+    # derives each graha's transit Whole Sign house from the user's lagna as
+    # ((sign - asc_sign) mod 12) + 1 without ever running an ephemeris.
+    day_positions = positions_from_ist(datetime(day.year, day.month, day.day))
+    planet_signs = {name: int(pos.longitude // 30) for name, pos in day_positions.items()}
+
     return {
         "date": day.isoformat(),
         "location": location,
@@ -84,6 +94,7 @@ def build_daily_sky(day: date, *, location: dict = CANONICAL_LOCATION) -> dict:
             "waxing": p.waxing,
         },
         "day_nakshatra_index": p.nakshatra[0].index,
+        "planet_signs": planet_signs,
         "tithi": _elems(p.tithi),
         "nakshatra": _elems(p.nakshatra),
         "yoga": _elems(p.yoga),

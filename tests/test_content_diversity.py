@@ -28,9 +28,11 @@ from __future__ import annotations
 import json
 import re
 from collections import Counter
-from pathlib import Path
 
-SEED = Path(__file__).resolve().parent.parent / "db" / "seed" / "score_rules_content_v3_2.json"
+# The gate always runs against the ACTIVE seed — the corpus users will read —
+# not a hand-typed filename that can silently lag a version bump.
+from engine.content import SEED_PATH as SEED
+
 RULES = json.loads(SEED.read_text())["rules"]
 
 MAX_WORD_SHARE = 0.06
@@ -126,6 +128,10 @@ BANDS = RULES["score_bands"]["order"]
 CAUSE_SECTIONS = (
     "why_cause", "why_cause_nakshatra", "why_cause_paksha",
     "why_cause_tara", "why_cause_phase",
+    # content_v4 (A5): the read-time house-cause corpus — 72 lines, one per
+    # (area, transit house of the area's primary significator). User-visible
+    # copy like every other cause source, so every gate below applies to it.
+    "why_cause_house",
 )
 
 
