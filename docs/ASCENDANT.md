@@ -177,11 +177,79 @@ date+place constrain it not at all. Binding, in the spirit of "absent > wrong":
   + crossval gate, per above), payload/profile storage, and the screens.
 * **Real life-area readings (A4/A5)** — the asc-relative house of each transit
   is now computable; needs the A4 guidance rewiring + content, then A5 scoring.
+  **A4 §1 verdict (below): the daily reading stays 27 rows; the asc enters the
+  daily product through A5 scoring arithmetic, not through content keying.**
 * **Marriage / 7th house + D9** — 7th house is `house_signs[6]` today; D9
   (navamsa) is closed-form arithmetic on the longitudes we already have
   (~20 lines, add when consumed); needs astrologer-reviewed content.
 * **KP** — Placidus cusps and the `krishnamurti` ayanamsa are in place; needs
   the 249 sub-lord table, KP rules, and content.
+
+## A4 §1 — does the ascendant change the DAILY claim? Measured: NO
+
+`scripts/measure_gochara_daily.py`, 366 days from 2026-07-21, real sky sampled
+at the 00:00 IST day boundary (the same convention `engine/transits.py` reads
+by). The question: is (nakshatra × asc-sign) keying real gochara, or 27
+readings repeated 12 times under a bigger cache key? Four measurements:
+
+1. **Structure.** On every one of 366 days, the 12 ascendants' Whole Sign
+   house-configurations are 12 labeled vectors that reduce to **exactly 1
+   configuration up to rotation**. The asc axis holds one degree of freedom:
+   the shared sky, rotated. Whole Sign guarantees this by construction —
+   `house = (sign − asc) mod 12` — so it is true forever, not just this year.
+2. **Cadence.** Sign changes at the day boundary, 366 days (and inside the
+   live 40-day precompute window): Moon **161/yr, 2.3-day dwell** (17 in the
+   window) · Sun 12 · Mercury 14 · Venus 12 (1–2 in the window) · Mars 6 ·
+   Jupiter 3 · Saturn/Rahu/Ketu 1 (0 in the window). **Only the Moon moves on
+   a daily-reading cadence.** Everything else is standing configuration — the
+   claim class the transit report already owns (keyed on Moon sign, ingress
+   cadence), and it deliberately CUT Mars-and-faster as "a daily card wearing
+   a longer name". A lagna-keyed daily line for slow movers would restate the
+   transit report's claim with the count-from point renamed.
+3. **The Moon line** — the only asc-keyed daily-cadence claim ("the Moon
+   crosses your Nth"). For a fixed user it changes on **44.0%** of days —
+   runs of 2 days ×115 and 3 days ×45 across the year, so most days it
+   repeats yesterday's line verbatim. And on **44.0%** of days the Moon
+   changes sign *inside* the civil day, making the line partly false that day
+   for every keying scheme. It also occupies the slot the six daily area
+   lines already own (which life area matters today) — a cross-corpus
+   collision, not an addition.
+4. **Information.** `row(day, nak, asc) = row27(day, nak) + f((moon_sign −
+   asc) mod 12)`. The asc-dependent fragment takes 12 values per day from a
+   pool of **12 values total across the entire year**. 324 rows/day =
+   118,584 rows/yr containing the same 9,882 nakshatra readings plus a
+   **static 12-entry house-line table**. The 1-in-286 collision prize would
+   be bought by appending one of 12 stock lines — byte-distinctness without
+   claim-distinctness. That is the yearly/area-outlook failure with a bigger
+   cache key.
+
+Doctrinal footnote: traditional *daily* gochara (chandrashtama, murti
+nirnaya) is reckoned from **janma rashi (Moon sign)** — which the product
+already has without a birth time, and which the transit report already keys
+on. Lagna-reckoned analysis earns its keep on standing configurations and
+scoring, not on the daily card.
+
+**Verdict (binding for A4): the daily reading keeps 27 rows/day.** The
+precompute, cache key, and `/v1/today` contract do not change. The ascendant's
+honest routes into the product, in order:
+
+* **A5 scoring** — house-based area scores and per-user rank order (the
+  audit's "single biggest win"). There the asc changes the *numbers and their
+  order* — a claim genuinely different in kind — and it enters as **read/score
+  time arithmetic over the 27-row corpus** (base + house offsets), never as
+  row multiplication. Any A5 design that proposes 324 precomputed rows should
+  be rejected on the measurements above.
+* **Identity / birth-chart surfaces** — rising sign, houses, chart: real
+  per-user standing facts. Gated by the binding TS-port + 1,001-birth
+  crossval condition above, which A4 does **not** trigger (nothing app-visible
+  ships from this decision).
+* **Transit report re-keying** (lagna-first, Moon-sign fallback) — a separate
+  decision for the transit surface with its own crossval implications; not a
+  daily-guidance question.
+
+The unknown-birth-time policy and the boundary-honesty design (±2 min
+ingress detection, payload field) move with the asc-visible surface —
+they land when the first app-visible ascendant lands, not before.
 
 ## Re-running
 
