@@ -99,7 +99,7 @@ are no houses, and none of those four can be computed as claimed.
 |---|---|---|---|
 | 1 | **Weekly** | ✅ **Buildable now** | Built — this document's prototype |
 | 2 | **Monthly** | ✅ **Built** | Done — see § the monthly report. Window widened 14 → 40, thresholds re-derived at month scale |
-| 3 | **Yearly** | ⚠️ **Reframe** | Not from daily aggregates — see below. Rebuild on Vimshottari, which we already have and have gated |
+| 3 | **Yearly** | ❌ **Cut** | Reframe attempted and measured in § the yearly audit. Not from daily aggregates (no signal); not from Vimshottari either (N ≈ 1.7 periods/year — no second-order feature exists, and the dasha timeline already ships every claim) |
 | 4 | **Career** | ⚠️ **Reframe or defer** | No 10th house. Shippable only as an honest "period outlook for Career", never as a natal career reading |
 | 5 | **Marriage** | ❌ **Cut for launch** | No 7th house, no D9, no Venus analysis — *and* highest reputational liability of the ten |
 | 6 | **Finance** | ⚠️ **Reframe or defer** | No 2nd/11th house. `docs/voice/money.md` already bans instrument advice and outcome guarantees — the report's own name overpromises |
@@ -124,7 +124,14 @@ astrology maths**. If a second report ships after weekly, this is the candidate.
 every user in every year. There is no yearly signal in the daily data. What we
 *do* have that genuinely varies over years is **Vimshottari dasha**, which is
 already computed, already gated, and already has an authored corpus
-(`dasha_content_v2`). A yearly report should be built on that.
+(`dasha_content_v2`) — so this section originally recommended rebuilding yearly
+on that.
+
+> **Superseded 2026-07-21.** The rebuild was measured before it was authored and
+> **the recommendation is withdrawn**: a calendar year holds a mean of 1.67 antar
+> periods, so there is no second-order feature to compute, and every claim such a
+> report could make is already shipped by `astro-dasha-current` and
+> `astro-dasha-detail`. Yearly is **cut**. See § the yearly audit.
 
 **Marriage should be cut on liability, not only on maths.** Even with houses and
 D9, a wrong marriage prediction is the single most damaging thing this product
@@ -265,9 +272,11 @@ engine for **range-aggregate** reports — claims computed by holding N
 consecutive `daily_guidance` rows at once. Weekly ships; monthly is the same
 engine at month scale (pending its corpus and re-derived thresholds). The
 **yearly** report never flows through this engine: § the audit shows a year of
-tara sawtooth averages to the same middling number for every user, so yearly is
-a **Vimshottari composition over `dasha_content`** — structurally a sibling of
-the dasha timeline, not of this pipeline.
+tara sawtooth averages to the same middling number for every user. The proposed
+alternative — a **Vimshottari composition over `dasha_content`**, structurally a
+sibling of the dasha timeline rather than of this pipeline — was then measured
+and **cut**, because at year scale that sibling holds too few periods to make a
+claim the timeline does not already make. See § the yearly audit.
 
 ### The design error the gates caught
 
@@ -816,7 +825,129 @@ That is a strictly better trade than the one `/v1/natal` had to take.
 
 ---
 
-## 7 · The premium boundary
+## 7 · The yearly audit — and why it is CUT
+
+§ 2 gave yearly a **reframe** verdict: not from daily aggregates, because a year
+of tara sawtooth averages to the same middling number for every user, but
+rebuilt on **Vimshottari**, which genuinely varies over years and already has a
+gated corpus. This section measures that reframing. **It does not survive.**
+
+`tests/test_yearly_verdict.py` (4 gates) pins every number below.
+
+> **VERDICT: CUT.** Not deferred, not blocked on maths we lack — cut, because
+> the measurement says a yearly report re-renders rows the app already renders.
+> No corpus was authored, no migration written, no route added. Authoring ~200
+> lines against a structure the measurement argues against would be the
+> expensive way to learn this, which is the § 6 lesson applied a second time.
+
+### 7.1 · The measurement
+
+120 natals (moon longitude × birth date, deterministic spread) × the ten
+calendar years 2026–2035 = 1,200 samples:
+
+| | |
+|---|---|
+| antar boundaries per calendar year | **mean 0.67** — 40.9% of years have *none*, 51.5% have one |
+| maha boundaries per calendar year | **mean 0.08** — 92.1% of years have none |
+| antar periods *touching* a year | **mean 1.67** |
+| median antar length | **404 days** — against a 365-day cadence |
+| years with no boundary of any kind | **40.9%** |
+| consecutive year pairs sharing (era, dominant sub-period) | **41.6%** |
+
+### 7.2 · The structural kill: there is no shape over N = 1.7
+
+§ 1 defines a report as an artefact whose every claim is a **second-order
+feature** — distribution, spread, position, adjacency — that exists only once
+you hold N units at once. That definition is what makes weekly and monthly
+reports rather than longer cards.
+
+Weekly holds **7 days**. Monthly holds **4–5 weeks**. A yearly report over
+Vimshottari holds a mean of **1.67 antar periods**, and **exactly one, 41% of
+the time**.
+
+**There is no distribution over 1.7 items.** Every candidate second-order
+feature — which period dominates, where the handover falls, whether the year is
+split — collapses to a first-order restatement of the one period the reader is
+already in. Yearly is squeezed from both sides, and this is the finding worth
+carrying forward:
+
+* **from daily data** — 365 samples, but § 2 already established there is no
+  signal in them at year scale;
+* **from Vimshottari** — real signal, but N ≈ 1.7, too few items for any
+  second-order feature to exist at all.
+
+A range-aggregate engine needs enough samples to have a shape. A period system
+needs the period to turn over faster than the cadence. Yearly satisfies
+neither, and there is no third source.
+
+### 7.3 · The transit failure mode, one cadence up
+
+§ 6.2 withdrew the transit *report* framing because the state held for a median
+89 days against a 7-day cadence. The identical test at year scale: the median
+antar runs **404 days against a 365-day cadence**, so the state **still**
+outlives the report that would describe it. 40.9% of years contain no boundary
+at all — that year's report is a verbatim reissue of the previous one — and
+41.6% of consecutive year pairs open on the same (era, dominant sub-period)
+headline.
+
+And rotation cannot rescue it, for the reason § 3 states by name: rotating the
+words while the claim stands still is **decorative variety**. That argument
+killed a 7-day cadence in § 6.8; it applies with more force at 365 days, where
+a repeat costs the reader a year rather than a week.
+
+### 7.4 · Cross-kind, the fourth way — where it actually fails
+
+The brief asked for the cross-kind gate extended to four kinds. Extending it
+was not necessary, because the collision is not a *copy* collision that a gate
+could referee. It is total:
+
+> **Weekly owns DAYS. Monthly owns WEEKS. Transit owns PASSAGES.
+> Yearly owns NOTHING that the dasha timeline does not already own.**
+
+Every candidate yearly claim, against what ships today:
+
+| candidate yearly claim | already shipped by |
+|---|---|
+| which era you are in | `astro-dasha-current` (lord, title, essence, favours/watch) · `astro-dasha-timeline` |
+| which sub-period dominates the year | `astro-dasha-current` — the running antar, which *is* the dominant one in 51% of years at >90% coverage |
+| when the sub-period hands over | `astro-dasha-current` (`untilLabel`, `remainingLabel`) · `astro-dasha-detail`, which dates **all nine** antars |
+| what the incoming sub-period asks | `astro-dasha-detail` — tap the next sub-period, it expands its `line` + `now` |
+| whether a new era begins this year | `astro-dasha-timeline` — proportional bars with the running era marked (and available in only 8% of years) |
+
+Weekly vs monthly needed a mechanical gate because they were *adjacent* claims
+that could be worded into each other. Yearly is not adjacent to the dasha
+timeline — **it is a subset of it with a twelve-month date filter applied**,
+composed from the *same* `dasha_content` rows (`maha`, `maha_antar`) the two
+shipped screens already render. There is no division of labour to write down,
+because there is no labour left to divide.
+
+### 7.5 · What would change this verdict
+
+Stated so the cut is revisitable rather than permanent, and so the gates have a
+meaning when they fail:
+
+* **A yearly artefact keyed on something other than Vimshottari** — the four
+  life-area outlooks, if the Block 8 houses engine lands, would give a year
+  scale real content (house lords, annual profections). That is a different
+  report with a different input, not this one.
+* **`test_a_year_holds_too_few_dasha_periods_to_have_a_second_order_feature`
+  failing** — if a year ever held enough periods to have a distribution.
+* **A pratyantar-level year.** Level 3 turns over far faster and *would* give N
+  in the tens. Not pursued: `dasha_content` authors copy at maha and maha_antar
+  only, so this needs 729 new cells, and § 6.3's Mars verdict applies — at that
+  rate it is a daily card wearing a longer name.
+
+### 7.6 · What this leaves in Block 3
+
+Of the ten: weekly ✅ · monthly ✅ · transit ✅ (as a passage reading, not a
+report) · **yearly ❌ cut** · marriage ❌ cut · KP ❌ cut · PDF ⏸ · career /
+finance / business ⚠️ blocked on the Block 8 houses engine. **Every report that
+can be built without houses is now built.** Block 3 is closed on content; what
+remains in it is gated on an engine capability, not on authoring.
+
+---
+
+## 8 · The premium boundary
 
 **Recommendation, not implementation** — billing is Block 11.
 
@@ -867,13 +998,20 @@ hardening the route.
 
 ## What is deliberately not here
 
-The other eight reports · any UI or screens · PDF rendering · billing ·
-language work.
+The life-area outlooks (career / finance / business — blocked on the Block 8
+houses engine) · any UI or screens · PDF rendering · billing · language work.
 
-**Transit specifically.** § 6 ships the *computation layer and its gates*
-(`engine/transits.py`, `tests/test_transits.py`) and the design record. It does
-**not** ship: the corpus, the fear gates as code, the three-kind cross-kind
-extension, migration 011, the ingress table and its seeder, `/v1/report/transit`,
-or a crossval golden. Those wait on § 6.9 — the storage decision — because the
-audit changed what is being built, and authoring ~200 lines against a structure
-the measurement has just argued against would be the expensive way to learn it.
+**Yearly specifically.** § the yearly audit ships the *measurement and its
+gates* (`tests/test_yearly_verdict.py`) and the design record. It deliberately
+ships **no** corpus, migration, composition code or route, because the
+measurement argued against the structure before authoring began — the § 6
+lesson applied a second time, and the cheaper end of it.
+
+**Transit — no longer pending.** This paragraph previously listed the corpus,
+the fear gates, migration 011, the ingress table, `/v1/report/transit` and the
+crossval golden as *not* shipped, held on the § 6.9 storage decision. Rohan
+decided 6.9 on 2026-07-21 and **all of it shipped the same day** — see the BUILT
+block in § 6. Delivery is done too, verified against production the same day:
+`/v1/report/transit` returns a composed reading carrying real ingress runs, so
+the Worker is deployed and `transit_ingress` is seeded. **Nothing for transit is
+pending.**
