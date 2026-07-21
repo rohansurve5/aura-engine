@@ -679,7 +679,17 @@ def build_monthly_report(
             for (monday, ds), mean in zip(weeks, week_means, strict=True)
         ],
         "energy_mean": _round_half_up(_mean(energies)),
-        "half_means": {"first": h1, "second": h2},
+        # ROUNDED, consistent with every other energy figure the payload
+        # publishes. These were the one exposed float left in any report, and
+        # they leaked the raw mean (69.53333333333333) into a reader-facing
+        # field for no gain. As with `energy_mean` and the week means, the
+        # rounding is applied only at the boundary: `h1`/`h2` above drive
+        # `month_turn_of`'s HALF_MARGIN comparison at full precision, so
+        # rounding here cannot move a turn. `_round_half_up` rather than
+        # Python's banker's `round()` so the Worker's `Math.round` cannot
+        # disagree on an exact .5 — a 15-day and a 13-16 day half both reach
+        # one readily.
+        "half_means": {"first": _round_half_up(h1), "second": _round_half_up(h2)},
         "standing": {labels[a]: r for a, r in standing.items()},
         "anchors": anchors,
         "opening": opening,
@@ -689,10 +699,23 @@ def build_monthly_report(
     }
 
 
+#: The movements each report_kind is composed of. weekly and monthly share the
+#: four movements of a range-aggregate report; transit's are different because
+#: its claim is different — a standing configuration rather than a distribution
+#: over a range (migration 011 carries the full reasoning). Declared here as
+#: one mapping so the loaders, the seeder and the corpus gates cannot disagree
+#: about what a kind consists of.
+KEY_TYPES: dict[str, tuple[str, ...]] = {
+    "weekly": ("shape", "turn", "standing", "close"),
+    "monthly": ("shape", "turn", "standing", "close"),
+    "transit": ("weather", "passage", "phase", "sade_sati"),
+}
+
+
 def load_report_content_from_json(path=None, report_kind: str = "weekly") -> dict:
     """One report_kind's corpus dict (key_type → key → payload) from the seed
-    file. The v2 seed nests corpora by kind so weekly and monthly can share one
-    version and one activation marker (see migration 010)."""
+    file. The v2 seed nests corpora by kind so every kind can share one version
+    and one activation marker (see migrations 010 and 011)."""
     import json
     from pathlib import Path
 
@@ -700,7 +723,7 @@ def load_report_content_from_json(path=None, report_kind: str = "weekly") -> dic
 
     data = json.loads(Path(path or REPORT_SEED_PATH).read_text())
     corpus = data[report_kind]
-    return {kt: corpus[kt] for kt in ("shape", "turn", "standing", "close")}
+    return {kt: corpus[kt] for kt in KEY_TYPES[report_kind]}
 
 
 def load_report_content_from_db(conn, version: str, report_kind: str = "weekly") -> dict:

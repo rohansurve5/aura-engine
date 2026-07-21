@@ -454,3 +454,226 @@ def weather(active: list[Passage]) -> str:
     if good == 0:
         return "demanding"
     return "mixed"
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# COMPOSITION — the transit reading, assembled from the corpus above the line.
+#
+# THE CADENCE IS THE INGRESS, NOT THE CALENDAR. Everything below follows from
+# that one decision (docs/REPORTS.md § 6.2). A weekly report is keyed by a
+# week and a monthly by a month; a transit reading is keyed by a DATE, but its
+# content is a pure function of the STANDING CONFIGURATION on that date, so two
+# dates inside the same configuration compose byte-identical readings. That is
+# the correct behaviour, not a bug to rotate away: the claim has not changed,
+# so the words must not either. `next_change` in the payload is the date the
+# reading actually becomes stale, and it is what a refresh or a notification
+# should be scheduled against.
+#
+# ROTATION, AND WHY THERE IS ALMOST NONE. A reader returns to a given
+# (mover, house) cell once per that mover's sidereal period — Saturn 29.5
+# years, Rahu 18.6, Jupiter 11.9 — so the soonest any passage cell can recur is
+# twelve years, against the weekly corpus's 17-week guarantee. Consecutive
+# distinctness is free, and adding a rotation on top would change the words
+# while the fact stood still, which § 3 rejects by name as decorative variety.
+# So passage, phase and sade_sati cells are authored at ONE line each.
+#
+# `weather` is the single exception and the reason is a measurement, not a
+# preference: it is a THREE-CLASS claim over ~37 states per decade, so a reader
+# meets `demanding` some sixteen times in ten years. One line per class would
+# be the "fourth week running that opened the same way" failure, at the one
+# slot in the reading where it can actually happen. Its rotation is driven by
+# `ingress_index`, which advances by exactly 1 per ingress — so it is still the
+# sky changing the copy, never a clock.
+# ═════════════════════════════════════════════════════════════════════════════
+
+#: Rotation width for the `weather` opening. Seven consecutive states draw
+#: seven distinct weather lines, by the same argument the weekly corpus's 17
+#: openings make over 17 consecutive weeks: `ingress_index` advances by exactly
+#: 1 per ingress, so consecutive states cannot collide mod 7.
+WEATHER_VARIANTS = 7
+
+#: The epoch `ingress_index` counts from. FIXED AND ABSOLUTE, and it must equal
+#: the seeded span start of `transit_ingress` exactly — pinned by
+#: `test_ingress_index_epoch_matches_the_seeded_span`.
+#:
+#: This is the week_index origin bug, seen coming. `src/report.ts` once
+#: computed `week_index` from days-since-Unix-epoch: it advanced by exactly 1
+#: per week just as the engine's `toordinal() // 7` does, every self-consistency
+#: property held on BOTH sides, and the two implementations still selected
+#: different cells because they started from different origins. Only agreement
+#: on an ABSOLUTE value catches that, which is why `ingress_index` is published
+#: in the payload and carried per case in the crossval golden.
+INGRESS_EPOCH = date(2000, 1, 1)
+
+#: How far either side of the asked-for date Sade Sati is searched. A full
+#: passage runs ~7.5 years and Saturn's period is 29.5, so ±12 years captures
+#: the whole of the episode `on` sits in plus any neighbouring detached run,
+#: and cannot reach into the previous or next Sade Sati region.
+SADE_SATI_WINDOW_DAYS = 12 * 366
+
+
+def ingress_index(on: date, bodies: tuple[str, ...] = INDEPENDENT_MOVERS) -> int:
+    """How many slow-mover ingresses have occurred since `INGRESS_EPOCH`.
+
+    Advances by EXACTLY 1 per sign change across `bodies` — the transit
+    analogue of `week_index`, and the same property is what makes it usable as
+    a rotation driver: consecutive configurations get consecutive indices, so
+    they cannot collide modulo a variant count.
+
+    Runs are counted with a STRICT `>` against the epoch, which excludes the
+    clipped first run of each body — the run that was already in progress at
+    the epoch and whose true start is unknown. The Worker counts
+    `transit_ingress` rows by the same rule over a table seeded from the same
+    epoch, so the two arrive at the same absolute number rather than merely at
+    the same increments.
+    """
+    return sum(
+        1
+        for body in bodies
+        for run in sign_runs(body, INGRESS_EPOCH, on)
+        if run.start > INGRESS_EPOCH
+    )
+
+
+def next_change(active: list[Passage]) -> date:
+    """The date the standing configuration next changes — the day after the
+    first of the active passages ends.
+
+    THE READING'S EXPIRY, and the reason it is in the payload. A transit
+    reading is not issued on a schedule, so nothing else tells a client when to
+    refetch or a notification when to fire. Without this the app would have to
+    poll a payload that is byte-identical for a median of 89 days.
+    """
+    if not active:
+        raise ValueError("next_change needs at least one active passage")
+    return min(p.end for p in active) + timedelta(days=1)
+
+
+def sade_sati_state(moon_sign: int, on: date) -> dict | None:
+    """The reader's Sade Sati standing on `on`, or None if they are not in one.
+
+    THE FIVE KEYS, and why two of them are not classical phases:
+
+    * `rising` / `peak` / `setting` — the 12th / 1st / 2nd, inside an episode
+      that contains all three. The ordinary case, and the only one that may
+      speak of the long passage.
+    * `resuming` — an episode that is NOT a full passage, occurring AFTER a
+      full one in the window. This is the Sagittarius case: the main episode
+      ends 2022-04-29 and Saturn returns for 189 days from 2022-07-13. The
+      copy has to say "this is back" without saying "this is beginning", which
+      is a claim neither a phase key nor a duration could carry.
+    * `brief` — an episode that is not a full passage and has no full one
+      before it. This is the Pisces case: a 73-day dip in 2022 that satisfies
+      the naive predicate eight months before the real 6.5-year passage. The
+      copy's job here is to say it is NOT the thing the reader has heard about.
+      Calling that Sade Sati would frighten someone about a fortnight of sky.
+
+    Both non-full keys exist because `is_full_passage` distinguishes them from
+    the real passage but not from EACH OTHER, and they need opposite copy: one
+    says "again", the other says "not yet, and not this".
+    """
+    lo = on - timedelta(days=SADE_SATI_WINDOW_DAYS)
+    hi = on + timedelta(days=SADE_SATI_WINDOW_DAYS)
+    episodes = sade_sati_episodes(moon_sign, lo, hi)
+
+    current = next((e for e in episodes if e.start <= on <= e.end), None)
+    if current is None:
+        return None
+
+    phase_run = next(p for p in current.phases if p.start <= on <= p.end)
+
+    if current.is_full_passage:
+        key = SADE_SATI_PHASES[phase_run.house]
+    elif any(e.is_full_passage and e.end < current.start for e in episodes):
+        key = "resuming"
+    else:
+        key = "brief"
+
+    return {
+        "key": key,
+        "house": phase_run.house,
+        "episode_start": current.start.isoformat(),
+        "episode_end": current.end.isoformat(),
+        "episode_days": current.days,
+        "is_full_passage": current.is_full_passage,
+        "phase_start": phase_run.start.isoformat(),
+        "phase_end": phase_run.end.isoformat(),
+    }
+
+
+def build_transit_reading(moon_sign: int, on: date, content: dict) -> dict:
+    """The transit reading for one natal Moon sign on one date.
+
+    Pure function of its arguments, like `build_weekly_report`. `content` is
+    the TRANSIT corpus (`load_report_content_from_json(report_kind="transit")`)
+    — weather → lines, '<mover>.<house>' → lines, '<mover>.<phase>' → lines,
+    sade_sati key → lines.
+
+    KEYED ON THE MOON SIGN, NEVER ON THE NAKSHATRA INDEX. Gochara is reckoned
+    from the Moon sign, and 9 of the 27 nakshatras straddle a sign boundary, so
+    for a third of readers the sign is genuinely not recoverable from the index
+    the rest of the product is keyed by. A caller without a stored Moon sign
+    must be refused, not guessed at — `/v1/report/transit` 404s.
+    """
+    if not 0 <= moon_sign <= 11:
+        raise ValueError(f"moon_sign must be 0-11, got {moon_sign}")
+
+    active = active_passages(moon_sign, on)
+    ing = ingress_index(on)
+    sky = weather(active)
+
+    weather_line = content["weather"][sky]["lines"][
+        (ing + moon_sign * 3) % WEATHER_VARIANTS
+    ]
+
+    passages_out = []
+    for p in sorted(active, key=lambda p: INDEPENDENT_MOVERS.index(p.body)):
+        phase = phase_of(p.start, p.end, on)
+        passages_out.append(
+            {
+                "body": p.body,
+                "house": p.house,
+                "sign": p.sign,
+                "sign_name": SIGNS[p.sign],
+                "start": p.start.isoformat(),
+                "end": p.end.isoformat(),
+                "days": p.days,
+                "days_remaining": (p.end - on).days,
+                "entry_retrograde": p.entry_retrograde,
+                "supportive": p.supportive,
+                "phase": phase,
+                "line": content["passage"][f"{p.body}.{p.house}"]["lines"][0],
+                "phase_line": content["phase"][f"{p.body}.{phase}"]["lines"][0],
+            }
+        )
+
+    # Ketu is RENDERED, never authored. Its house is always Rahu's + 6, so a
+    # Ketu cell would be a duplication rather than a gap — but the position is
+    # one readers look for, and omitting it entirely reads as an oversight.
+    rahu = next(p for p in active if p.body == "Rahu")
+    ketu_sign = (rahu.sign + 6) % 12
+
+    ss = sade_sati_state(moon_sign, on)
+    if ss is not None:
+        ss = {**ss, "line": content["sade_sati"][ss["key"]]["lines"][0]}
+
+    return {
+        "kind": "transit",
+        "date": on.isoformat(),
+        "moon_sign": moon_sign,
+        "moon_sign_name": SIGNS[moon_sign],
+        "ingress_index": ing,
+        "weather": sky,
+        "weather_line": weather_line,
+        "passages": passages_out,
+        "ketu": {
+            "house": house_from_moon(ketu_sign, moon_sign),
+            "sign": ketu_sign,
+            "sign_name": SIGNS[ketu_sign],
+        },
+        "sade_sati": ss,
+        # The expiry, and the whole reason this artefact needs no calendar:
+        # the reading is valid until exactly this date and byte-identical
+        # until then.
+        "next_change": next_change(active).isoformat(),
+    }

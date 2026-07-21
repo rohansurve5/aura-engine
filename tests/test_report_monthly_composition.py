@@ -28,6 +28,7 @@ protects against a score_rules retune.
 from __future__ import annotations
 
 import json
+from calendar import monthrange
 from datetime import date
 from functools import cache, lru_cache
 from math import gcd
@@ -104,6 +105,34 @@ def _true_week_means(natal: int, offset: int) -> tuple[float, ...]:
         for d in days:
             energy[d] = guidance_for_nakshatra(natal, R.build_daily_sky(d), RULES)["energy"]
     return tuple(sum(energy[d] for d in days) / len(days) for _, days in weeks)
+
+
+@cache
+def _true_half_means(natal: int, offset: int) -> tuple[float, float]:
+    """The month's UNROUNDED calendar-half means, re-derived from the
+    ephemeris — the half-scale twin of `_true_week_means`, and needed for
+    exactly the same reason.
+
+    `half_means` is now published ROUNDED, consistent with every other energy
+    figure in the payload. That makes it a display of the data rather than the
+    data, so a gate that fed the payload's own halves back into
+    `month_turn_of` would be grading the report against its display: HALF_MARGIN
+    is 4, and two halves 3.6 apart (`steady`) round to values 4 apart
+    (`settles`). That is precisely the drift this helper exists to prevent, and
+    it is the failure the rounding change surfaced here first.
+
+    Note the denominator differs from `_true_week_means`: halves cover EVERY
+    day of the month, including the edge fragments that do not qualify as
+    nameable weeks.
+    """
+    y, m = _ym(offset)
+    n_days = monthrange(y, m)[1]
+    first, second = [], []
+    for i in range(n_days):
+        d = date(y, m, i + 1)
+        e = guidance_for_nakshatra(natal, R.build_daily_sky(d), RULES)["energy"]
+        (first if d.day <= R.FIRST_HALF_LAST_DAY else second).append(e)
+    return sum(first) / len(first), sum(second) / len(second)
 
 
 # ── month arithmetic ─────────────────────────────────────────────────────────
@@ -339,10 +368,9 @@ def test_reported_shape_turn_and_weeks_agree_with_the_data(natal):
         # series (a 5.6-point spread is not `level`; its rounded display can
         # look like 6, which is).
         means = list(_true_week_means(natal, offset))
+        h1, h2 = _true_half_means(natal, offset)
         assert rep["shape"] == month_shape_of(means)
-        assert rep["turn"] == month_turn_of(
-            means, rep["half_means"]["first"], rep["half_means"]["second"], rep["shape"]
-        )
+        assert rep["turn"] == month_turn_of(means, h1, h2, rep["shape"])
         assert 4 <= len(rep["weeks"]) <= 5
         if rep["shape"] == "level":
             assert rep["turn"] == "steady"

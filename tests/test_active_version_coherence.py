@@ -452,19 +452,43 @@ def test_seeding_report_content_also_marks_it_active():
     )
 
 
-def test_report_seeds_all_four_movements_in_one_transaction():
-    """The consecutive-week distinctness gate spans all four movements, so it is
-    only meaningful over a matched SET of them. A seeder that wrote `shape` and
-    `close` under different versions would produce a report whose movements were
-    never gated against each other — made unreachable, not merely detected."""
+def test_report_seeds_every_movement_of_every_kind_in_one_transaction():
+    """The consecutive-report distinctness gate spans all of a kind's
+    movements, so it is only meaningful over a matched SET of them. A seeder
+    that wrote `shape` and `close` under different versions would produce a
+    report whose movements were never gated against each other — made
+    unreachable, not merely detected.
+
+    The key types are no longer a literal here: transit's movements differ
+    from the range reports' (`weather`/`passage`/`phase`/`sade_sati` against
+    `shape`/`turn`/`standing`/`close`), so the seeder iterates
+    `engine.reports.KEY_TYPES`. That indirection is CHECKED rather than
+    trusted — the assertion below reads the real mapping and confirms it
+    covers every kind the seed file carries, which is strictly stronger than
+    the old substring match: a new kind added to the seed file with no
+    KEY_TYPES entry now fails here instead of seeding nothing.
+    """
+    from engine.reports import KEY_TYPES
+
     code = _code_only(_migrate_module().seed_report_content)
-    assert "'shape', 'turn', 'standing', 'close'" in code, (
-        "seed_report_content must write all four key types in the same "
-        "transaction as the marker"
+    assert "KEY_TYPES[report_kind]" in code, (
+        "seed_report_content must iterate every key type of every kind in the "
+        "same transaction as the marker"
     )
     assert code.count("active_content") == 1, (
-        "exactly one activation write, covering all four movements"
+        "exactly one activation write, covering every kind and every movement"
     )
+
+    seeded = json.loads(REPORT_SEED_PATH.read_text())
+    kinds = set(seeded) - {"version", "_about"}
+    unknown = kinds - set(KEY_TYPES)
+    assert not unknown, f"seed file has kinds KEY_TYPES does not know: {unknown}"
+    assert kinds == {"weekly", "monthly", "transit"}, kinds
+    for kind in kinds:
+        assert set(seeded[kind]) == set(KEY_TYPES[kind]), (
+            f"{kind}: seed file movements {sorted(seeded[kind])} do not match "
+            f"KEY_TYPES {sorted(KEY_TYPES[kind])}"
+        )
 
 
 def test_every_report_seed_file_declares_a_version_matching_its_name():

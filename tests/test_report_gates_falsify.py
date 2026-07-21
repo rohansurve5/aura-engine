@@ -654,3 +654,411 @@ def test_monthly_window_gate_would_not_pass_vacuously():
     gate greens having compared nothing."""
     assert M.MONTHS_SPAN >= R.MONTH_OPENING_VARIANTS
     assert M.MONTHS_SPAN - R.MONTH_OPENING_VARIANTS + 1 >= 2
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# THE TRANSIT GATES, AND THE ONE THAT MATTERS MOST
+#
+# The fear gates are the first gates in this repo written against a failure
+# mode that is INVISIBLE TO VOCABULARY. Everything else here falsifies by
+# planting a forbidden word or a broken number. Fear does not work like that —
+# § 6.6's example is dread built from entirely permitted words:
+#
+#     "This is a demanding stretch. Old patterns surface. What you built may be
+#      tested in ways that are not immediately obvious."
+#
+# So the signatures below escalate deliberately. Gates 1-4 are falsified the
+# ordinary way, one planted signature each and more than one per gate. Gate 5
+# is falsified by INFLATING EVERY DEMANDING LINE 40% WITH PERMITTED WORDS, and
+# the test asserts that gates 1-4 STAY GREEN while gate 5 goes red. That is the
+# entire argument for gate 5's existence, and it is the case a vocabulary scan
+# structurally cannot see.
+# ═════════════════════════════════════════════════════════════════════════════
+
+import tests.test_transit_content_seed as TG  # noqa: E402
+
+
+def _tdata() -> dict:
+    return json.loads(TG.SEED_PATH.read_text())["transit"]
+
+
+def _t_red(monkeypatch, data, gate, *args) -> str:
+    monkeypatch.setattr(TG, "_load", lambda: data)
+    with pytest.raises(AssertionError) as exc:
+        gate(*args)
+    return str(exc.value)
+
+
+def _t_green(monkeypatch, gate, *args) -> None:
+    monkeypatch.setattr(TG, "_load", lambda: json.loads(TG.SEED_PATH.read_text())["transit"])
+    gate(*args)
+
+
+# ── structure and share ──────────────────────────────────────────────────────
+
+def test_transit_size_pin_catches_a_half_authored_corpus(monkeypatch):
+    """THE VACUOUS-PASS SIGNATURE. An emptied demanding corpus must fail the
+    declared-size pin — otherwise every fear gate below would iterate an empty
+    work-list and go green having examined nothing, which is the most dangerous
+    possible outcome for this particular battery."""
+    data = _tdata()
+    for key in list(data["passage"]):
+        if not TG._is_supportive(key):
+            data["passage"][key]["lines"] = []
+    msg = _t_red(monkeypatch, data, TG.test_transit_corpus_is_the_declared_size)
+    assert "71" in msg or "==" in msg
+    _t_green(monkeypatch, TG.test_transit_corpus_is_the_declared_size)
+
+
+def test_transit_share_cap_catches_a_dominating_word(monkeypatch):
+    data = _tdata()
+    keys = list(data["passage"])
+    for i in range(G._share_limit(71) + 1):
+        data["passage"][keys[i]]["lines"][0] += " Momentum."
+    assert "momentum" in TG.check_word_share(data)
+    monkeypatch.setattr(TG, "_load", lambda: data)
+    with pytest.raises(AssertionError):
+        TG.test_transit_no_content_word_dominates()
+    _t_green(monkeypatch, TG.test_transit_no_content_word_dominates)
+
+
+def test_transit_frame_exemption_is_load_bearing_in_both_directions(monkeypatch):
+    """`Saturn` saturating must PASS and an ordinary word at the same rate must
+    FAIL — otherwise the frame list is an escape hatch that grows every time
+    the cap is inconvenient."""
+    data = _tdata()
+    saturny = sum(
+        1 for ln in TG._all_lines(data) if set(G._words(ln)) & {"saturn", "saturn's"}
+    )
+    assert saturny > G._share_limit(71)
+    assert TG.check_word_share(data) == {}
+
+
+# ── FEAR GATE 1: planet as agent — three signatures ──────────────────────────
+
+@pytest.mark.parametrize(
+    "planted,rx,label",
+    [
+        ("Saturn tests you here, and the pressure is real. Keep your routines "
+         "and let the passage run its course.",
+         TG.AGENT_ADJACENT, "adjacent"),
+        ("Rahu quietly pulls your attention away from home. Track where it "
+         "goes and protect one steady routine.",
+         TG.AGENT_ADJACENT, "adverb between"),
+        ("Jupiter brings opportunity toward the work you have been building. "
+         "Accept the openings and staff them properly.",
+         TG.AGENT_VERBS, "agency verb, no direct object"),
+        ("Whatever you have built will be examined closely by Saturn before "
+         "this passage finishes. Keep the paperwork exact.",
+         TG.PASSIVE_AGENT, "passive"),
+    ],
+)
+def test_planet_agency_gate_fires_on_more_than_one_signature(
+    monkeypatch, planted, rx, label
+):
+    """FOUR signatures across the three patterns, because the fatalism claim
+    reappears in a new grammar the moment one form is banned. The passive is
+    the one a careful author reaches for after the active is closed."""
+    data = _tdata()
+    data["passage"]["Saturn.1"]["lines"] = [planted]
+    monkeypatch.setattr(TG, "_load", lambda: data)
+    with pytest.raises(AssertionError) as exc:
+        TG.test_no_planet_acts_on_the_reader(rx, label)
+    assert planted in str(exc.value)
+    _t_green(monkeypatch, TG.test_no_planet_acts_on_the_reader, rx, label)
+
+
+def test_planet_agency_gate_permits_a_locative(monkeypatch):
+    """The discrimination, checked from the other side: a planet may be WHERE
+    it is. If this went red the gate would be unusable and the corpus could not
+    name a position at all — which is the one thing transit copy must do."""
+    data = _tdata()
+    data["passage"]["Saturn.1"]["lines"] = [
+        "Saturn stands in your own footing and sits over the ordinary business "
+        "of the body. Move deliberately and keep your standards high."
+    ]
+    monkeypatch.setattr(TG, "_load", lambda: data)
+    for rx, label in ((TG.AGENT_ADJACENT, "a"), (TG.AGENT_VERBS, "b"), (TG.PASSIVE_AGENT, "c")):
+        TG.test_no_planet_acts_on_the_reader(rx, label)
+
+
+# ── FEAR GATE 2: actionless difficulty — two signatures ──────────────────────
+
+@pytest.mark.parametrize(
+    "planted,label",
+    [
+        ("Saturn is over your own footing, and old patterns surface here. "
+         "What you built may be examined in ways that are not immediately obvious.",
+         "the section 6.6 example — permitted words only"),
+        ("Rahu sits over joint finances and the things nobody discusses. "
+         "The appetite for shortcuts is strong and the exposure is genuine.",
+         "named and bounded but with no move"),
+    ],
+)
+def test_actionless_demanding_line_is_caught(monkeypatch, planted, label):
+    """The § 6.6 example itself is signature one. It carries zero banned words,
+    zero intensifiers, no promise and no planet-as-agent — it passes gates 1, 3
+    and 4 outright — and it is exactly the copy this product must never ship."""
+    data = _tdata()
+    data["passage"]["Saturn.1"]["lines"] = [planted]
+    msg = _t_red(monkeypatch, data, TG.test_every_demanding_line_carries_an_action)
+    assert planted in msg, label
+    _t_green(monkeypatch, TG.test_every_demanding_line_carries_an_action)
+
+
+# ── FEAR GATE 3: unbounded difficulty — two signatures ───────────────────────
+
+@pytest.mark.parametrize(
+    "planted,label",
+    [
+        ("Saturn asks a great deal and the asking does not let up. "
+         "Reduce, simplify, and accept that some things must give.",
+         "actionable but names no domain and no horizon"),
+        ("Jupiter enlarges whatever it touches and the consequences spread. "
+         "Choose carefully and prepare for more than you expected.",
+         "actionable, vivid, entirely unbounded"),
+    ],
+)
+def test_unbounded_demanding_line_is_caught(monkeypatch, planted, label):
+    """Both signatures carry an action, so gate 2 passes them. What neither
+    carries is a domain or a horizon — the reader finishes not knowing what is
+    demanding or when it ends, which is the definition of dread."""
+    data = _tdata()
+    data["passage"]["Saturn.1"]["lines"] = [planted]
+    msg = _t_red(monkeypatch, data, TG.test_every_demanding_line_is_bounded)
+    assert planted in msg, label
+    _t_green(monkeypatch, TG.test_every_demanding_line_is_bounded)
+
+
+# ── FEAR GATE 4: intensifiers — two signatures ───────────────────────────────
+
+@pytest.mark.parametrize("word", ["relentless", "devastating"])
+def test_intensifier_gate_fires(monkeypatch, word):
+    data = _tdata()
+    planted = (
+        f"Saturn is over your own footing and the {word} part of it is the pace. "
+        "Move deliberately and keep your standards steady."
+    )
+    data["passage"]["Saturn.1"]["lines"] = [planted]
+    msg = _t_red(monkeypatch, data, TG.test_no_intensifiers_anywhere_in_the_transit_corpus)
+    assert word in msg
+    _t_green(monkeypatch, TG.test_no_intensifiers_anywhere_in_the_transit_corpus)
+
+
+def test_intensifiers_are_not_already_banned_words(monkeypatch):
+    """Gate 4 must be doing work the existing vocabulary gate does not. If
+    these were already in BANNED_WORDS the gate would be decoration."""
+    assert not (TG.INTENSIFIERS & G.BANNED_WORDS)
+
+
+# ── FEAR GATE 5: THE SYMMETRY GATE — the signature that cannot be gamed ──────
+
+#: Padding built ENTIRELY from words already present in the shipped corpus and
+#: permitted by every other gate. No banned word, no intensifier, no promise,
+#: no planet as agent, a domain noun and an action verb in every fragment — so
+#: gates 1-4 cannot see any of it.
+PERMITTED_PADDING = [
+    "Give this the attention it asks for and keep the pace steady.",
+    "Hold your routines and protect the basics of sleep and food.",
+    "Notice what the work costs you and record it honestly.",
+    "Keep your commitments small and check them against what you can carry.",
+]
+
+
+def _inflate_demanding(data: dict, factor: float = 0.4) -> dict:
+    """Grow every demanding passage line by ~`factor`, using permitted words
+    only. This is what fear-selling looks like from the outside: the hard copy
+    quietly acquires more words than the easy copy."""
+    for key, cell in data["passage"].items():
+        if TG._is_supportive(key):
+            continue
+        line = cell["lines"][0]
+        target = int(len(G._words(line)) * factor)
+        added, i = 0, 0
+        parts = [line]
+        while added < target:
+            frag = PERMITTED_PADDING[i % len(PERMITTED_PADDING)]
+            parts.append(frag)
+            added += len(G._words(frag))
+            i += 1
+        cell["lines"] = [" ".join(parts)]
+    return data
+
+
+@pytest.mark.parametrize("body", ["Saturn", "Jupiter", "Rahu"])
+def test_symmetry_gate_fires_on_permitted_word_inflation(monkeypatch, body):
+    """THE DECISIVE SIGNATURE, and the reason gate 5 exists at all.
+
+    Every demanding line grows 40% using nothing but vocabulary the corpus
+    already ships. A vocabulary scan CANNOT see this — there is no word to
+    find. What can see it is the measurement over the library: the demanding
+    copy is now visibly longer than the supportive copy for the same mover,
+    which is the statistical fingerprint of fear-selling.
+    """
+    data = _inflate_demanding(_tdata())
+    stats = TG.symmetry_stats(data, body)
+    assert stats["length_ratio"] > 1 + TG.SYMMETRY_LENGTH_TOLERANCE, stats
+    gate = TG.test_demanding_and_supportive_copy_are_statistically_comparable
+    _t_red(monkeypatch, data, gate, body)
+    _t_green(monkeypatch, gate, body)
+
+
+def test_the_inflated_corpus_still_passes_gates_one_through_four(monkeypatch):
+    """THE OTHER HALF OF THE ARGUMENT, and the whole point of the exercise.
+
+    If the inflated corpus also tripped gates 1-4, gate 5 would be redundant
+    and could be deleted. It does not: the padding is built from permitted
+    words, so the vocabulary and grammar gates see nothing wrong with it. Only
+    the symmetry measurement catches it — which is precisely why a corpus can
+    pass every gate this repo had before transit and still read as dread.
+    """
+    data = _inflate_demanding(_tdata())
+    monkeypatch.setattr(TG, "_load", lambda: data)
+
+    for rx, label in (
+        (TG.AGENT_ADJACENT, "adjacent"),
+        (TG.AGENT_VERBS, "verb"),
+        (TG.PASSIVE_AGENT, "passive"),
+    ):
+        TG.test_no_planet_acts_on_the_reader(rx, label)          # gate 1 green
+    TG.test_every_demanding_line_carries_an_action()             # gate 2 green
+    TG.test_every_demanding_line_is_bounded()                    # gate 3 green
+    TG.test_no_intensifiers_anywhere_in_the_transit_corpus()     # gate 4 green
+    TG.test_transit_no_banned_vocabulary()                       # and the old gate
+
+    # ...and gate 5 is red.
+    with pytest.raises(AssertionError):
+        TG.test_demanding_and_supportive_copy_are_statistically_comparable("Saturn")
+
+
+def test_symmetry_gate_also_fires_on_density_alone(monkeypatch):
+    """A second, independent signature: same word COUNT, denser words. An
+    author who knows the length check exists would reach for exactly this —
+    swap the function words out for content words and the line reads heavier
+    at identical length."""
+    data = _tdata()
+    for key, cell in data["passage"].items():
+        if TG._is_supportive(key):
+            continue
+        n = len(G._words(cell["lines"][0]))
+        cell["lines"] = [" ".join(["pressure", "burden", "weight", "cost"] * n)[: 400]]
+    stats = TG.symmetry_stats(data, "Saturn")
+    assert stats["density_gap"] > TG.SYMMETRY_DENSITY_TOLERANCE, stats
+    _t_red(
+        monkeypatch, data,
+        TG.test_demanding_and_supportive_copy_are_statistically_comparable, "Saturn",
+    )
+
+
+def test_symmetry_stats_refuses_an_empty_side(monkeypatch):
+    """The vacuous-pass signature for gate 5 specifically: if either side is
+    emptied, the ratio is undefined and the gate must refuse rather than
+    divide by zero into a green."""
+    data = _tdata()
+    for key in list(data["passage"]):
+        if TG._is_supportive(key) and key.startswith("Saturn"):
+            data["passage"][key]["lines"] = []
+    with pytest.raises(AssertionError):
+        TG.symmetry_stats(data, "Saturn")
+
+
+# ── cross-kind, three ways ───────────────────────────────────────────────────
+
+def test_transit_calendar_trespass_gate_fires(monkeypatch):
+    """A transit line naming a calendar unit is asserting a cadence the
+    artefact does not have."""
+    data = _tdata()
+    data["passage"]["Saturn.1"]["lines"] = [
+        "Saturn is on your own footing this month and the week ahead asks for "
+        "care. Move deliberately and keep your standards steady."
+    ]
+    monkeypatch.setattr(TG, "_load", lambda: data)
+    with pytest.raises(AssertionError):
+        X.test_transit_copy_never_names_a_calendar_unit()
+    _t_green(monkeypatch, X.test_transit_copy_never_names_a_calendar_unit)
+
+
+def test_range_report_planet_trespass_gate_fires(monkeypatch):
+    """The other direction: a weekly line naming a planet is making transit's
+    claim inside a range report."""
+    data = _data()
+    data["shape"]["front"]["openings"][0] = (
+        "Saturn sits behind the front of this week, and the strong days land "
+        "early. Take the openings while they are there."
+    )
+    monkeypatch.setattr(G, "_load", lambda: data)
+    with pytest.raises(AssertionError):
+        X.test_the_range_reports_never_name_a_planet_or_a_passage()
+    monkeypatch.setattr(G, "_load", lambda: json.loads(G.SEED_PATH.read_text())["weekly"])
+    X.test_the_range_reports_never_name_a_planet_or_a_passage()
+
+
+def test_transit_passage_must_name_its_mover_gate_fires(monkeypatch):
+    data = _tdata()
+    data["passage"]["Saturn.1"]["lines"] = [
+        "Your own footing needs re-earning at present, which is why everything "
+        "feels heavier. Move deliberately and let your standards decide."
+    ]
+    monkeypatch.setattr(TG, "_load", lambda: data)
+    with pytest.raises(AssertionError) as exc:
+        X.test_every_transit_passage_line_names_its_mover()
+    assert "never names saturn" in str(exc.value)
+    _t_green(monkeypatch, X.test_every_transit_passage_line_names_its_mover)
+
+
+# ── within-reading collision ─────────────────────────────────────────────────
+
+def test_within_reading_frame_gate_fires(monkeypatch):
+    """Two movers opening identically in ONE payload — the collision surface
+    no cross-kind or consecutive-reading gate can see."""
+    data = _tdata()
+    # The first four words must MATCH for a frame collision — which is the
+    # realistic failure: two cells written from one template, the mover name
+    # arriving later in the sentence.
+    data["passage"]["Saturn.4"]["lines"] = [
+        "Over the base you rest on, Saturn asks for repair rather than change. "
+        "Fix what you have and sleep properly."
+    ]
+    data["passage"]["Jupiter.4"]["lines"] = [
+        "Over the base you rest on, Jupiter enlarges comfort and expense alike. "
+        "Enjoy that and keep the household numbers visible."
+    ]
+    monkeypatch.setattr(TG, "_load", lambda: data)
+    with pytest.raises(AssertionError):
+        X.test_two_movers_never_open_the_same_way_in_one_reading()
+    _t_green(monkeypatch, X.test_two_movers_never_open_the_same_way_in_one_reading)
+
+
+def test_within_reading_same_house_overlap_gate_fires(monkeypatch):
+    """Two movers in the same house saying the same thing in different words —
+    the sharper case, caught on content overlap rather than on frame."""
+    data = _tdata()
+    data["passage"]["Saturn.4"]["lines"] = [
+        "Saturn presses on home, domestic life, rest and the household routine. "
+        "Repair what you have and sleep properly."
+    ]
+    data["passage"]["Rahu.4"]["lines"] = [
+        "Where home, domestic life, rest and the household routine are concerned, "
+        "Rahu unsettles things. Keep one room steady."
+    ]
+    monkeypatch.setattr(TG, "_load", lambda: data)
+    with pytest.raises(AssertionError) as exc:
+        X.test_two_movers_in_the_same_house_do_not_say_the_same_thing()
+    # The gate reports the FIRST offending pair in key order, which may be
+    # Jupiter.4/Rahu.4 rather than Saturn.4/Rahu.4 — the planted Rahu line
+    # collides with the shipped Jupiter one too. Either way it must be a
+    # 4th-house pair, which is what the assertion checks.
+    msg = str(exc.value)
+    assert ".4 / " in msg and msg.split(":")[0].endswith(".4"), msg
+    _t_green(monkeypatch, X.test_two_movers_in_the_same_house_do_not_say_the_same_thing)
+
+
+def test_within_reading_work_list_would_not_pass_vacuously():
+    """432 cross-mover pairs and 36 same-house pairs. If the corpus lost a
+    mover the work-list would shrink and every gate above would green having
+    compared less than it claims."""
+    assert len(X.cross_mover_pairs()) == 432
+    same_house = [
+        1 for ka, _, kb, _ in X.cross_mover_pairs() if ka.split(".")[1] == kb.split(".")[1]
+    ]
+    assert len(same_house) == 36

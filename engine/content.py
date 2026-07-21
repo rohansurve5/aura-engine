@@ -47,7 +47,7 @@ DASHA_SEED_PATH = _SEED_DIR / "dasha_content_v2.json"
 # ── THE ONE LINE THAT SETS THE ACTIVE identity_content VERSION ───────────────
 IDENTITY_SEED_PATH = _SEED_DIR / "identity_content_v2.json"
 # ── THE ONE LINE THAT SETS THE ACTIVE report_content VERSION ─────────────────
-REPORT_SEED_PATH = _SEED_DIR / "report_content_v3.json"
+REPORT_SEED_PATH = _SEED_DIR / "report_content_v4.json"
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -79,10 +79,13 @@ ACTIVE_IDENTITY_CONTENT_VERSION = declared_version(IDENTITY_SEED_PATH)
 
 #: The active period-report corpus version — derived, never typed. Written to
 #: `active_content` by migrate; served by /v1/report/content. ONE version spans
-#: every report_kind in the seed file (weekly today, monthly when authored), on
+#: every report_kind in the seed file — weekly, monthly and transit — on
 #: identity_content's reasoning: separate markers per kind would make "weekly v2
-#: + monthly v1, gated against neither pairing" expressible. This corpus feeds
-#: the weekly/monthly report engine only — yearly is a Vimshottari composition
-#: over dasha_content — and the remaining report types are a scope decision,
-#: not an authoring backlog; see docs/REPORTS.md § what we can actually compute.
+#: + monthly v1, gated against neither pairing" expressible. That argument got
+#: stronger with transit rather than weaker: the cross-kind gate now runs THREE
+#: ways, so the corpora are gated as one set and a per-kind marker would put
+#: half of each comparison behind a separate rollback. Yearly remains outside
+#: this corpus entirely — it is a Vimshottari composition over dasha_content —
+#: and the remaining report types are a scope decision, not an authoring
+#: backlog; see docs/REPORTS.md § what we can actually compute.
 ACTIVE_REPORT_CONTENT_VERSION = declared_version(REPORT_SEED_PATH)

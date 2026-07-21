@@ -28,6 +28,7 @@ import argparse
 import json
 import os
 import sys
+from datetime import date
 from pathlib import Path
 
 import psycopg
@@ -43,6 +44,8 @@ from engine.content import DASHA_SEED_PATH as CONTENT_DASHA_SEED_PATH
 from engine.content import IDENTITY_SEED_PATH as CONTENT_IDENTITY_SEED_PATH
 from engine.content import REPORT_SEED_PATH as CONTENT_REPORT_SEED_PATH
 from engine.content import SEED_PATH as CONTENT_SEED_PATH  # noqa: E402
+from engine.reports import KEY_TYPES  # noqa: E402
+from engine.transits import INDEPENDENT_MOVERS, INGRESS_EPOCH, MOVERS, sign_runs  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
 MIGRATIONS = ROOT / "migrations"
@@ -206,26 +209,33 @@ def seed_report_content(conn: psycopg.Connection) -> None:
     (`'..._v10' < '..._v2'` in Postgres) has now been closed twice in this repo
     by retrofit; closing it up front costs nothing.
 
-    EVERY report_kind in the seed file (weekly today, monthly when authored)
-    and all four key types are written in ONE transaction with ONE marker.
-    Within a kind, the four movements are gated as a set (the consecutive-week
+    EVERY report_kind in the seed file — weekly, monthly and transit — and all
+    of each kind's key types are written in ONE transaction with ONE marker.
+    Within a kind, the movements are gated as a set (the consecutive-week
     distinctness gate spans all four); across kinds, the corpus gates run over
     the whole seed file, so a weekly at v2 beside a monthly at v1 would be a
     pairing no gate ever saw. Both halves of that argument are 008's — made
     unreachable rather than merely detected. A kind present in the file but
     unknown here fails loudly rather than seeding a partial corpus.
+
+    Transit strengthened that argument rather than complicating it: the
+    cross-kind gate now runs three ways (weekly x monthly x transit), so the
+    three corpora are gated as a single set and a per-kind marker would leave
+    half of every comparison behind an independent rollback. Its key types
+    differ from the range reports' — see engine/reports.py KEY_TYPES and
+    migration 011.
     """
     data = json.loads(REPORT_SEED.read_text())
     version = data["version"]
-    kinds = [k for k in ("weekly", "monthly") if k in data]
-    unknown = set(data) - {"version", "_about", "weekly", "monthly"}
+    kinds = [k for k in KEY_TYPES if k in data]
+    unknown = set(data) - {"version", "_about"} - set(KEY_TYPES)
     if unknown:
         raise SystemExit(f"report seed {REPORT_SEED.name} has unknown keys: {sorted(unknown)}")
     count = 0
     with conn.cursor() as cur:
         for report_kind in kinds:
             corpus = data[report_kind]
-            for key_type in ("shape", "turn", "standing", "close"):
+            for key_type in KEY_TYPES[report_kind]:
                 for key, payload in corpus[key_type].items():
                     cur.execute(
                         "INSERT INTO report_content "
@@ -249,6 +259,71 @@ def seed_report_content(conn: psycopg.Connection) -> None:
     )
 
 
+#: The seeded span of `transit_ingress`. The START is not a free choice — it
+#: must equal `engine.transits.INGRESS_EPOCH` exactly, because the Worker
+#: derives `ingress_index` by COUNTING rows in this table and the engine
+#: derives it by counting runs from that epoch. Two origins that both advance
+#: by 1 per ingress but start in different places is precisely the week_index
+#: bug that only an absolute-value crossval caught; here the equality is
+#: asserted in code rather than left to a comment.
+INGRESS_END = date(2045, 1, 1)
+
+
+def seed_transit_ingress(conn: psycopg.Connection) -> None:
+    """Seed `transit_ingress` with the slow movers' contiguous sign runs.
+
+    ONE ROW PER CONTIGUOUS OCCUPANCY. A retrograde re-entry into a sign the
+    body has already visited writes a SEPARATE row — never an extension of the
+    earlier one and never a merge across the gap. Measured 2024-2034, Saturn
+    re-crosses Pisces->Aries twice and Jupiter re-crosses seven of its twelve
+    boundaries, so a table of one ingress date per (body, sign) would be wrong
+    about a passage it is telling someone how to live through.
+
+    Ketu is seeded even though it carries no independent claim: its house is
+    always Rahu's + 6, so no copy is keyed on it, but the position is rendered
+    and the Worker should read it rather than recompute the offset.
+
+    Upserts are keyed by (body, start_date), so re-running with a wider span is
+    additive and idempotent — a widened seed cannot leave the table worse than
+    it started, the same rollback property the precompute window widening has.
+    """
+    span_days = (INGRESS_END - INGRESS_EPOCH).days
+    count = 0
+    with conn.cursor() as cur:
+        for body in MOVERS:
+            for run in sign_runs(body, INGRESS_EPOCH, INGRESS_END):
+                cur.execute(
+                    "INSERT INTO transit_ingress "
+                    "(body, sign, start_date, end_date, entry_retrograde) "
+                    "VALUES (%s, %s, %s, %s, %s) "
+                    "ON CONFLICT (body, start_date) DO UPDATE SET "
+                    "sign = EXCLUDED.sign, end_date = EXCLUDED.end_date, "
+                    "entry_retrograde = EXCLUDED.entry_retrograde",
+                    (body, run.sign, run.start, run.end, run.entry_retrograde),
+                )
+                count += 1
+        cur.execute(
+            "INSERT INTO transit_ingress_span (id, start_date, end_date) "
+            "VALUES (1, %s, %s) "
+            "ON CONFLICT (id) DO UPDATE SET "
+            "start_date = EXCLUDED.start_date, end_date = EXCLUDED.end_date, "
+            "updated_at = now()",
+            (INGRESS_EPOCH, INGRESS_END),
+        )
+    conn.commit()
+    ingresses = sum(
+        1
+        for body in INDEPENDENT_MOVERS
+        for run in sign_runs(body, INGRESS_EPOCH, INGRESS_END)
+        if run.start > INGRESS_EPOCH
+    )
+    print(
+        f"seeded {count} transit_ingress runs over {INGRESS_EPOCH}..{INGRESS_END} "
+        f"({span_days} days; {ingresses} counted ingresses across "
+        f"{len(INDEPENDENT_MOVERS)} independent movers)"
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
         description=(
@@ -268,6 +343,7 @@ def main(argv: list[str] | None = None) -> int:
             seed_dasha_content(conn)
             seed_identity_content(conn)
             seed_report_content(conn)
+            seed_transit_ingress(conn)
     return 0
 
 
