@@ -29,15 +29,13 @@ from __future__ import annotations
 
 import json
 from datetime import date
-from functools import lru_cache
+from functools import cache, lru_cache
 from math import gcd
 
 import pytest
 
 import engine.reports as R
 from engine.reports import (
-    HALF_MARGIN,
-    LEVEL_SPREAD,
     MONTH_CLOSE_VARIANTS,
     MONTH_OPENING_VARIANTS,
     MONTH_SHAPES,
@@ -51,7 +49,7 @@ from engine.reports import (
     month_turn_of,
     month_weeks,
 )
-from engine.scoring import load_rules_from_json
+from engine.scoring import guidance_for_nakshatra, load_rules_from_json
 
 RULES = load_rules_from_json()
 CONTENT = R.load_report_content_from_json(report_kind="monthly")
@@ -76,10 +74,36 @@ def _cached_sky(monkeypatch):
     monkeypatch.setattr(R, "build_daily_sky", lru_cache(maxsize=None)(R.build_daily_sky))
 
 
-@lru_cache(maxsize=None)
+@cache
 def _mreport(natal: int, offset: int) -> dict:
     y, m = _ym(offset)
     return build_monthly_report(natal, y, m, RULES, CONTENT)
+
+
+@cache
+def _true_week_means(natal: int, offset: int) -> tuple[float, ...]:
+    """The month's UNROUNDED weekly means, re-derived from the ephemeris
+    independently of the report payload.
+
+    Every `energy_mean` a report publishes is a rounded integer (a report
+    should never show a reader 70.85714285714286). That makes the payload a
+    *display* of the data rather than the data, and the anchor gate must not
+    grade the report against its own display: two weeks 0.4 apart round to
+    the same integer, so `max(published_means)` can pick the wrong week and
+    the gate would pass a report that names the wrong carrier week.
+
+    So the gate re-computes the true means here and grades the report against
+    those — strictly stronger than the pre-rounding version, which trusted a
+    payload field. The rounding is then checked separately, as faithfulness of
+    the display, by `test_published_means_are_the_rounded_true_means`.
+    """
+    y, m = _ym(offset)
+    weeks = month_weeks(y, m)
+    energy = {}
+    for _, days in weeks:
+        for d in days:
+            energy[d] = guidance_for_nakshatra(natal, R.build_daily_sky(d), RULES)["energy"]
+    return tuple(sum(energy[d] for d in days) / len(days) for _, days in weeks)
 
 
 # ── month arithmetic ─────────────────────────────────────────────────────────
@@ -271,22 +295,50 @@ def test_anchors_name_the_actual_extreme_weeks(natal):
     ISO weeks of the month — dates a reader can open a weekly report for."""
     for offset in range(0, MONTHS_SPAN, 2):
         rep = _mreport(natal, offset)
-        means = [w["energy_mean"] for w in rep["weeks"]]
+        true = list(_true_week_means(natal, offset))
         starts = [w["week_start"] for w in rep["weeks"]]
+        assert len(true) == len(starts), rep["month"]
         carrier = rep["anchors"]["carrier_week"]
         thin = rep["anchors"]["thin_week"]
-        assert carrier["energy_mean"] == max(means), rep["month"]
-        assert thin["energy_mean"] == min(means), rep["month"]
-        assert carrier["week_start"] == starts[means.index(max(means))]
-        assert thin["week_start"] == starts[means.index(min(means))]
+        # The falsifiable claim is the DATE, graded against the true means —
+        # not against the report's own rounded display (see _true_week_means).
+        assert carrier["week_start"] == starts[true.index(max(true))], rep["month"]
+        assert thin["week_start"] == starts[true.index(min(true))], rep["month"]
+        assert carrier["energy_mean"] == R._round_half_up(max(true)), rep["month"]
+        assert thin["energy_mean"] == R._round_half_up(min(true)), rep["month"]
         assert date.fromisoformat(carrier["week_start"]).weekday() == 0
+
+
+@pytest.mark.parametrize("natal", SAMPLE_NATALS)
+def test_published_means_are_the_rounded_true_means(natal):
+    """Faithfulness of the display, the other half of the anchor gate.
+
+    Every `energy_mean` in the payload — per week, both anchors, and the
+    month — is an INTEGER and is exactly the half-up rounding of the value the
+    engine actually computed. This is what stops "round it for the reader"
+    from drifting into "show the reader a different number", and it is why the
+    gate above can afford to grade dates against the unrounded series.
+    """
+    for offset in range(0, MONTHS_SPAN, 2):
+        rep = _mreport(natal, offset)
+        true = list(_true_week_means(natal, offset))
+        published = [w["energy_mean"] for w in rep["weeks"]]
+        assert all(isinstance(v, int) for v in published), rep["month"]
+        assert published == [R._round_half_up(t) for t in true], rep["month"]
+        assert isinstance(rep["energy_mean"], int)
+        assert isinstance(rep["anchors"]["carrier_week"]["energy_mean"], int)
+        assert isinstance(rep["anchors"]["thin_week"]["energy_mean"], int)
 
 
 @pytest.mark.parametrize("natal", SAMPLE_NATALS[:3])
 def test_reported_shape_turn_and_weeks_agree_with_the_data(natal):
     for offset in range(0, MONTHS_SPAN, 3):
         rep = _mreport(natal, offset)
-        means = [w["energy_mean"] for w in rep["weeks"]]
+        # Re-derived from the ephemeris, not read back from the payload: the
+        # published means are rounded, and classification runs on the raw
+        # series (a 5.6-point spread is not `level`; its rounded display can
+        # look like 6, which is).
+        means = list(_true_week_means(natal, offset))
         assert rep["shape"] == month_shape_of(means)
         assert rep["turn"] == month_turn_of(
             means, rep["half_means"]["first"], rep["half_means"]["second"], rep["shape"]

@@ -169,6 +169,19 @@ def _mean(values: list[int]) -> float:
     return sum(values) / len(values)
 
 
+def _round_half_up(x: float) -> int:
+    """Round half away from zero for positive x — i.e. JS `Math.round`.
+
+    Deliberately NOT Python's `round()`, which is banker's (half-to-even):
+    over a 4-7 day week mean or a 28-31 day month mean an exact .5 is
+    reachable, and the two rules disagree there. Every rounded field in a
+    report payload goes through this, so the Worker's `Math.round` and the
+    engine cannot drift on a tie. Energies are 0-100, so the positive-only
+    simplification is safe and is asserted in the composition gates.
+    """
+    return int(x + 0.5)
+
+
 def strong_days(energies: list[int]) -> list[int]:
     """Indices of the `STRONG_DAYS` highest-energy days, earliest first.
 
@@ -630,14 +643,20 @@ def build_monthly_report(
     # argmin — the monthly instance of "a report may not contradict its own
     # data". Their Monday dates are the weekly report's own keys, so the two
     # kinds corroborate rather than repeat.
+    # `energy_mean` is ROUNDED wherever it is exposed, at every scale, matching
+    # the weekly report — which has only ever published an integer. The raw
+    # float stays internal: `week_means` above drives classification and the
+    # argmax/argmin tie-breaks, so rounding here cannot move a shape, a turn or
+    # an anchor. It only stops the payload publishing 70.85714285714286 to a
+    # reader, which is a number no report should ever show anyone.
     anchors = {
         "carrier_week": {
             "week_start": weeks[carrier_i][0].isoformat(),
-            "energy_mean": week_means[carrier_i],
+            "energy_mean": _round_half_up(week_means[carrier_i]),
         },
         "thin_week": {
             "week_start": weeks[thin_i][0].isoformat(),
-            "energy_mean": week_means[thin_i],
+            "energy_mean": _round_half_up(week_means[thin_i]),
         },
     }
 
@@ -655,15 +674,11 @@ def build_monthly_report(
             {
                 "week_start": monday.isoformat(),
                 "days_in_month": len(ds),
-                "energy_mean": mean,
+                "energy_mean": _round_half_up(mean),
             }
             for (monday, ds), mean in zip(weeks, week_means, strict=True)
         ],
-        # int(x + 0.5) rather than round(): Python round() is banker's
-        # (half-to-even) and JS Math.round is floor(x + 0.5); over a 28-31 day
-        # mean an exact .5 is reachable, so the engine uses the Worker's
-        # semantics — the crossval golden would catch any disagreement.
-        "energy_mean": int(_mean(energies) + 0.5),
+        "energy_mean": _round_half_up(_mean(energies)),
         "half_means": {"first": h1, "second": h2},
         "standing": {labels[a]: r for a, r in standing.items()},
         "anchors": anchors,

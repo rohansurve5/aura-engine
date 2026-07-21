@@ -104,7 +104,7 @@ are no houses, and none of those four can be computed as claimed.
 | 5 | **Marriage** | ❌ **Cut for launch** | No 7th house, no D9, no Venus analysis — *and* highest reputational liability of the ten |
 | 6 | **Finance** | ⚠️ **Reframe or defer** | No 2nd/11th house. `docs/voice/money.md` already bans instrument advice and outcome guarantees — the report's own name overpromises |
 | 7 | **Business** | ⚠️ **Reframe or defer** | Same as career; the weakest distinct case of the four |
-| 8 | **Transit** | ✅ **Buildable — the surprise** | See below. No new maths |
+| 8 | **Transit** | ✅ **Buildable — but NOT as a report** | Confirmed: no new maths. Audited in full in § the transit audit, where the "report" framing is withdrawn |
 | 9 | **KP** | ❌ **Cut** | Ascendant + 12 Placidus cusps + 249 sub-divisions + the Krishnamurti ayanamsa. Nothing exists |
 | 10 | **PDF** | ⏸ **Not a content problem** | A rendering concern. Defer until there is content worth exporting |
 
@@ -473,7 +473,294 @@ ship a paid report screen against it as it stands.
 
 ---
 
-## 6 · The premium boundary
+## 6 · The transit audit — and why it is not a third report
+
+Transit was flagged in § the audit as the surprise: more buildable than the four
+life-area reports, because *gochara* is reckoned from the **Moon sign**, which we
+compute and gate, rather than from the ascendant, which we do not have. That
+holds. **The maths verdict is confirmed. The framing is withdrawn.**
+
+`engine/transits.py` ships the computation layer;
+`tests/test_transits.py` (27 gates) pins every measurement quoted below.
+**No corpus, no endpoint and no `report_kind='transit'` row exists yet** — see
+§ what is deliberately not here.
+
+### 6.1 · What claim class this is
+
+The three shipped systems and the two report kinds each have a unit:
+
+| System | Unit | Question |
+|---|---|---|
+| `daily_guidance` | one **date** | what is today like? |
+| weekly report | a **range** | where did the strong days fall? |
+| monthly report | a **range** | which week carried the month? |
+| `dasha_content` | one **period** | what is this era about? |
+| **transit** | one **passage** | which slow mover stands where, and for how long? |
+
+Weekly aggregates days. Monthly aggregates weeks. **Transit aggregates nothing.**
+It reads no `daily_guidance` row at all — it has no energy series, no peak day,
+no shape, no distribution. Its claim is a *standing configuration with a
+duration*: Saturn is in your 12th, it has been since March, it holds until
+October.
+
+That is structurally **`dasha_content`, not a report**: keyed by a (mover,
+relative-position) pair, static per key, dated by an externally computed
+timeline. The task asked whether transit is "a period reading dressed as a
+report". It is. Recorded as a finding, not worked around.
+
+Two things distinguish it from dasha and are worth naming, because they are what
+a transit artefact would own that nothing else does:
+
+* **Concurrency.** Dasha has one period active per level. Transit has three
+  independent movers running at once on unrelated clocks. Their *mix* is a
+  claim no single passage carries — the only second-order feature here (§ 6.4).
+* **It is the product's first cohort-level artefact.** Daily guidance varies by
+  27 natal stars and by date. A transit reading varies by **12 Moon signs** and
+  changes only a few times a year, so everyone with the same Moon sign reads the
+  same thing at the same time.
+
+### 6.2 · The measurement that settled it
+
+For one Moon sign, the tuple of slow-mover houses (Saturn / Jupiter / Rahu),
+daily scan, 2026–2036:
+
+| | |
+|---|---|
+| distinct states in 10 years | **37** |
+| median state length | **89 days** |
+| mean | 99 days |
+| longest unchanged | **375 days** |
+
+Against a weekly report's new range every 7 days and a monthly's every ~30.
+
+**A transit report on a calendar cadence would ship a byte-identical payload to
+the previous issue for months at a stretch** — a reader on a weekly cadence
+receives the same claim a dozen times running. And no rotation can rescue that:
+rotating the words while the claim stands still is *decorative variety*, which
+§ 3 rejects by name ("the copy differs because the week differs"). Pinned by
+`test_the_transit_state_changes_far_too_slowly_to_be_a_periodic_report`, which
+also states the condition under which the verdict should be revisited.
+
+**Consequence: the natural cadence is the INGRESS, not the calendar.** A transit
+artefact should be refreshed when the sky changes and notified on, not issued
+weekly or monthly.
+
+### 6.3 · What is actually computable — audited against the engine
+
+Verified by computation, not by reading:
+
+| | Verdict | Evidence |
+|---|---|---|
+| **Saturn** sign, any date | ✅ exact | Swiss Ephemeris, Lahiri VP285 |
+| **Jupiter** sign | ✅ exact | " |
+| **Rahu / Ketu** axis | ✅ exact, and *cleanest* | mean node: 6 crossings in 10 years, **all** retrograde, **zero** boundaries re-crossed |
+| **Sade Sati** | ✅ exact — *as runs* | § 6.5 |
+| **Dhaiya** (Saturn 4th/8th) | ✅ exact | `dhaiya_runs` |
+| **Retrograde state** | ✅ for Saturn/Jupiter · ❌ *meaningless* for Rahu/Ketu | the mean node is retrograde by construction — always. A "Rahu is retrograde" line is true in every reading ever composed: Barnum in its purest mechanical form. Pinned. |
+| **Mars, and everything faster** | ❌ **cut** | 66 sign crossings in 10 years (~1 per 55 days). At that rate a "transit reading" is a daily card wearing a longer name — and Mars is the Mangal Dosha fear vector. |
+| Ascendant, houses, aspects, D9 | ❌ absent | unchanged from § the audit |
+
+**Ketu carries no independent information.** Ketu is always exactly six houses
+from Rahu — asserted across all 360 measured states. It is a position to render,
+never a claim to author, so the corpus is **3 movers × 12 houses = 36 cells**,
+not 48.
+
+**The delivery constraint nobody had written down.** Gochara needs the Moon
+**sign**. It is *not* derivable from the natal nakshatra index the rest of the
+product is keyed by: a nakshatra is 13°20′ against a 30° sign, so **9 of the 27
+straddle a boundary** — Krittika, Mrigashira, Punarvasu, Uttara Phalguni,
+Chitra, Vishakha, Uttara Ashadha, Dhanishtha, Purva Bhadrapada. **A third of
+readers cannot have their sign inferred.** `/v1/natal` already returns
+`moon_sign` and `UserProfile.natalMoonSign` already stores it, so the input
+exists — but anything transit-shaped must key on the **sign** and **404 rather
+than guess** when it is absent. Pinned by
+`test_nakshatra_index_cannot_determine_the_moon_sign` so it cannot be
+"optimised" back to the nakshatra index later.
+
+### 6.4 · The only second-order feature: weather
+
+`weather()` counts how many movers stand in classically supportive houses and
+returns `supported` | `mixed` | `demanding`. It is a **count over the set**, not
+a synthesis of it: with no aspect computation and no yoga logic the engine
+cannot say what Saturn-in-the-12th *means together with* Jupiter-in-the-5th, and
+authoring pair copy would invent a claim the maths does not support.
+
+**It votes on Saturn and Jupiter only, and that is a measurement.** Over 12 signs
+× 6 years:
+
+| voters | result |
+|---|---|
+| Saturn + Jupiter, unanimous | demanding 43.5% / mixed 46.4% / supported 10.1% — **all live** |
+| + Rahu, unanimous | `supported` collapses to **1.8%** — dead copy |
+| + Rahu, majority | `mixed` becomes **unreachable** (3 voters cannot tie) |
+
+Adding a third voter destroys a class either way. That is the weekly corpus's
+dead `even` cell arriving a second time — and this time it was caught **before**
+authoring rather than after. Rahu still renders as a standing passage; it does
+not vote. Pinned by `test_adding_rahu_as_a_third_voter_would_kill_a_class_either_way`.
+
+### 6.5 · Sade Sati — the highest-liability computation in the product
+
+The single most asked-about transit in the Indian market, and the one most
+likely to be got wrong. **It is computable exactly — but only as a set of runs.**
+
+Every consumer app that publishes "your Sade Sati runs from X to X+7.5 years" is
+wrong for a meaningful share of users, for three measured reasons:
+
+1. **Episodes detach.** Moon in Sagittarius: the main episode ends **2022-04-29**
+   — and Saturn **returns** for a further 189 days, 2022-07-13 to 2023-01-17. An
+   app publishing a single end date tells that reader the hard period is over
+   and then goes silent when it resumes ten weeks later. That is the failure
+   mode that destroys trust permanently.
+2. **Phases are not monotone.** The classical 12th → 1st → 2nd progression does
+   not hold in real sky. Moon in Virgo measures **seven** phase runs in one
+   episode — `12, 1, 12, 1, 2, 1, 2` — because Saturn retrogrades back across
+   each boundary. Copy saying "you have entered the setting phase" must survive
+   saying it twice without contradicting itself.
+3. **Short dips are not Sade Sati.** Moon in Pisces has a **73-day** episode in
+   2022 that satisfies the naive predicate eight months before the real
+   6.5-year passage. Calling that Sade Sati would frighten someone about a
+   fortnight of sky. `SadeSatiEpisode.is_full_passage` separates them.
+
+So nothing in `engine/transits.py` merges across a gap or interpolates a nominal
+duration. `sign_runs` emits one run per contiguous occupancy and is the
+primitive everything else is built from. This is also a genuine accuracy
+differentiator: done properly it is *more correct than the market*.
+
+The same retrograde trap applies generally — Saturn re-crosses Pisces→Aries
+twice in 2027–28; Jupiter re-crosses **seven of its twelve** boundaries within a
+decade.
+
+### 6.6 · The fear problem, and the gate for it
+
+Transit content is where astrology apps fear-sell hardest. The binding rules
+already forbid fatalism and fear-selling, and `BANNED_WORDS` already carries
+`doom`, `curse`, `malefic`, `inauspicious`, `fate`, `disaster`. **That is not
+enough: fear is constructible entirely from permitted words.**
+
+> *"This is a demanding stretch. Old patterns surface. What you built may be
+> tested in ways that are not immediately obvious."*
+
+Zero banned words. Reads as dread. The rule the copy must hold instead:
+
+> **A hard transit is named, bounded, and actionable — in that order.** The
+> reader must finish knowing *what* is demanding, *how long* it lasts, and *what
+> to do about it*. Remove any one and it becomes either a threat or a
+> platitude.
+
+Five gates, of which the last is the one that cannot be gamed:
+
+1. **No planet may act on the reader.** The fatalism signature is grammatical:
+   the planet as agent, the reader as patient. `Saturn tests you`, `Rahu pulls
+   you`, `Jupiter brings you`. Matched as a pattern, not a word list.
+2. **Every demanding line must carry an action** — an actionable second-person
+   clause from the voice specs' vocabulary. IDENTITY.md §7: *never a warning the
+   reader must pay to resolve.* A difficulty with no action **is** that warning.
+3. **Every demanding line must be bounded** — it names its scope (a life domain)
+   or its horizon (the phase, the passage, "while this lasts"). An unbounded
+   negative is the definition of dread.
+4. **Intensifier ban**, separate from `BANNED_WORDS`: `severe`, `intense`,
+   `brutal`, `harsh`, `crushing`, `relentless`, `overwhelming`, `devastating`,
+   `dire`, `grim`, `ordeal`, `suffering`, `torment`, `misfortune`, `calamity`.
+5. **The symmetry gate.** For each mover, the `demanding` cells and the
+   `supportive` cells must be **statistically comparable** — mean line length
+   and mean content-word density within tolerance. *You cannot write dread
+   without spending more words on it.* Fear-selling shows up as the hard copy
+   being longer and more vivid than the easy copy, and this fires on copy that
+   passes gates 1–4 completely. It is the transit analogue of the share cap:
+   a measurement over the corpus that no individual line reveals.
+
+Falsification must use **more than one signature** (per the existing suite's
+standard): a planet-subject line, an actionless demanding line, an unbounded
+one, an intensifier, and — the decisive one — **inflating every demanding line
+by 40% with entirely permitted words**, which must fire gate 5 while 1–4 stay
+green. Plus the vacuous-pass signature: an emptied demanding corpus must fail
+the declared-size pin.
+
+### 6.7 · Cross-kind, with a third term
+
+Weekly and monthly divide by unit. Transit needs a third term that is not a
+subdivision of calendar time at all:
+
+> **Weekly owns DAYS. Monthly owns WEEKS. Transit owns PASSAGES.**
+
+| kind | names | never names |
+|---|---|---|
+| weekly | dated days, weekday names | months |
+| monthly | ISO weeks, month-halves | days, weekdays |
+| **transit** | movers, houses, phases, multi-month spans | days, weekdays, weeks, month-halves, calendar months |
+
+Transit is the **only** kind that may name a planet, and it may never name a
+calendar unit — which makes the division mechanically checkable in both
+directions and is a cleaner separation than weekly/monthly have with each other.
+The existing `DAY_TOKENS` / `MONTH_TOKENS` sets extend to a third,
+`PASSAGE_TOKENS`, plus a `PLANET_TOKENS` set banned from weekly and monthly copy
+and *required* in transit passage copy.
+
+Slot correspondence, since the movements differ: transit's `weather` occupies
+the "what is this whole thing" slot that weekly/monthly `shape` openings hold,
+and transit's `passage` occupies the per-item judgment slot that `standing`
+holds. Those are the pairs worth comparing; the rest do not co-occupy a slot in
+the reader's attention, the same scoping argument as the existing gate's
+36-not-324.
+
+### 6.8 · Rotation — derived from transit's own cycle
+
+The weekly cycle is 52 and the monthly is 12. **Transit's cycle is a planetary
+period, and the answer that falls out is that no rotation is needed at all.**
+
+A reader returns to a given (mover, house) cell once per that mover's sidereal
+period: **Saturn 29.5 years, Rahu 18.6, Jupiter 11.9.** Jupiter's is the
+shortest, so the soonest any cell can recur is **twelve years** — against the
+weekly corpus's 17-week guarantee and the monthly's 13 months. Consecutive
+distinctness is free. And adding a rotation would be *actively wrong*: the claim
+holds for a median 89 days, so rotating copy inside a passage changes the words
+while the fact stands still.
+
+The real repetition risk is a different one, and it needs its own gate:
+**collision across movers inside one sitting.** The reader sees Saturn, Jupiter
+and Rahu simultaneously, so if two share a house, two lines about the same house
+arrive together. The gate is therefore a **within-reading** cross product over
+(mover A, house) × (mover B, house) for A ≠ B — the transit analogue of the
+cross-kind same-slot rule, applied inside one payload.
+
+The only legitimate within-passage variation is **phase** (`early`/`middle`/
+`late`, computed from the real run length, not a nominal one). That is
+data-driven variety in the § 3 sense: the copy changes because the reader's
+position in the passage changed.
+
+### 6.9 · Where it should live — the open decision
+
+The brief specified `report_kind='transit'` in `report_content`. Given § 6.1 that
+is now a genuine question rather than a given, and it is **Rohan's call**:
+
+* **`report_content`, `report_kind='transit'`.** Keeps ONE activation marker
+  across all long-form copy, which is the property 010's reasoning actually
+  cares about — a half-rolled-back state stays inexpressible. Costs a widened
+  `key_type` CHECK (migration 011), since transit's key types (`passage`,
+  `phase`, `weather`, `sade_sati`) are disjoint from `shape|turn|standing|close`.
+* **A sibling of `dasha_content`.** Matches the structure honestly, and matches
+  the cadence (both are period readings dated by a computed timeline). Costs a
+  second marker and a second rollback path.
+
+**Recommendation: `report_content` with the widened CHECK.** The structural
+finding changes the *cadence, the rotation and the gates* — all of which are
+recorded above — but not the *versioning mechanics*, which are the only thing
+the table choice actually governs. One marker is worth more than taxonomic
+tidiness.
+
+### 6.10 · Data delivery
+
+Slow-mover positions should reach the Worker as a **precomputed ingress table**
+seeded by this engine — not recomputed in-Worker with astronomy-engine as
+`/v1/natal` does. Sign runs for three movers over a wide span are a few hundred
+rows that change never; a lookup needs no second implementation, so there is no
+drift surface and no crossval burden for the maths (only for the composition).
+That is a strictly better trade than the one `/v1/natal` had to take.
+
+---
+
+## 7 · The premium boundary
 
 **Recommendation, not implementation** — billing is Block 11.
 
@@ -524,5 +811,13 @@ hardening the route.
 
 ## What is deliberately not here
 
-The other nine reports · any UI or screens · PDF rendering · billing ·
-language work. The weekly report is one report proven, which is the point.
+The other eight reports · any UI or screens · PDF rendering · billing ·
+language work.
+
+**Transit specifically.** § 6 ships the *computation layer and its gates*
+(`engine/transits.py`, `tests/test_transits.py`) and the design record. It does
+**not** ship: the corpus, the fear gates as code, the three-kind cross-kind
+extension, migration 011, the ingress table and its seeder, `/v1/report/transit`,
+or a crossval golden. Those wait on § 6.9 — the storage decision — because the
+audit changed what is being built, and authoring ~200 lines against a structure
+the measurement has just argued against would be the expensive way to learn it.

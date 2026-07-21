@@ -46,9 +46,6 @@ compared nothing. tests/test_report_gates_falsify.py proves each gate fires.
 
 from __future__ import annotations
 
-import json
-import re
-
 import pytest
 
 import tests.test_report_content_seed as G
