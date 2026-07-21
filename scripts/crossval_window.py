@@ -289,7 +289,8 @@ def main() -> int:
         [{**p, "place": n} for p, (n, *_) in zip(polar_payload, POLAR_CASES, strict=True)]
     )
     for (name, lat, lon, zone, date), act in zip(POLAR_CASES, polar_actual, strict=True):
-        eng = engine_window({"lat": round(lat, 1), "lon": round(lon, 1), "zone": zone, "date": date})
+        case = {"lat": round(lat, 1), "lon": round(lon, 1), "zone": zone, "date": date}
+        eng = engine_window(case)
         if eng is not None:
             problems.append(f"{name}: engine unexpectedly found a rise/set")
         if "error" not in act:

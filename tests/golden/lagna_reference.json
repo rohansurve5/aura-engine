@@ -1,0 +1,80 @@
+{
+ "source": "drikpanchang.com muhurat/lagna.html tables (per geoname-id + date) and panchang.astrosage.com/panchang/lagna-table sunrise-lagna anchors, fetched 2026-07-21",
+ "notes": [
+  "DrikPanchang tables are exact (root-found): intraday spread of (engine - reference) is ~display rounding only.",
+  "DrikPanchang displays whole minutes; residual per-city constants up to ~158s at |lat|>50 documented in docs/ASCENDANT.md.",
+  "AstroSage 'Lagna at Sunrise' degree is exact and matches this engine to arc-seconds when evaluated at (displayed instant + deltaT) for modern dates — the TT-frame discovery, docs/ASCENDANT.md.",
+  "AstroSage's lagna TABLE is traditional arithmetic (sidereal -9.8 s/h sawtooth around exact anchors) and is deliberately NOT a fixture.",
+  "DrikPanchang refuses |lat| above ~62 ('High Latitudes are not entertained', Tromso geoname 3133895); this engine computes Whole Sign charts there and returns placidus_cusps=None.",
+  "begins times are local wall clock; hours >= 24 mean the next civil day. Coordinates are geonames values for the geoname-id, cross-checked via sunrise agreement < 30s.",
+  "1943 Kolkata table is in India's war-time DST clock (UTC+06:30, tzdb Asia/Kolkata) — verified: interpreting it at +05:30 misses every window by ~1h."
+ ],
+ "drik_tables": [
+  {
+   "id": "pune-1989", "geoname_id": 1259229, "city": "Pune", "lat": 18.5204, "lon": 73.8567,
+   "tz": "Asia/Kolkata", "date": "1989-09-23",
+   "begins": {"Virgo": "06:00", "Libra": "08:06", "Scorpio": "10:17", "Sagittarius": "12:31",
+    "Capricorn": "14:37", "Aquarius": "16:27", "Pisces": "18:05", "Aries": "19:40",
+    "Taurus": "21:23", "Gemini": "23:23", "Cancer": "25:35", "Leo": "27:48"}
+  },
+  {
+   "id": "kolkata-1943", "geoname_id": 1275004, "city": "Kolkata", "lat": 22.56263, "lon": 88.36304,
+   "tz": "Asia/Kolkata", "date": "1943-06-15",
+   "begins": {"Taurus": "03:57", "Gemini": "05:55", "Cancer": "08:08", "Leo": "10:23",
+    "Virgo": "12:35", "Libra": "14:45", "Scorpio": "16:59", "Sagittarius": "19:15",
+    "Capricorn": "21:21", "Aquarius": "23:08", "Pisces": "24:42", "Aries": "26:13"}
+  },
+  {
+   "id": "chennai-1965", "geoname_id": 1264527, "city": "Chennai", "lat": 13.08784, "lon": 80.27847,
+   "tz": "Asia/Kolkata", "date": "1965-03-05",
+   "begins": {"Aquarius": "05:14", "Pisces": "06:56", "Aries": "08:35", "Taurus": "10:23",
+    "Gemini": "12:25", "Cancer": "14:36", "Leo": "16:46", "Virgo": "18:49",
+    "Libra": "20:50", "Scorpio": "22:57", "Sagittarius": "25:09", "Capricorn": "27:16"}
+  },
+  {
+   "id": "srinagar-1975", "geoname_id": 1255634, "city": "Srinagar", "lat": 34.08565, "lon": 74.80555,
+   "tz": "Asia/Kolkata", "date": "1975-08-15",
+   "begins": {"Cancer": "03:39", "Leo": "06:04", "Virgo": "08:28", "Libra": "10:50",
+    "Scorpio": "13:15", "Sagittarius": "15:37", "Capricorn": "17:40", "Aquarius": "19:18",
+    "Pisces": "20:40", "Aries": "21:58", "Taurus": "23:28", "Gemini": "25:20"}
+  },
+  {
+   "id": "london-2000", "geoname_id": 2643743, "city": "London", "lat": 51.50853, "lon": -0.12574,
+   "tz": "Europe/London", "date": "2000-01-01",
+   "begins": {"Sagittarius": "07:04", "Capricorn": "09:00", "Aquarius": "10:14", "Pisces": "11:09",
+    "Aries": "12:00", "Taurus": "13:03", "Gemini": "14:40", "Cancer": "17:03",
+    "Leo": "19:51", "Virgo": "22:42", "Libra": "25:32", "Scorpio": "28:23"}
+  },
+  {
+   "id": "singapore-2000", "geoname_id": 1880252, "city": "Singapore", "lat": 1.28967, "lon": 103.85007,
+   "tz": "Asia/Singapore", "date": "2000-02-29",
+   "begins": {"Aquarius": "06:17", "Pisces": "08:09", "Aries": "09:58", "Taurus": "11:55",
+    "Gemini": "14:01", "Cancer": "16:11", "Leo": "18:13", "Virgo": "20:06",
+    "Libra": "21:58", "Scorpio": "23:56", "Sagittarius": "26:04", "Capricorn": "28:13"}
+  },
+  {
+   "id": "wellington-2010", "geoname_id": 2179537, "city": "Wellington", "lat": -41.28664, "lon": 174.77557,
+   "tz": "Pacific/Auckland", "date": "2010-12-25",
+   "begins": {"Sagittarius": "05:12", "Capricorn": "07:30", "Aquarius": "10:02", "Pisces": "12:35",
+    "Aries": "15:07", "Taurus": "17:41", "Gemini": "20:07", "Cancer": "22:08",
+    "Leo": "23:38", "Virgo": "24:50", "Libra": "25:59", "Scorpio": "27:20"}
+  },
+  {
+   "id": "anchorage-2015", "geoname_id": 5879400, "city": "Anchorage", "lat": 61.21806, "lon": -149.90028,
+   "tz": "America/Anchorage", "date": "2015-07-04",
+   "begins": {"Gemini": "03:20", "Cancer": "05:55", "Leo": "09:14", "Virgo": "12:32",
+    "Libra": "15:49", "Scorpio": "19:10", "Sagittarius": "22:10", "Capricorn": "23:54",
+    "Aquarius": "24:38", "Pisces": "25:04", "Aries": "25:28", "Taurus": "26:03"}
+  }
+ ],
+ "astrosage_sunrise_anchors": [
+  {"date": "1943-06-15", "tz": "Asia/Kolkata", "city": "New Delhi", "lat": 28.6139, "lon": 77.209,
+   "sunrise": "06:22:44", "sign": "Taurus", "longitude_dms": [59, 12, 21], "era": "historical"},
+  {"date": "1965-03-05", "tz": "Asia/Kolkata", "city": "New Delhi", "lat": 28.6139, "lon": 77.209,
+   "sunrise": "06:42:42", "sign": "Aquarius", "longitude_dms": [319, 54, 7], "era": "historical"},
+  {"date": "1989-09-23", "tz": "Asia/Kolkata", "city": "New Delhi", "lat": 28.6139, "lon": 77.209,
+   "sunrise": "06:09:38", "sign": "Virgo", "longitude_dms": [155, 35, 34], "era": "modern"},
+  {"date": "2026-07-21", "tz": "Asia/Kolkata", "city": "New Delhi", "lat": 28.6139, "lon": 77.209,
+   "sunrise": "05:35:57", "sign": "Cancer", "longitude_dms": [93, 19, 24], "era": "modern"}
+ ]
+}

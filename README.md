@@ -44,6 +44,15 @@ product API can be closed without ever touching AGPL-covered code.
   pratyantar** tables with start/end dates. Two year-length conventions
   (`solar` = 365.25 days, default; `savana` = 360 days). Pratyantar is
   structured but marked **experimental**.
+- **`engine/chart.py`** — the natal chart: sidereal **ascendant (lagna)** with
+  nakshatra/pada, **Whole Sign houses** (shipped) + Placidus cusps (for future
+  KP; `None` above the polar circles), and all 9 grahas placed in signs AND
+  houses with retrogradation. Birth time and place are load-bearing here — the
+  asc moves ~1°/4 min. Golden-tested against DrikPanchang + AstroSage across
+  8 latitudes and 83 years, incl. war-time DST; the full record — two
+  reference-site discoveries (TT-frame houses, AstroSage's arithmetic lagna
+  table), tolerances, birth-time sensitivity numbers, unknown-birth-time
+  policy — is in **`docs/ASCENDANT.md`**.
 - **`engine/panchang.py`** — full panchang for a date + location: sunrise/sunset
   (Swiss rise/set), tithi, nakshatra, yoga, karana — every boundary root-found
   on the driving angle (never sampled), so kshaya/adhika cases fall out
@@ -245,7 +254,10 @@ Conventions proven by the golden set:
 * Residual systematic ~**+1 min late** on tithi/karana end times
   (ayanamsa-independent — visible in the elongation-driven categories, so it
   is a small Moon-theory/ΔT/display-truncation difference on their side).
-  Inside tolerance; **accepted, not tuned away**.
+  Inside tolerance; **accepted, not tuned away**. *A3 postscript*: the
+  ascendant cross-validation identified the likely cause — the reference
+  sites evaluate time-driven quantities in the **TT frame** (~ΔT ≈ 57–69 s
+  ahead of UT); see `docs/ASCENDANT.md` > Discovery 1.
 
 ### Historical timezones and India's war-time DST (1941–45)
 
