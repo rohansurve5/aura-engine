@@ -1,0 +1,34 @@
+{
+ "source": "drikpanchang.com/muhurat/choghadiya.html (GET, server-rendered), fetched 2026-07-22",
+ "notes": "Non-IST extension of the Pune golden (drik_panchang.json). DrikPanchang's choghadiya page IS headlessly GET-fetchable (unlike the POST-only guna-milan calculator, docs/COMPATIBILITY.md). Names below are engine spellings; DrikPanchang prints the Sanskrit -a forms (Chara=Chal, Labha=Labh, Amrita=Amrit, Kala=Kaal, Shubha=Shubh, Roga=Rog, Udvega=Udveg). Day+night name sequences and (where fetched) Rahu Kaal were verified EXACTLY against the fetch on three weekdays, both hemispheres, and two DST zones. Sunrise/sunset are the minute-rounded DrikPanchang display; the engine (upper-limb+refraction, Swiss) is asserted within tolerance. Non-IST rise/set is already gated tightly by crossval_window.py; choghadiya names/parts are pure weekday arithmetic, so non-IST correctness reduces to rise/set correctness.",
+ "tolerance_s": 180,
+ "cities": [
+  {
+   "place": "London",
+   "lat": 51.5074, "lon": -0.1278, "zone": "Europe/London",
+   "date": "2026-08-07", "weekday": "Friday",
+   "sunrise": "05:33", "sunset": "20:38",
+   "day": ["Chal", "Labh", "Amrit", "Kaal", "Shubh", "Rog", "Udveg", "Chal"],
+   "night": ["Rog", "Kaal", "Labh", "Udveg", "Shubh", "Amrit", "Chal", "Rog"],
+   "rahu": "11:13"
+  },
+  {
+   "place": "Sydney",
+   "lat": -33.8688, "lon": 151.2093, "zone": "Australia/Sydney",
+   "date": "2026-03-15", "weekday": "Sunday",
+   "sunrise": "06:54", "sunset": "19:14",
+   "day": ["Udveg", "Chal", "Labh", "Amrit", "Kaal", "Shubh", "Rog", "Udveg"],
+   "night": ["Shubh", "Amrit", "Chal", "Rog", "Kaal", "Labh", "Udveg", "Shubh"],
+   "rahu": null
+  },
+  {
+   "place": "New York",
+   "lat": 40.7128, "lon": -74.0060, "zone": "America/New_York",
+   "date": "2026-11-10", "weekday": "Tuesday",
+   "sunrise": "06:37", "sunset": "16:42",
+   "day": ["Rog", "Udveg", "Chal", "Labh", "Amrit", "Kaal", "Shubh", "Rog"],
+   "night": ["Kaal", "Labh", "Udveg", "Shubh", "Amrit", "Chal", "Rog", "Kaal"],
+   "rahu": null
+  }
+ ]
+}
