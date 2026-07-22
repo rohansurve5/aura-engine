@@ -173,6 +173,42 @@ gate identical in kind to natal/dasha (the golden JSON here is already in the
 engine-vs-worker shape), asserting the full breakdown deep-equal. Until then
 there is nothing in the runtime path to gate.
 
+### §2.1 — The Worker port (Block 4 wiring task) — the condition is now DISCHARGED
+
+`aura-api` now serves `GET /v1/compatibility` (`src/compatibility.ts`), and the
+gate above exists and blocks deploys. How divergence is made impossible:
+
+* **Single source of truth for the tables.** The Worker never retypes a table:
+  `aura-api/src/compatibilityTables.gen.ts` is machine-generated from THIS
+  module by `scripts/crossval_compatibility_worker.py` (which also regenerates
+  the golden). The Python constants stay the only hand-maintained encoding,
+  still pinned structurally by `tests/test_compatibility.py`.
+* **Exhaustive functional parity.** Because every koota is a finite lookup,
+  the gate does not sample — it enumerates: all 108×108 (nakshatra, pada)
+  midpoint couples (11,664), exercising every cell of every table, every
+  parihar branch and both directions of every asymmetry, deep-equal
+  engine-vs-Worker; plus the 14 curated couples byte-equal including the
+  composed voice lines. Replayed on every CI run / deploy by
+  `aura-api/test/compatibility.crossval.test.ts`.
+* **Mangal births.** Mars/Venus/Moon/lagna are real ephemeris quantities, so
+  240 seeded births are resolved by `compute_chart` (Swiss Ephemeris) and by
+  the Worker (astronomy-engine, `src/planets.ts`): every longitude within 1′
+  (measured max ≈ 19″), every sign/house/flag equal, with the
+  `crossval_ascendant.py` boundary-honesty policy for bodies within 1′ of an
+  ingress.
+* **Honest degradation over HTTP.** No birth time → the koota tally computes
+  (with `time_assumed` carried per partner) and `mangal.available: false`
+  states the lagna reference is unavailable — never a noon fabrication, and
+  never a bare "manglik" bit anywhere in the payload (route-tested). The
+  directional-role convention (§3) is stated in the payload (`roles`), not
+  hidden.
+* **Ethics gates cross the port (see §3).** The falsification battery runs at
+  AUTHORING time in this repo, against `DESCRIPTORS`. The export ships those
+  exact bytes, the golden embeds them, and the vitest gate asserts the
+  Worker's corpus is byte-equal — so copy that has not passed the gates
+  cannot reach users without failing the deploy gate. The Worker composes no
+  free text.
+
 ## §3 — The ethics problem (the central risk)
 
 Compatibility is where astrology does the most real-world harm: weddings called

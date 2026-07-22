@@ -249,6 +249,47 @@ golden-parity gate over the ranking, engine-vs-Worker, identical in kind to
 natal/dasha. The choghadiya/kaal half is already ported and gated. Until then
 there is nothing in the runtime path to gate — this task is engine + gates only.
 
+### §5.1 — The Worker port (Block 4 wiring task) — the condition is now DISCHARGED
+
+`aura-api` now serves `GET /v1/muhurat?lat&lon&zone&date&purpose[&lagna]`
+(`src/muhurat.ts`), composed EXACTLY as this document prescribes: the 16
+choghadiya slots + 3 kaals come from the already-gated `src/window.ts`, the
+midpoint rising signs from the already-gated `src/ascendant.ts` (nothing
+duplicated), and only the purpose filter / score / ordering was ported. The
+gate is `scripts/crossval_muhurat.py` → `aura-api/test/muhurat.crossval.test.ts`,
+blocking on every CI run and deploy, in two layers:
+
+* **Rank parity, deep-equal, no tolerance:** the Worker's `rankWindows` replays
+  the engine's own Swiss-resolved windows for 45 place-dates (the
+  `crossval_window.py` place panel incl. non-IST, DST-transition and
+  fractional-offset zones, plus fixed DST-boundary dates) × 4 purposes × 3
+  lagna variants = 540 rankings, reproducing every score, tie-break and
+  personalisation label exactly.
+* **End-to-end with input tolerance:** the full Worker path must produce the
+  same candidate sets within the ±90 s rise/set model gap, the same
+  personalisation label, and the same midpoint rising sign except where the
+  engine flags the midpoint ascendant within 1° of an ingress (drift-contested,
+  flagged and counted); rankings free of such slots must match order and
+  scores exactly (363/540 on generation).
+
+**The honesty contract is IN THE PAYLOAD:** every response carries
+`personalisation: 'impersonal' | 'personal_12way'` and leads its `lines` with
+the matching corpus sentence, so the app cannot present an impersonal list as
+personal without contradicting a field it received. No `lagna` parameter →
+impersonal, always — a noon lagna is never fabricated.
+
+**Ethics gates cross the port:** the falsification battery
+(`tests/test_muhurat_gates_falsify.py`) runs at AUTHORING time against
+`DESCRIPTORS` in this repo; `scripts/crossval_muhurat.py` machine-exports that
+exact corpus to `aura-api/src/muhuratTables.gen.ts`, embeds it in the golden,
+and the vitest gate asserts byte-equality — ungated copy cannot ship. The
+Worker composes no free text.
+
+**The paywall copy is restored** per the exact §5 wordings, as constants on
+`astrology_paywall_hero_screen.dart` (`muhuratFeaturePersonal` /
+`muhuratFeatureImpersonal`); the default feature list carries the impersonal
+line so the screen never over-claims without profile state.
+
 ---
 
 ## Re-running
