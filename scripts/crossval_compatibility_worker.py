@@ -57,6 +57,8 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
+from crossval_compatibility import COUPLES, person_at  # noqa: E402
+
 from engine import compatibility as compat  # noqa: E402
 from engine.chart import compute_chart  # noqa: E402
 from engine.compatibility import (  # noqa: E402
@@ -64,12 +66,12 @@ from engine.compatibility import (  # noqa: E402
     DESCRIPTORS,
     GANA_BY_NAK,
     NADI_BY_NAK,
-    Person,
     SIGN_LORDS,
     VARNA_BY_SIGN,
     VASHYA_GROUP_BY_SIGN,
     YONI_BY_NAK,
     YONI_NAMES,
+    Person,
     bhakoot_parihar,
     describe_match,
     guna_milan,
@@ -78,7 +80,6 @@ from engine.compatibility import (  # noqa: E402
 )
 from engine.timezones import local_to_utc  # noqa: E402
 from engine.vimshottari import NAKSHATRA_ARC, NAKSHATRAS  # noqa: E402
-from crossval_compatibility import COUPLES, person_at  # noqa: E402
 
 ENGINE_ROOT = Path(__file__).resolve().parent.parent
 AURA_API = ENGINE_ROOT.parent / "aura-api"
@@ -215,14 +216,14 @@ def generate_mangal_cases() -> list[dict]:
     rng = random.Random(SEED)
     span_minutes = int((END - START).total_seconds() // 60)
     cases = []
-    for i in range(N_MANGAL - len(WORLD_CITIES) - 1):
+    for _ in range(N_MANGAL - len(WORLD_CITIES) - 1):
         when = START + timedelta(minutes=rng.randrange(span_minutes + 1))
         city = rng.choices(INDIA_CITIES, weights=INDIA_WEIGHTS)[0]
         cases.append({
             "dob": when.strftime("%Y-%m-%d"), "time": when.strftime("%H:%M"),
             "zone": "Asia/Kolkata", "lat": city[1], "lon": city[2],
         })
-    for i, city in enumerate(WORLD_CITIES):
+    for city in WORLD_CITIES:
         when = START + timedelta(minutes=rng.randrange(span_minutes + 1))
         cases.append({
             "dob": when.strftime("%Y-%m-%d"), "time": when.strftime("%H:%M"),

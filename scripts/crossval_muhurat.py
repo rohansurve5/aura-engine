@@ -58,12 +58,12 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
 
-from engine.chart import ascendant_sidereal  # noqa: E402
-from engine.muhurat import DESCRIPTORS, PURPOSES, rank_windows  # noqa: E402
-from engine import muhurat as muh  # noqa: E402
+import swisseph as swe  # noqa: E402
 from crossval_window import PLACES, engine_window  # noqa: E402
 
-import swisseph as swe  # noqa: E402
+from engine import muhurat as muh  # noqa: E402
+from engine.chart import ascendant_sidereal  # noqa: E402
+from engine.muhurat import DESCRIPTORS, PURPOSES, rank_windows  # noqa: E402
 
 ENGINE_ROOT = Path(__file__).resolve().parent.parent
 AURA_API = ENGINE_ROOT.parent / "aura-api"
