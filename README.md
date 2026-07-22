@@ -59,6 +59,14 @@ product API can be closed without ever touching AGPL-covered code.
   naturally — plus vaar, paksha and moon phase.
 - **`engine/choghadiya.py`** — day/night choghadiya (8 splits each) and rahu
   kaal / gulika kaal / yamaganda, pure arithmetic on sunrise/sunset.
+- **`engine/compatibility.py`** — Ashtakoota (Guna Milan): the classical
+  eight-koota tally out of 36, plus Nadi/Bhakoot parihar and Mangal (Kuja)
+  Dosha facts, from two people's Moon placements. A deterministic classical
+  **table lookup** over the already-cross-validated Moon nakshatra/rashi — not
+  an independent computation — so it is proven by table-encoding pins + a frozen
+  breakdown golden, and its band-neutral voice is guarded by a fatalism/fear
+  gate battery. Full record (computability, reference divergences, the ethics
+  position on Nadi/Mangal): **`docs/COMPATIBILITY.md`**.
 - **`engine/ephemeris.py`** — the single place that configures Swiss Ephemeris
   (data path, ayanamsa registry, IST↔UTC).
 - **`engine/daily.py` + `engine/scoring.py`** — the precompute payload builders:

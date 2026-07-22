@@ -1,0 +1,1220 @@
+[
+ {
+  "label": "same-nakshatra (Nadi dosha + pada parihar)",
+  "note": "same nakshatra => same Nadi => dosha; parihar 'same nakshatra, different pada'",
+  "groom": {
+   "nakshatra": "Ashwini",
+   "pada": 1,
+   "sign": 0
+  },
+  "bride": {
+   "nakshatra": "Ashwini",
+   "pada": 3,
+   "sign": 0
+  },
+  "kootas": [
+   {
+    "name": "Varna",
+    "got": 1.0,
+    "max": 1.0,
+    "detail": "Kshatriya / Kshatriya",
+    "is_dosha": false
+   },
+   {
+    "name": "Vashya",
+    "got": 2.0,
+    "max": 2.0,
+    "detail": "Chatushpada / Chatushpada",
+    "is_dosha": false
+   },
+   {
+    "name": "Tara",
+    "got": 3.0,
+    "max": 3.0,
+    "detail": "ok / ok",
+    "is_dosha": false
+   },
+   {
+    "name": "Yoni",
+    "got": 4.0,
+    "max": 4.0,
+    "detail": "Horse / Horse",
+    "is_dosha": false
+   },
+   {
+    "name": "Graha Maitri",
+    "got": 5.0,
+    "max": 5.0,
+    "detail": "Mars / Mars (same lord)",
+    "is_dosha": false
+   },
+   {
+    "name": "Gana",
+    "got": 6.0,
+    "max": 6.0,
+    "detail": "Deva / Deva",
+    "is_dosha": false
+   },
+   {
+    "name": "Bhakoot",
+    "got": 7.0,
+    "max": 7.0,
+    "detail": "1/1 apart",
+    "is_dosha": false
+   },
+   {
+    "name": "Nadi",
+    "got": 0.0,
+    "max": 8.0,
+    "detail": "Aadi / Aadi",
+    "is_dosha": true
+   }
+  ],
+  "total": 28.0,
+  "nadi_parihar": {
+   "dosha": "Nadi",
+   "applies": true,
+   "reason": "same nakshatra, different pada"
+  },
+  "bhakoot_parihar": {
+   "dosha": "Bhakoot",
+   "applies": false,
+   "reason": "no Bhakoot dosha"
+  },
+  "lines": [
+   "A high traditional tally: most of the eight koota markers line up. Read it as encouragement rather than a guarantee, and keep talking.",
+   "Nadi: both charts share the same nadi in this tradition, which some readers weigh for health and children. It is a marker to discuss, not a barrier, and traditional exceptions can set it aside. Here a recognised exception applies: same nakshatra, different pada."
+  ]
+ },
+ {
+  "label": "Aries x Scorpio (Bhakoot 6/8 + same-lord parihar + Nadi dosha)",
+  "note": "Bhakoot 6/8 dosha, lords both Mars => parihar; Bharani/Anuradha both Madhya => Nadi dosha",
+  "groom": {
+   "nakshatra": "Bharani",
+   "pada": 1,
+   "sign": 0
+  },
+  "bride": {
+   "nakshatra": "Anuradha",
+   "pada": 2,
+   "sign": 7
+  },
+  "kootas": [
+   {
+    "name": "Varna",
+    "got": 0.0,
+    "max": 1.0,
+    "detail": "Kshatriya / Brahmin",
+    "is_dosha": false
+   },
+   {
+    "name": "Vashya",
+    "got": 1.0,
+    "max": 2.0,
+    "detail": "Chatushpada / Keeta",
+    "is_dosha": false
+   },
+   {
+    "name": "Tara",
+    "got": 1.5,
+    "max": 3.0,
+    "detail": "bad / ok",
+    "is_dosha": false
+   },
+   {
+    "name": "Yoni",
+    "got": 3.0,
+    "max": 4.0,
+    "detail": "Elephant / Deer",
+    "is_dosha": false
+   },
+   {
+    "name": "Graha Maitri",
+    "got": 5.0,
+    "max": 5.0,
+    "detail": "Mars / Mars (same lord)",
+    "is_dosha": false
+   },
+   {
+    "name": "Gana",
+    "got": 5.0,
+    "max": 6.0,
+    "detail": "Manushya / Deva",
+    "is_dosha": false
+   },
+   {
+    "name": "Bhakoot",
+    "got": 0.0,
+    "max": 7.0,
+    "detail": "8/6 apart",
+    "is_dosha": true
+   },
+   {
+    "name": "Nadi",
+    "got": 0.0,
+    "max": 8.0,
+    "detail": "Madhya / Madhya",
+    "is_dosha": true
+   }
+  ],
+  "total": 15.5,
+  "nadi_parihar": {
+   "dosha": "Nadi",
+   "applies": false,
+   "reason": "same Nadi, no recognised exception"
+  },
+  "bhakoot_parihar": {
+   "dosha": "Bhakoot",
+   "applies": true,
+   "reason": "same rashi lord"
+  },
+  "lines": [
+   "A low traditional tally: fewer of the eight koota markers line up. It is one tradition's count rather than a verdict, and many close bonds score low here.",
+   "Bhakoot: the moon signs sit in a count this tradition reads for household rhythm. Treat it as a note for conversation rather than a ruling, and traditional exceptions can set it aside. Here a recognised exception applies: same rashi lord.",
+   "Nadi: both charts share the same nadi in this tradition, which some readers weigh for health and children. It is a marker to discuss, not a barrier, and traditional exceptions can set it aside."
+  ]
+ },
+ {
+  "label": "Taurus x Capricorn (Bhakoot 5/9 + friendly-lord parihar)",
+  "note": "Bhakoot 5/9 dosha, Venus & Saturn mutual friends => parihar",
+  "groom": {
+   "nakshatra": "Rohini",
+   "pada": 1,
+   "sign": 1
+  },
+  "bride": {
+   "nakshatra": "Shravana",
+   "pada": 2,
+   "sign": 9
+  },
+  "kootas": [
+   {
+    "name": "Varna",
+    "got": 1.0,
+    "max": 1.0,
+    "detail": "Vaishya / Vaishya",
+    "is_dosha": false
+   },
+   {
+    "name": "Vashya",
+    "got": 2.0,
+    "max": 2.0,
+    "detail": "Chatushpada / Chatushpada",
+    "is_dosha": false
+   },
+   {
+    "name": "Tara",
+    "got": 3.0,
+    "max": 3.0,
+    "detail": "ok / ok",
+    "is_dosha": false
+   },
+   {
+    "name": "Yoni",
+    "got": 2.0,
+    "max": 4.0,
+    "detail": "Serpent / Monkey",
+    "is_dosha": false
+   },
+   {
+    "name": "Graha Maitri",
+    "got": 5.0,
+    "max": 5.0,
+    "detail": "Venus / Saturn",
+    "is_dosha": false
+   },
+   {
+    "name": "Gana",
+    "got": 5.0,
+    "max": 6.0,
+    "detail": "Manushya / Deva",
+    "is_dosha": false
+   },
+   {
+    "name": "Bhakoot",
+    "got": 0.0,
+    "max": 7.0,
+    "detail": "9/5 apart",
+    "is_dosha": true
+   },
+   {
+    "name": "Nadi",
+    "got": 0.0,
+    "max": 8.0,
+    "detail": "Antya / Antya",
+    "is_dosha": true
+   }
+  ],
+  "total": 18.0,
+  "nadi_parihar": {
+   "dosha": "Nadi",
+   "applies": false,
+   "reason": "same Nadi, no recognised exception"
+  },
+  "bhakoot_parihar": {
+   "dosha": "Bhakoot",
+   "applies": true,
+   "reason": "rashi lords are mutual friends"
+  },
+  "lines": [
+   "A middling traditional tally: some koota markers line up and some do not. It sketches tendencies rather than outcomes, so weigh it lightly.",
+   "Bhakoot: the moon signs sit in a count this tradition reads for household rhythm. Treat it as a note for conversation rather than a ruling, and traditional exceptions can set it aside. Here a recognised exception applies: rashi lords are mutual friends.",
+   "Nadi: both charts share the same nadi in this tradition, which some readers weigh for health and children. It is a marker to discuss, not a barrier, and traditional exceptions can set it aside."
+  ]
+ },
+ {
+  "label": "Yoni sworn enemy Cow/Tiger",
+  "note": "Uttara Phalguni (Cow) vs Chitra (Tiger) => Yoni 0, a recognised dosha pole",
+  "groom": {
+   "nakshatra": "Uttara Phalguni",
+   "pada": 2,
+   "sign": 5
+  },
+  "bride": {
+   "nakshatra": "Chitra",
+   "pada": 1,
+   "sign": 5
+  },
+  "kootas": [
+   {
+    "name": "Varna",
+    "got": 1.0,
+    "max": 1.0,
+    "detail": "Vaishya / Vaishya",
+    "is_dosha": false
+   },
+   {
+    "name": "Vashya",
+    "got": 2.0,
+    "max": 2.0,
+    "detail": "Manava / Manava",
+    "is_dosha": false
+   },
+   {
+    "name": "Tara",
+    "got": 1.5,
+    "max": 3.0,
+    "detail": "bad / ok",
+    "is_dosha": false
+   },
+   {
+    "name": "Yoni",
+    "got": 0.0,
+    "max": 4.0,
+    "detail": "Cow / Tiger",
+    "is_dosha": true
+   },
+   {
+    "name": "Graha Maitri",
+    "got": 5.0,
+    "max": 5.0,
+    "detail": "Mercury / Mercury (same lord)",
+    "is_dosha": false
+   },
+   {
+    "name": "Gana",
+    "got": 0.0,
+    "max": 6.0,
+    "detail": "Manushya / Rakshasa",
+    "is_dosha": false
+   },
+   {
+    "name": "Bhakoot",
+    "got": 7.0,
+    "max": 7.0,
+    "detail": "1/1 apart",
+    "is_dosha": false
+   },
+   {
+    "name": "Nadi",
+    "got": 8.0,
+    "max": 8.0,
+    "detail": "Aadi / Madhya",
+    "is_dosha": false
+   }
+  ],
+  "total": 24.5,
+  "nadi_parihar": {
+   "dosha": "Nadi",
+   "applies": false,
+   "reason": "no Nadi dosha"
+  },
+  "bhakoot_parihar": {
+   "dosha": "Bhakoot",
+   "applies": false,
+   "reason": "no Bhakoot dosha"
+  },
+  "lines": [
+   "A middling traditional tally: some koota markers line up and some do not. It sketches tendencies rather than outcomes, so weigh it lightly.",
+   "Yoni: the two nakshatra animals are read as a mismatched pair in this tradition. It speaks to pace and temperament, not fate, and it is one signal among the eight rather than the last word."
+  ]
+ },
+ {
+  "label": "Gana asymmetry: Deva groom x Rakshasa bride",
+  "note": "Ashwini (Deva) x Krittika (Rakshasa) => low Gana one way",
+  "groom": {
+   "nakshatra": "Ashwini",
+   "pada": 1,
+   "sign": 0
+  },
+  "bride": {
+   "nakshatra": "Krittika",
+   "pada": 1,
+   "sign": 0
+  },
+  "kootas": [
+   {
+    "name": "Varna",
+    "got": 1.0,
+    "max": 1.0,
+    "detail": "Kshatriya / Kshatriya",
+    "is_dosha": false
+   },
+   {
+    "name": "Vashya",
+    "got": 2.0,
+    "max": 2.0,
+    "detail": "Chatushpada / Chatushpada",
+    "is_dosha": false
+   },
+   {
+    "name": "Tara",
+    "got": 1.5,
+    "max": 3.0,
+    "detail": "bad / ok",
+    "is_dosha": false
+   },
+   {
+    "name": "Yoni",
+    "got": 3.0,
+    "max": 4.0,
+    "detail": "Horse / Sheep",
+    "is_dosha": false
+   },
+   {
+    "name": "Graha Maitri",
+    "got": 5.0,
+    "max": 5.0,
+    "detail": "Mars / Mars (same lord)",
+    "is_dosha": false
+   },
+   {
+    "name": "Gana",
+    "got": 1.0,
+    "max": 6.0,
+    "detail": "Deva / Rakshasa",
+    "is_dosha": false
+   },
+   {
+    "name": "Bhakoot",
+    "got": 7.0,
+    "max": 7.0,
+    "detail": "1/1 apart",
+    "is_dosha": false
+   },
+   {
+    "name": "Nadi",
+    "got": 8.0,
+    "max": 8.0,
+    "detail": "Aadi / Antya",
+    "is_dosha": false
+   }
+  ],
+  "total": 28.5,
+  "nadi_parihar": {
+   "dosha": "Nadi",
+   "applies": false,
+   "reason": "no Nadi dosha"
+  },
+  "bhakoot_parihar": {
+   "dosha": "Bhakoot",
+   "applies": false,
+   "reason": "no Bhakoot dosha"
+  },
+  "lines": [
+   "A high traditional tally: most of the eight koota markers line up. Read it as encouragement rather than a guarantee, and keep talking."
+  ]
+ },
+ {
+  "label": "Gana asymmetry: Rakshasa groom x Deva bride",
+  "note": "the reverse of the above \u2014 the classical asymmetry, 0 this direction",
+  "groom": {
+   "nakshatra": "Krittika",
+   "pada": 1,
+   "sign": 0
+  },
+  "bride": {
+   "nakshatra": "Ashwini",
+   "pada": 1,
+   "sign": 0
+  },
+  "kootas": [
+   {
+    "name": "Varna",
+    "got": 1.0,
+    "max": 1.0,
+    "detail": "Kshatriya / Kshatriya",
+    "is_dosha": false
+   },
+   {
+    "name": "Vashya",
+    "got": 2.0,
+    "max": 2.0,
+    "detail": "Chatushpada / Chatushpada",
+    "is_dosha": false
+   },
+   {
+    "name": "Tara",
+    "got": 1.5,
+    "max": 3.0,
+    "detail": "ok / bad",
+    "is_dosha": false
+   },
+   {
+    "name": "Yoni",
+    "got": 3.0,
+    "max": 4.0,
+    "detail": "Sheep / Horse",
+    "is_dosha": false
+   },
+   {
+    "name": "Graha Maitri",
+    "got": 5.0,
+    "max": 5.0,
+    "detail": "Mars / Mars (same lord)",
+    "is_dosha": false
+   },
+   {
+    "name": "Gana",
+    "got": 0.0,
+    "max": 6.0,
+    "detail": "Rakshasa / Deva",
+    "is_dosha": false
+   },
+   {
+    "name": "Bhakoot",
+    "got": 7.0,
+    "max": 7.0,
+    "detail": "1/1 apart",
+    "is_dosha": false
+   },
+   {
+    "name": "Nadi",
+    "got": 8.0,
+    "max": 8.0,
+    "detail": "Antya / Aadi",
+    "is_dosha": false
+   }
+  ],
+  "total": 27.5,
+  "nadi_parihar": {
+   "dosha": "Nadi",
+   "applies": false,
+   "reason": "no Nadi dosha"
+  },
+  "bhakoot_parihar": {
+   "dosha": "Bhakoot",
+   "applies": false,
+   "reason": "no Bhakoot dosha"
+  },
+  "lines": [
+   "A middling traditional tally: some koota markers line up and some do not. It sketches tendencies rather than outcomes, so weigh it lightly."
+  ]
+ },
+ {
+  "label": "Nadi dosha, no parihar (different rashi)",
+  "note": "Ashwini & Ardra both Aadi, different signs => Nadi dosha, no exception",
+  "groom": {
+   "nakshatra": "Ashwini",
+   "pada": 1,
+   "sign": 0
+  },
+  "bride": {
+   "nakshatra": "Ardra",
+   "pada": 1,
+   "sign": 2
+  },
+  "kootas": [
+   {
+    "name": "Varna",
+    "got": 1.0,
+    "max": 1.0,
+    "detail": "Kshatriya / Shudra",
+    "is_dosha": false
+   },
+   {
+    "name": "Vashya",
+    "got": 1.0,
+    "max": 2.0,
+    "detail": "Chatushpada / Manava",
+    "is_dosha": false
+   },
+   {
+    "name": "Tara",
+    "got": 1.5,
+    "max": 3.0,
+    "detail": "ok / bad",
+    "is_dosha": false
+   },
+   {
+    "name": "Yoni",
+    "got": 2.0,
+    "max": 4.0,
+    "detail": "Horse / Dog",
+    "is_dosha": false
+   },
+   {
+    "name": "Graha Maitri",
+    "got": 0.5,
+    "max": 5.0,
+    "detail": "Mars / Mercury",
+    "is_dosha": false
+   },
+   {
+    "name": "Gana",
+    "got": 5.0,
+    "max": 6.0,
+    "detail": "Deva / Manushya",
+    "is_dosha": false
+   },
+   {
+    "name": "Bhakoot",
+    "got": 7.0,
+    "max": 7.0,
+    "detail": "3/11 apart",
+    "is_dosha": false
+   },
+   {
+    "name": "Nadi",
+    "got": 0.0,
+    "max": 8.0,
+    "detail": "Aadi / Aadi",
+    "is_dosha": true
+   }
+  ],
+  "total": 18.0,
+  "nadi_parihar": {
+   "dosha": "Nadi",
+   "applies": false,
+   "reason": "same Nadi, no recognised exception"
+  },
+  "bhakoot_parihar": {
+   "dosha": "Bhakoot",
+   "applies": false,
+   "reason": "no Bhakoot dosha"
+  },
+  "lines": [
+   "A middling traditional tally: some koota markers line up and some do not. It sketches tendencies rather than outcomes, so weigh it lightly.",
+   "Nadi: both charts share the same nadi in this tradition, which some readers weigh for health and children. It is a marker to discuss, not a barrier, and traditional exceptions can set it aside."
+  ]
+ },
+ {
+  "label": "high tally",
+  "note": "Rohini x Uttara Phalguni \u2014 a broadly aligned pair",
+  "groom": {
+   "nakshatra": "Rohini",
+   "pada": 1,
+   "sign": 1
+  },
+  "bride": {
+   "nakshatra": "Uttara Phalguni",
+   "pada": 2,
+   "sign": 5
+  },
+  "kootas": [
+   {
+    "name": "Varna",
+    "got": 1.0,
+    "max": 1.0,
+    "detail": "Vaishya / Vaishya",
+    "is_dosha": false
+   },
+   {
+    "name": "Vashya",
+    "got": 1.0,
+    "max": 2.0,
+    "detail": "Chatushpada / Manava",
+    "is_dosha": false
+   },
+   {
+    "name": "Tara",
+    "got": 3.0,
+    "max": 3.0,
+    "detail": "ok / ok",
+    "is_dosha": false
+   },
+   {
+    "name": "Yoni",
+    "got": 2.0,
+    "max": 4.0,
+    "detail": "Serpent / Cow",
+    "is_dosha": false
+   },
+   {
+    "name": "Graha Maitri",
+    "got": 5.0,
+    "max": 5.0,
+    "detail": "Venus / Mercury",
+    "is_dosha": false
+   },
+   {
+    "name": "Gana",
+    "got": 6.0,
+    "max": 6.0,
+    "detail": "Manushya / Manushya",
+    "is_dosha": false
+   },
+   {
+    "name": "Bhakoot",
+    "got": 0.0,
+    "max": 7.0,
+    "detail": "5/9 apart",
+    "is_dosha": true
+   },
+   {
+    "name": "Nadi",
+    "got": 8.0,
+    "max": 8.0,
+    "detail": "Antya / Aadi",
+    "is_dosha": false
+   }
+  ],
+  "total": 26.0,
+  "nadi_parihar": {
+   "dosha": "Nadi",
+   "applies": false,
+   "reason": "no Nadi dosha"
+  },
+  "bhakoot_parihar": {
+   "dosha": "Bhakoot",
+   "applies": true,
+   "reason": "rashi lords are mutual friends"
+  },
+  "lines": [
+   "A middling traditional tally: some koota markers line up and some do not. It sketches tendencies rather than outcomes, so weigh it lightly.",
+   "Bhakoot: the moon signs sit in a count this tradition reads for household rhythm. Treat it as a note for conversation rather than a ruling, and traditional exceptions can set it aside. Here a recognised exception applies: rashi lords are mutual friends."
+  ]
+ },
+ {
+  "label": "Revati x Hasta",
+  "note": "spread coverage",
+  "groom": {
+   "nakshatra": "Revati",
+   "pada": 2,
+   "sign": 11
+  },
+  "bride": {
+   "nakshatra": "Hasta",
+   "pada": 3,
+   "sign": 5
+  },
+  "kootas": [
+   {
+    "name": "Varna",
+    "got": 1.0,
+    "max": 1.0,
+    "detail": "Brahmin / Vaishya",
+    "is_dosha": false
+   },
+   {
+    "name": "Vashya",
+    "got": 1.5,
+    "max": 2.0,
+    "detail": "Jalachara / Manava",
+    "is_dosha": false
+   },
+   {
+    "name": "Tara",
+    "got": 1.5,
+    "max": 3.0,
+    "detail": "bad / ok",
+    "is_dosha": false
+   },
+   {
+    "name": "Yoni",
+    "got": 2.0,
+    "max": 4.0,
+    "detail": "Elephant / Buffalo",
+    "is_dosha": false
+   },
+   {
+    "name": "Graha Maitri",
+    "got": 0.5,
+    "max": 5.0,
+    "detail": "Jupiter / Mercury",
+    "is_dosha": false
+   },
+   {
+    "name": "Gana",
+    "got": 6.0,
+    "max": 6.0,
+    "detail": "Deva / Deva",
+    "is_dosha": false
+   },
+   {
+    "name": "Bhakoot",
+    "got": 7.0,
+    "max": 7.0,
+    "detail": "7/7 apart",
+    "is_dosha": false
+   },
+   {
+    "name": "Nadi",
+    "got": 8.0,
+    "max": 8.0,
+    "detail": "Antya / Aadi",
+    "is_dosha": false
+   }
+  ],
+  "total": 27.5,
+  "nadi_parihar": {
+   "dosha": "Nadi",
+   "applies": false,
+   "reason": "no Nadi dosha"
+  },
+  "bhakoot_parihar": {
+   "dosha": "Bhakoot",
+   "applies": false,
+   "reason": "no Bhakoot dosha"
+  },
+  "lines": [
+   "A middling traditional tally: some koota markers line up and some do not. It sketches tendencies rather than outcomes, so weigh it lightly."
+  ]
+ },
+ {
+  "label": "Magha x Mula",
+  "note": "two Rakshasa/Kshatriya-heavy stars",
+  "groom": {
+   "nakshatra": "Magha",
+   "pada": 1,
+   "sign": 4
+  },
+  "bride": {
+   "nakshatra": "Mula",
+   "pada": 1,
+   "sign": 8
+  },
+  "kootas": [
+   {
+    "name": "Varna",
+    "got": 1.0,
+    "max": 1.0,
+    "detail": "Kshatriya / Kshatriya",
+    "is_dosha": false
+   },
+   {
+    "name": "Vashya",
+    "got": 0.0,
+    "max": 2.0,
+    "detail": "Vanachara / Manava",
+    "is_dosha": false
+   },
+   {
+    "name": "Tara",
+    "got": 3.0,
+    "max": 3.0,
+    "detail": "ok / ok",
+    "is_dosha": false
+   },
+   {
+    "name": "Yoni",
+    "got": 2.0,
+    "max": 4.0,
+    "detail": "Rat / Dog",
+    "is_dosha": false
+   },
+   {
+    "name": "Graha Maitri",
+    "got": 5.0,
+    "max": 5.0,
+    "detail": "Sun / Jupiter",
+    "is_dosha": false
+   },
+   {
+    "name": "Gana",
+    "got": 6.0,
+    "max": 6.0,
+    "detail": "Rakshasa / Rakshasa",
+    "is_dosha": false
+   },
+   {
+    "name": "Bhakoot",
+    "got": 0.0,
+    "max": 7.0,
+    "detail": "5/9 apart",
+    "is_dosha": true
+   },
+   {
+    "name": "Nadi",
+    "got": 8.0,
+    "max": 8.0,
+    "detail": "Antya / Aadi",
+    "is_dosha": false
+   }
+  ],
+  "total": 25.0,
+  "nadi_parihar": {
+   "dosha": "Nadi",
+   "applies": false,
+   "reason": "no Nadi dosha"
+  },
+  "bhakoot_parihar": {
+   "dosha": "Bhakoot",
+   "applies": true,
+   "reason": "rashi lords are mutual friends"
+  },
+  "lines": [
+   "A middling traditional tally: some koota markers line up and some do not. It sketches tendencies rather than outcomes, so weigh it lightly.",
+   "Bhakoot: the moon signs sit in a count this tradition reads for household rhythm. Treat it as a note for conversation rather than a ruling, and traditional exceptions can set it aside. Here a recognised exception applies: rashi lords are mutual friends."
+  ]
+ },
+ {
+  "label": "Punarvasu x Shravana",
+  "note": "spread coverage",
+  "groom": {
+   "nakshatra": "Punarvasu",
+   "pada": 3,
+   "sign": 2
+  },
+  "bride": {
+   "nakshatra": "Shravana",
+   "pada": 1,
+   "sign": 9
+  },
+  "kootas": [
+   {
+    "name": "Varna",
+    "got": 0.0,
+    "max": 1.0,
+    "detail": "Shudra / Vaishya",
+    "is_dosha": false
+   },
+   {
+    "name": "Vashya",
+    "got": 1.0,
+    "max": 2.0,
+    "detail": "Manava / Chatushpada",
+    "is_dosha": false
+   },
+   {
+    "name": "Tara",
+    "got": 1.5,
+    "max": 3.0,
+    "detail": "bad / ok",
+    "is_dosha": false
+   },
+   {
+    "name": "Yoni",
+    "got": 2.0,
+    "max": 4.0,
+    "detail": "Cat / Monkey",
+    "is_dosha": false
+   },
+   {
+    "name": "Graha Maitri",
+    "got": 4.0,
+    "max": 5.0,
+    "detail": "Mercury / Saturn",
+    "is_dosha": false
+   },
+   {
+    "name": "Gana",
+    "got": 6.0,
+    "max": 6.0,
+    "detail": "Deva / Deva",
+    "is_dosha": false
+   },
+   {
+    "name": "Bhakoot",
+    "got": 0.0,
+    "max": 7.0,
+    "detail": "8/6 apart",
+    "is_dosha": true
+   },
+   {
+    "name": "Nadi",
+    "got": 8.0,
+    "max": 8.0,
+    "detail": "Aadi / Antya",
+    "is_dosha": false
+   }
+  ],
+  "total": 22.5,
+  "nadi_parihar": {
+   "dosha": "Nadi",
+   "applies": false,
+   "reason": "no Nadi dosha"
+  },
+  "bhakoot_parihar": {
+   "dosha": "Bhakoot",
+   "applies": false,
+   "reason": "Bhakoot dosha, no recognised exception"
+  },
+  "lines": [
+   "A middling traditional tally: some koota markers line up and some do not. It sketches tendencies rather than outcomes, so weigh it lightly.",
+   "Bhakoot: the moon signs sit in a count this tradition reads for household rhythm. Treat it as a note for conversation rather than a ruling, and traditional exceptions can set it aside."
+  ]
+ },
+ {
+  "label": "Vishakha x Krittika",
+  "note": "spread coverage",
+  "groom": {
+   "nakshatra": "Vishakha",
+   "pada": 2,
+   "sign": 6
+  },
+  "bride": {
+   "nakshatra": "Krittika",
+   "pada": 2,
+   "sign": 1
+  },
+  "kootas": [
+   {
+    "name": "Varna",
+    "got": 0.0,
+    "max": 1.0,
+    "detail": "Shudra / Vaishya",
+    "is_dosha": false
+   },
+   {
+    "name": "Vashya",
+    "got": 1.0,
+    "max": 2.0,
+    "detail": "Manava / Chatushpada",
+    "is_dosha": false
+   },
+   {
+    "name": "Tara",
+    "got": 1.5,
+    "max": 3.0,
+    "detail": "ok / bad",
+    "is_dosha": false
+   },
+   {
+    "name": "Yoni",
+    "got": 2.0,
+    "max": 4.0,
+    "detail": "Tiger / Sheep",
+    "is_dosha": false
+   },
+   {
+    "name": "Graha Maitri",
+    "got": 5.0,
+    "max": 5.0,
+    "detail": "Venus / Venus (same lord)",
+    "is_dosha": false
+   },
+   {
+    "name": "Gana",
+    "got": 6.0,
+    "max": 6.0,
+    "detail": "Rakshasa / Rakshasa",
+    "is_dosha": false
+   },
+   {
+    "name": "Bhakoot",
+    "got": 0.0,
+    "max": 7.0,
+    "detail": "8/6 apart",
+    "is_dosha": true
+   },
+   {
+    "name": "Nadi",
+    "got": 0.0,
+    "max": 8.0,
+    "detail": "Antya / Antya",
+    "is_dosha": true
+   }
+  ],
+  "total": 15.5,
+  "nadi_parihar": {
+   "dosha": "Nadi",
+   "applies": false,
+   "reason": "same Nadi, no recognised exception"
+  },
+  "bhakoot_parihar": {
+   "dosha": "Bhakoot",
+   "applies": true,
+   "reason": "same rashi lord"
+  },
+  "lines": [
+   "A low traditional tally: fewer of the eight koota markers line up. It is one tradition's count rather than a verdict, and many close bonds score low here.",
+   "Bhakoot: the moon signs sit in a count this tradition reads for household rhythm. Treat it as a note for conversation rather than a ruling, and traditional exceptions can set it aside. Here a recognised exception applies: same rashi lord.",
+   "Nadi: both charts share the same nadi in this tradition, which some readers weigh for health and children. It is a marker to discuss, not a barrier, and traditional exceptions can set it aside."
+  ]
+ },
+ {
+  "label": "Bharani x Purva Phalguni",
+  "note": "spread coverage",
+  "groom": {
+   "nakshatra": "Bharani",
+   "pada": 2,
+   "sign": 0
+  },
+  "bride": {
+   "nakshatra": "Purva Phalguni",
+   "pada": 1,
+   "sign": 4
+  },
+  "kootas": [
+   {
+    "name": "Varna",
+    "got": 1.0,
+    "max": 1.0,
+    "detail": "Kshatriya / Kshatriya",
+    "is_dosha": false
+   },
+   {
+    "name": "Vashya",
+    "got": 1.5,
+    "max": 2.0,
+    "detail": "Chatushpada / Vanachara",
+    "is_dosha": false
+   },
+   {
+    "name": "Tara",
+    "got": 3.0,
+    "max": 3.0,
+    "detail": "ok / ok",
+    "is_dosha": false
+   },
+   {
+    "name": "Yoni",
+    "got": 2.0,
+    "max": 4.0,
+    "detail": "Elephant / Rat",
+    "is_dosha": false
+   },
+   {
+    "name": "Graha Maitri",
+    "got": 5.0,
+    "max": 5.0,
+    "detail": "Mars / Sun",
+    "is_dosha": false
+   },
+   {
+    "name": "Gana",
+    "got": 6.0,
+    "max": 6.0,
+    "detail": "Manushya / Manushya",
+    "is_dosha": false
+   },
+   {
+    "name": "Bhakoot",
+    "got": 0.0,
+    "max": 7.0,
+    "detail": "5/9 apart",
+    "is_dosha": true
+   },
+   {
+    "name": "Nadi",
+    "got": 0.0,
+    "max": 8.0,
+    "detail": "Madhya / Madhya",
+    "is_dosha": true
+   }
+  ],
+  "total": 18.5,
+  "nadi_parihar": {
+   "dosha": "Nadi",
+   "applies": false,
+   "reason": "same Nadi, no recognised exception"
+  },
+  "bhakoot_parihar": {
+   "dosha": "Bhakoot",
+   "applies": true,
+   "reason": "rashi lords are mutual friends"
+  },
+  "lines": [
+   "A middling traditional tally: some koota markers line up and some do not. It sketches tendencies rather than outcomes, so weigh it lightly.",
+   "Bhakoot: the moon signs sit in a count this tradition reads for household rhythm. Treat it as a note for conversation rather than a ruling, and traditional exceptions can set it aside. Here a recognised exception applies: rashi lords are mutual friends.",
+   "Nadi: both charts share the same nadi in this tradition, which some readers weigh for health and children. It is a marker to discuss, not a barrier, and traditional exceptions can set it aside."
+  ]
+ },
+ {
+  "label": "Jyeshtha x Dhanishta",
+  "note": "spread coverage",
+  "groom": {
+   "nakshatra": "Jyeshtha",
+   "pada": 1,
+   "sign": 7
+  },
+  "bride": {
+   "nakshatra": "Dhanishta",
+   "pada": 4,
+   "sign": 10
+  },
+  "kootas": [
+   {
+    "name": "Varna",
+    "got": 1.0,
+    "max": 1.0,
+    "detail": "Brahmin / Shudra",
+    "is_dosha": false
+   },
+   {
+    "name": "Vashya",
+    "got": 1.0,
+    "max": 2.0,
+    "detail": "Keeta / Manava",
+    "is_dosha": false
+   },
+   {
+    "name": "Tara",
+    "got": 1.5,
+    "max": 3.0,
+    "detail": "ok / bad",
+    "is_dosha": false
+   },
+   {
+    "name": "Yoni",
+    "got": 2.0,
+    "max": 4.0,
+    "detail": "Deer / Lion",
+    "is_dosha": false
+   },
+   {
+    "name": "Graha Maitri",
+    "got": 0.5,
+    "max": 5.0,
+    "detail": "Mars / Saturn",
+    "is_dosha": false
+   },
+   {
+    "name": "Gana",
+    "got": 6.0,
+    "max": 6.0,
+    "detail": "Rakshasa / Rakshasa",
+    "is_dosha": false
+   },
+   {
+    "name": "Bhakoot",
+    "got": 7.0,
+    "max": 7.0,
+    "detail": "4/10 apart",
+    "is_dosha": false
+   },
+   {
+    "name": "Nadi",
+    "got": 8.0,
+    "max": 8.0,
+    "detail": "Aadi / Madhya",
+    "is_dosha": false
+   }
+  ],
+  "total": 27.0,
+  "nadi_parihar": {
+   "dosha": "Nadi",
+   "applies": false,
+   "reason": "no Nadi dosha"
+  },
+  "bhakoot_parihar": {
+   "dosha": "Bhakoot",
+   "applies": false,
+   "reason": "no Bhakoot dosha"
+  },
+  "lines": [
+   "A middling traditional tally: some koota markers line up and some do not. It sketches tendencies rather than outcomes, so weigh it lightly."
+  ]
+ }
+]
