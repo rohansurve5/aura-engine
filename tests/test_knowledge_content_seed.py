@@ -60,8 +60,12 @@ import pytest
 from _pytest.outcomes import Skipped
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from engine.content import IDENTITY_SEED_PATH, KNOWLEDGE_SEED_PATH, SEED_PATH as RULES_SEED_PATH  # noqa: E402
-from engine.content import DASHA_SEED_PATH  # noqa: E402
+from engine.content import (  # noqa: E402
+    DASHA_SEED_PATH,
+    IDENTITY_SEED_PATH,
+    KNOWLEDGE_SEED_PATH,
+)
+from engine.content import SEED_PATH as RULES_SEED_PATH  # noqa: E402
 
 #: Derived from the ONE line that activates a corpus — never typed twice.
 SEED_PATH = KNOWLEDGE_SEED_PATH

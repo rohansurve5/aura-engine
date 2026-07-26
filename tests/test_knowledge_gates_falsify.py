@@ -551,9 +551,10 @@ def test_falsify_definitional_baseline_collision(monkeypatch) -> None:
         "The eleventh house is gains and networks and hopes, income from many "
         "directions at once, elder siblings, associations, and granted wishes."
     )
-    msg = _expect_red(monkeypatch, data, G.test_no_shared_content_word_with_the_definitional_house_card)
+    gate = G.test_no_shared_content_word_with_the_definitional_house_card
+    msg = _expect_red(monkeypatch, data, gate)
     assert "house_11" in msg
-    _expect_green(monkeypatch, G.test_no_shared_content_word_with_the_definitional_house_card)
+    _expect_green(monkeypatch, gate)
 
 
 def test_falsify_baseline_shape(monkeypatch) -> None:
@@ -700,9 +701,10 @@ def test_falsify_an_unrecorded_sample_shortfall(monkeypatch) -> None:
     data["_about"]["astrologer_review"]["spec_deviations"] = [
         "A sixth field, source_ref, was added to the five-field spine."
     ]
-    msg = _expect_red(monkeypatch, data, G.test_checkpoint_a_sample_deviation_is_recorded_not_omitted)
+    gate = G.test_checkpoint_a_sample_deviation_is_recorded_not_omitted
+    msg = _expect_red(monkeypatch, data, gate)
     assert "spec_deviations does not say so" in msg
-    _expect_green(monkeypatch, G.test_checkpoint_a_sample_deviation_is_recorded_not_omitted)
+    _expect_green(monkeypatch, gate)
 
 
 def test_falsify_an_implied_reviewer_qualification(monkeypatch) -> None:
