@@ -25,10 +25,12 @@ import pytest
 from engine.content import (
     ACTIVE_DASHA_CONTENT_VERSION,
     ACTIVE_IDENTITY_CONTENT_VERSION,
+    ACTIVE_KNOWLEDGE_CONTENT_VERSION,
     ACTIVE_REPORT_CONTENT_VERSION,
     ACTIVE_SCORE_RULES_VERSION,
     DASHA_SEED_PATH,
     IDENTITY_SEED_PATH,
+    KNOWLEDGE_SEED_PATH,
     REPORT_SEED_PATH,
     SEED_PATH,
     declared_version,
@@ -393,6 +395,7 @@ def test_no_kind_selects_its_version_by_inference():
         migrate.seed_dasha_content,
         migrate.seed_identity_content,
         migrate.seed_report_content,
+        migrate.seed_knowledge_content,
     ):
         code = _code_only(fn).lower()
         assert "max(version)" not in code, f"{fn.__name__} infers a version via max()"
@@ -511,5 +514,87 @@ def test_active_report_version_is_the_newest_seed():
     assert REPORT_SEED_PATH.name == newest, (
         f"the newest report seed is {newest} but engine/content.py activates "
         f"{REPORT_SEED_PATH.name}. If that is a deliberate rollback, update "
+        "this test's expectation in the same commit."
+    )
+
+
+# ── knowledge_content: the fifth corpus, on the marker from version ONE ──────
+#
+# Same contract as identity_content and report_content. This corpus has an extra
+# reason to be held to it: KNOWLEDGE.md §7d's gates are COMPARATIVE, so a
+# per-category version would leave entries live whose licence to exist was a
+# median that is no longer in the database. See migration 015.
+
+
+def test_active_knowledge_seed_file_exists():
+    assert KNOWLEDGE_SEED_PATH.is_file(), f"active knowledge seed missing: {KNOWLEDGE_SEED_PATH}"
+
+
+def test_active_knowledge_version_matches_seed_filename():
+    expected = f"{ACTIVE_KNOWLEDGE_CONTENT_VERSION}.json"
+    assert KNOWLEDGE_SEED_PATH.name == expected, (
+        f"knowledge seed {KNOWLEDGE_SEED_PATH.name} declares version "
+        f"{ACTIVE_KNOWLEDGE_CONTENT_VERSION!r}; expected the file named {expected}"
+    )
+    assert ACTIVE_KNOWLEDGE_CONTENT_VERSION == declared_version(KNOWLEDGE_SEED_PATH)
+
+
+def test_migrate_seeds_the_exact_knowledge_file_content_py_activates():
+    """One declaration of the knowledge seed path, not two."""
+    migrate = _migrate_module()
+    assert migrate.KNOWLEDGE_SEED == KNOWLEDGE_SEED_PATH, (
+        f"db/migrate.py seeds {migrate.KNOWLEDGE_SEED} but engine/content.py "
+        f"activates {KNOWLEDGE_SEED_PATH}. Two declarations is how seeded and "
+        "served diverge."
+    )
+
+
+def test_seeding_knowledge_content_also_marks_it_active():
+    """Seed-without-activate must not be expressible for this corpus either."""
+    import inspect
+
+    src = inspect.getsource(_migrate_module().seed_knowledge_content)
+    assert "active_content" in src and "'knowledge_content'" in src, (
+        "seed_knowledge_content does not stamp active_content. Seeding and "
+        "activating must be one act."
+    )
+
+
+def test_knowledge_seeds_all_three_categories_in_one_transaction():
+    """The §7d symmetry gates compare an entry against its CATEGORY's median and
+    against the rest of its category's heavy-token density. Those are properties
+    of a set, not of a row, so the three categories must be written by the one
+    function that stamps the one marker — otherwise a half-rolled-back corpus is
+    live with the comparison that licensed it missing from the database."""
+    code = _code_only(_migrate_module().seed_knowledge_content)
+    assert "'nakshatra', 'planet', 'house'" in code, (
+        "seed_knowledge_content must write all three key types in the same "
+        "transaction as the marker"
+    )
+    assert code.count("active_content") == 1, (
+        "exactly one activation write, covering all three categories"
+    )
+
+
+def test_every_knowledge_seed_file_declares_a_version_matching_its_name():
+    for path in sorted(SEED_DIR.glob("knowledge_content_v*.json")):
+        version = json.loads(path.read_text()).get("version")
+        assert path.name == f"{version}.json", (
+            f"{path.name} declares version {version!r}; name and version disagree"
+        )
+
+
+def test_active_knowledge_version_is_the_newest_seed():
+    """Numeric ordering, as for the other four kinds."""
+
+    def key(name: str) -> tuple[int, ...]:
+        stem = name.removesuffix(".json").removeprefix("knowledge_content_v")
+        return tuple(int(p) for p in stem.split("_") if p.isdigit())
+
+    names = [p.name for p in SEED_DIR.glob("knowledge_content_v*.json")]
+    newest = max(names, key=key)
+    assert KNOWLEDGE_SEED_PATH.name == newest, (
+        f"the newest knowledge seed is {newest} but engine/content.py activates "
+        f"{KNOWLEDGE_SEED_PATH.name}. If that is a deliberate rollback, update "
         "this test's expectation in the same commit."
     )

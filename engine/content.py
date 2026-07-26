@@ -48,6 +48,8 @@ DASHA_SEED_PATH = _SEED_DIR / "dasha_content_v2.json"
 IDENTITY_SEED_PATH = _SEED_DIR / "identity_content_v2.json"
 # ── THE ONE LINE THAT SETS THE ACTIVE report_content VERSION ─────────────────
 REPORT_SEED_PATH = _SEED_DIR / "report_content_v4.json"
+# ── THE ONE LINE THAT SETS THE ACTIVE knowledge_content VERSION ──────────────
+KNOWLEDGE_SEED_PATH = _SEED_DIR / "knowledge_content_v1.json"
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -89,3 +91,13 @@ ACTIVE_IDENTITY_CONTENT_VERSION = declared_version(IDENTITY_SEED_PATH)
 #: and the remaining report types are a scope decision, not an authoring
 #: backlog; see docs/REPORTS.md § what we can actually compute.
 ACTIVE_REPORT_CONTENT_VERSION = declared_version(REPORT_SEED_PATH)
+
+#: The active interpretive significations corpus version — derived, never typed.
+#: Written to `active_content` by migrate; served by /v1/knowledge/content. ONE
+#: version spans all three categories (nakshatra, planet, house) on
+#: identity_content's reasoning, strengthened: KNOWLEDGE.md §7d's gates are
+#: COMPARATIVE — a demand's legality depends on its category's median length and
+#: on the hard group's heavy-token density against the rest of that category —
+#: so a per-category marker would let a half-rolled-back corpus be live with the
+#: comparison that licensed it no longer in the database. See migration 015.
+ACTIVE_KNOWLEDGE_CONTENT_VERSION = declared_version(KNOWLEDGE_SEED_PATH)

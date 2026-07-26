@@ -1,0 +1,685 @@
+{
+  "version": "knowledge_content_v1",
+  "_about": {
+    "spec": "docs/voice/KNOWLEDGE.md",
+    "status": "AUTHORED — 48 of 48 entries, every gate in KNOWLEDGE.md §7 running with none skipped. NOT COMPLETE and NOT SHIPPABLE: §8 Checkpoint B (astrologer review of the full 48) has not happened, and Checkpoint A was met by a non-astrologer against a sample that misses two of its three mandatory slots. Both are recorded in astrologer_review.spec_deviations rather than papered over.",
+    "axis": "One jurisdiction, one demand. Every entry names the part of life the tradition reads this thing for (governs), and the one thing that jurisdiction will not let anyone do (demand). Not a domain and a warning attached to it — one domain, and the condition of entry that follows from what the domain is. If the demand can be deleted without touching the jurisdiction, the entry is two traits and has to be rewritten.",
+    "reader_vs_system": "This corpus explains the SYSTEM and never addresses the READER. Second person is absent from every string, which is the exact inversion of identity_content_v2, where `you` is required in every core and cost. That inversion is why the two corpora can sit on adjacent screens without blurring, and it is enforced by one regex over the whole file.",
+    "what_the_gates_caught": "Two things worth recording, because both were invisible while writing any single entry. FIRST, the spec's own worked examples in §3 do not survive its own cross-corpus gate: KNOWLEDGE.md §3 offers `Rahu is read for appetite without precedent — the pull toward what a life has no experience of` as the model sentence, and `appetite`, `pull` and `life` are all in dasha_content_v2's Rahu essence. The illustration in the spec would have failed the gate the spec specifies. Rahu was reauthored around `craving`, `no experience of` and `magnification`. SECOND, `is read for` cannot be the corpus's frame: at 48 entries `read` would appear in all of them and §7a caps it at 5 of 27 nakshatras and 3 of 9 planets. The spec names `read` in its not-exempt list for exactly this reason. Every entry therefore states its jurisdiction with a copula and a noun rather than with a shared verb, which is a stricter constraint than it looks and is where most of the authoring time went.",
+    "share_gate_firings": "The word-share cap fired on `nothing` (5 of 27 nakshatras, at the limit), `thing` (8 of 27), `person` (7 of 12 houses) and `older lists` as a source-field tic (7 of 9 planets). Every firing was answered by rewriting copy. No threshold was moved. ONE exemption was added and it is documented in KNOWLEDGE.md §11 with its justification rather than added quietly here: `bhava` and `graha`, which name the unit their category is about and appear only in `source`, on the identical reasoning that exempts `house` and `planet` in §7a.",
+    "definitional_baseline": {
+      "house_1": "1 — self, body, how you begin",
+      "house_2": "2 — wealth, speech, family",
+      "house_3": "3 — siblings, courage, effort",
+      "house_4": "4 — home, mother, comfort",
+      "house_5": "5 — creativity, learning, children",
+      "house_6": "6 — health, work, obstacles",
+      "house_7": "7 — partnership, others",
+      "house_8": "8 — change, shared resources, depth",
+      "house_9": "9 — fortune, beliefs, long journeys",
+      "house_10": "10 — career, standing, action",
+      "house_11": "11 — gains, networks, hopes",
+      "house_12": "12 — rest, expenses, letting go"
+    },
+    "definitional_baseline_note": "A COPY of the twelve lines shipped in astrology_knowledge_hub_screen.dart (Aura, Block 7, 93aa31f). §6c's gate runs against this copy and deliberately does NOT import the Flutter source: three crossval suites in aura-api broke CI for ten consecutive runs by importing a sibling path that exists on a laptop and not in a runner, and repeating that across the Aura repo boundary would be worse. Keeping this copy in sync with the shipped card is a NAMED HUMAN REVIEW ITEM (§7f), not a mechanical guarantee, and it is listed as such rather than implied to be covered.",
+    "editorial_reframings": [
+      {
+        "entry": "Saturn",
+        "source_says": "BPHS 3 and Phaladeepika 2 put Saturn with grief, servitude, old age and hardship; the common rendering is that Saturn brings suffering and delay.",
+        "rendered_as": "What only elapsed duration produces — age, endurance, a trade practised for decades, structures that settle rather than assemble.",
+        "why": "The classical material is about TIME, not about punishment: longevity, ageing and long labour are the karakatvas, and the misery reading is a gloss laid over them. Stating the demand as a condition of the domain — it accepts no substitute for elapsed duration — keeps every classical signification and drops only the verdict."
+      },
+      {
+        "entry": "Mars",
+        "source_says": "Named a papa graha and read for anger, weapons, wounds, quarrels and accidents.",
+        "rendered_as": "Force applied deliberately — boundaries defended, contests entered, surgery, machinery, land held.",
+        "why": "Uttara Kalamrita's karakatva for Mars is strength and valour first; the harm readings are what force does when it is the wrong instrument. Naming the domain as force and the demand as its unsuitability for negotiation keeps both halves without telling anyone what is coming for them."
+      },
+      {
+        "entry": "Rahu",
+        "source_says": "A shadow graha read for illusion, foreign influence, sudden rise and sudden downfall.",
+        "rendered_as": "Craving for what a household has no experience of — the foreign, sudden magnification, the borrowed manner.",
+        "why": "The downfall reading is a prediction about a person, which §1 excludes outright. What survives translation is the structural fact the sources describe: there is no precedent to measure against, so there is no sense of scale. That is a condition of the territory and applies to everyone equally."
+      },
+      {
+        "entry": "Ketu",
+        "source_says": "Read for loss, separation, and detachment; commonly rendered as the graha that takes things away.",
+        "rendered_as": "Finished business — a skill retained after the wish to use it faded, and the part of a chart where searching has concluded.",
+        "why": "Detachment is in the sources on its own terms, not only as deprivation. Rendering it as interest already withdrawn rather than as things removed keeps the classical signification and removes the implied agent doing the removing."
+      },
+      {
+        "entry": "house_6",
+        "source_says": "BPHS 11 gives the sixth bhava enemies, diseases, debts, litigation and obstacles.",
+        "rendered_as": "Maintenance — the daily round of service and repair, debts owed and collected, opposition met at close quarters.",
+        "why": "Phaladeepika's treatment already reads the sixth as effort that overcomes, not as a verdict of sickness. `Disease` is in BANNED_WORDS across every Aura corpus and stating it as a domain would make a health prediction the app cannot support and would not make if it could. Maintenance covers debts, service and opposition without any of that."
+      },
+      {
+        "entry": "house_8",
+        "source_says": "BPHS 11 gives the eighth bhava longevity and death; it is commonly named the house of death.",
+        "rendered_as": "What comes without being asked for — inheritance, other people's money, upheaval, research into what is concealed, and the length of a life taken as a fact.",
+        "why": "Longevity is the primary classical signification and is a measure, not an event; Uttara Kalamrita adds inheritance, hidden matters and research. Reading the house for what arrives unchosen keeps every one of those and drops a word the app must never print at a reader."
+      },
+      {
+        "entry": "house_12",
+        "source_says": "BPHS 11 gives the twelfth bhava expenditure, losses, imprisonment and the end of things.",
+        "rendered_as": "Release — spending that does not return, seclusion, distant residence, sleep, and everything given away without a receipt.",
+        "why": "Loss and moksha are the same signification read in two directions, and the classical lists carry both — Phaladeepika puts renunciation and liberation here alongside expenditure. Naming the domain as outflow keeps the accounting sense and the retreat sense together without a verdict on either."
+      },
+      {
+        "entry": "Bharani",
+        "source_says": "Presided over by Yama and grouped ugra (severe) at Brihat Samhita 98.8, whose acts are listed as disgrace, destruction, deceit and poison.",
+        "rendered_as": "The passage a form must complete before it can stand as itself — gestation, the limit a form is held to, the point of irreversibility.",
+        "why": "Yama is the setter of limits before he is anything else, and the symbol is the womb. The severe-acts list at 98.8 is a muhurta instruction about what to schedule under the star, not a description of what the star means. Reading Bharani for the threshold keeps Yama's function and the symbol together."
+      },
+      {
+        "entry": "Magha",
+        "source_says": "Presided over by the Pitrs (ancestors), symbol a throne, grouped ugra at Brihat Samhita 98.8.",
+        "rendered_as": "An inherited seat — the office occupied because of who sat in it before, the debt owed to forebears, the rite that marks precedence.",
+        "why": "The ancestors and the throne are the whole signification; the ugra grouping is again a muhurta classification. Stating the demand as the seat never being the sitter's own keeps the difficulty structural rather than making it a warning."
+      },
+      {
+        "entry": "Purva Phalguni",
+        "source_says": "Presided over by Bhaga, symbol the front of a couch, grouped ugra at Brihat Samhita 98.8.",
+        "rendered_as": "Enjoyment of a portion — leisure between labours, the ease of company, the allotment each party receives.",
+        "why": "Bhaga is the apportioner and the couch is rest; both are plainly in the classical material. The ugra label sits oddly on a star of pleasure, which is itself evidence that the muhurta groups classify ACTS rather than meanings — recorded because that argument is what licenses reading all five ugra stars this way."
+      },
+      {
+        "entry": "Purva Ashadha",
+        "source_says": "Presided over by the Waters, symbol a winnowing fan, grouped ugra at Brihat Samhita 98.8; commonly rendered as invincibility.",
+        "rendered_as": "The unarguable claim — conviction stated ahead of proof, water finding its way around a wall.",
+        "why": "Invincibility as a promise would be a prediction; invincibility as a property of water is a description. The demand — a claim made ahead of proof cannot be quietly withdrawn — is the cost of the same trait rather than a separate warning."
+      },
+      {
+        "entry": "Purva Bhadrapada",
+        "source_says": "Presided over by Aja Ekapada, a form of Rudra; grouped ugra at Brihat Samhita 98.8; the symbol is read as a sword or the front legs of a funeral cot.",
+        "rendered_as": "Severity turned inward — austerity practised on oneself, fire that alters a substance rather than warming it.",
+        "why": "The funeral reading is one of two symbol traditions and is the one Aura cannot print. Austerity and transforming fire are the other, are equally classical, and carry the same intensity without a verdict about anyone's end."
+      },
+      {
+        "entry": "Ardra",
+        "source_says": "Presided over by Rudra, grouped tikshna (sharp) at Brihat Samhita 98.7, whose listed acts include punishment, imprisonment and separation.",
+        "rendered_as": "The breaking of weather — the disturbance that arrives uninvited, pressure released with no outlet, and the clarity available only afterwards.",
+        "why": "Rudra is the storm before he is a punisher, and the symbol is a teardrop. Reading Ardra as weather keeps the sharpness — it cannot be scheduled — while refusing the reading in which something is done to a named person."
+      },
+      {
+        "entry": "Ashlesha",
+        "source_says": "Presided over by the Sarpas (serpents), grouped tikshna at Brihat Samhita 98.7; commonly rendered as deceit and poison.",
+        "rendered_as": "The embrace that does not release — attachment, influence exerted quietly, the hold one part keeps on another past usefulness.",
+        "why": "The serpent's coil is the symbol; embrace, not venom, is the primary sense of the name. Reading the demand as a grip that cannot be selective keeps the difficulty in the structure of the domain rather than in anyone's character."
+      },
+      {
+        "entry": "Jyeshtha",
+        "source_says": "Presided over by Indra, the name means `the eldest`; grouped tikshna at Brihat Samhita 98.7.",
+        "rendered_as": "Seniority — the protection an elder owes those behind them, precedence in a line, the burden of being what others are measured against.",
+        "why": "Indra and the eldest are the signification. The tikshna acts at 98.7 are muhurta guidance. Stating the demand as protection owed whether or not it is returned keeps the weight and removes the reading in which seniority is a hazard to someone."
+      },
+      {
+        "entry": "Mula",
+        "source_says": "Presided over by Nirriti, dissolution; symbol a bunch of tied roots; grouped tikshna at Brihat Samhita 98.7. Widely rendered as the most inauspicious star to be born under.",
+        "rendered_as": "The bottom of a matter — the origin nobody examines, the tangle beneath a smooth surface, the digging that must happen before a cause is visible.",
+        "why": "The root is the symbol and going to the root is the function; Nirriti's dissolution is what uprooting IS. The inauspicious-birth reading is precisely the class of claim §2 exists to make unwriteable — it tells one reader in twenty-seven that they drew a bad hand, and it is not a signification, it is a verdict."
+      }
+    ],
+    "astrologer_review": {
+      "checkpoint_a": {
+        "reviewer": "Rohan Surve — product owner",
+        "reviewer_is_astrologer": false,
+        "date": "2026-07-26",
+        "verdict": "approved",
+        "sample": ["Saturn", "Hasta", "house_8"],
+        "scope": "The axis (§2) and the fear approach (§3), against three sample entries. This approves the VOICE and the editorial rules. It does not and cannot approve the accuracy of a signification."
+      },
+      "checkpoint_b": {
+        "reviewer": null,
+        "reviewer_is_astrologer": false,
+        "date": null,
+        "verdict": "pending",
+        "entries_marked_inaccurate": null,
+        "scope": "The full 48, before any of it reaches a reader through any surface. NOT DONE. No astrologer is engaged."
+      },
+      "spec_deviations": [
+        "checkpoint_a sample does not meet §8's mandatory hardest-cases set. §8 requires Ketu, house_8 and one of Ashlesha/Mula. The sample actually reviewed was Saturn, Hasta and house_8 — one of three slots met. Hasta is not in any hard group, so the sample under-tests exactly the part §8 says a sample exists to test.",
+        "checkpoint_a's reviewer is not an astrologer. §8 is explicit that the question `is this signification traditionally correct?` can be answered by an astrologer and by nobody else. What was approved is the voice and the editorial rules, which is a real approval of a real thing, and is not the approval §8 asks for.",
+        "The authoring task substituted a SOURCE-CITATION gate for the astrologer as the accuracy mechanism. That gate is real and it is enforced — every entry names a classical text and a locus, and an entry that cannot be sourced fails CI. It narrows the gap and does not close it: a citation proves a claim is traceable, not that the cited text says it. Recorded here so the substitution is a visible decision and not an assumption.",
+        "A sixth field, `source_ref`, was added to §5's five-field spine to carry the citation. §5's `source` remains plain-English attribution as specified. Documented in KNOWLEDGE.md §11."
+      ]
+    },
+    "shippable": false,
+    "shippable_note": "FALSE until checkpoint_b is approved by a named astrologer with zero entries marked inaccurate. /v1/knowledge/content echoes this flag so a screen can refuse to render a corpus no practitioner has passed. The knowledge-base screens are a separate task and MUST honour it.",
+    "source_research_note": "Citation loci were verified to chapter/section level, not verse-by-verse for every claim. Verified directly: BPHS ch. 3 is Graha Guna Swaroopa (planetary natures) and ch. 11 is Bhava Vivechanam (judgement of houses); Phaladeepika ch. 2 is `Planets and their Varieties` and chs. 15–16 treat the bhavas, out of 28 chapters; Uttara Kalamrita's own text cross-references its graha karakatva to Khanda V, slokas 22½–54½, and its bhava karakatva to Khanda IV; Brihat Samhita ch. 98 is nakshatra-karmaguna, with the devata table at 98.4–5 and the group classification at 98.6–11. The tikshna set at 98.7 (Mula, Ardra, Jyeshtha, Ashlesha) and the ugra set at 98.8 (Purva Phalguni, Purva Ashadha, Purva Bhadrapada, Bharani, Magha) match score_rules_content_v4's seeded nakshatra_traits EXACTLY, and test_hard_nakshatras_match_brihat_samhita_98 asserts that agreement so the density gate rests on a citable source rather than on a JSON file agreeing with itself."
+  },
+  "nakshatra": {
+    "Ashwini": {
+      "title": "The opening move",
+      "governs": "Ashwini is onset — the first motion of a journey, the swift relief that arrives ahead of a full account of the trouble, and the direction a matter takes from how it was set going.",
+      "demand": "Nothing in it can be weighed at leisure, because the opening motion is over before there is much to weigh.",
+      "source": "The Ashwini Kumaras, physicians of the gods; a horse's head.",
+      "source_ref": "Brihat Samhita 98.4–5 — Ashwini Devas as presiding devata; Brihat Samhita 98.9 — the laghu group, favouring swift acts",
+      "distinct_from": {
+        "entry": "Revati",
+        "because": "Revati sees a road to its close; Ashwini is the first step on it"
+      }
+    },
+    "Bharani": {
+      "title": "The threshold a form passes",
+      "governs": "Bharani is the passage a form must complete before it can stand as itself — gestation, the limit a shape is held to, and the moment at which a process becomes irreversible.",
+      "demand": "A half-made form cannot be lifted out of the passage and called finished, and the passage itself refuses to be hurried.",
+      "source": "Yama, who sets the limit; the womb.",
+      "source_ref": "Brihat Samhita 98.4–5 — Yama as presiding devata; Brihat Samhita 98.8 — the ugra group",
+      "distinct_from": {
+        "entry": "Mula",
+        "because": "Mula pulls up what has already grown; Bharani holds what is not yet formed"
+      }
+    },
+    "Krittika": {
+      "title": "The edge that separates",
+      "governs": "Krittika is separation by fire — cooking, refining, and the cut that divides what is fit for use from what is not, in materials and in judgement alike.",
+      "demand": "A cut cannot be undone, so whatever is put to this edge is put there once and never tested twice.",
+      "source": "Agni, the fire itself; the razor's edge.",
+      "source_ref": "Brihat Samhita 98.4–5 — Agni as presiding devata; Brihat Samhita 98.11 — the mishra group, soft and sharp together",
+      "distinct_from": {
+        "entry": "Chitra",
+        "because": "Chitra shapes something into form; Krittika removes what does not belong"
+      }
+    },
+    "Rohini": {
+      "title": "What is planted and grows",
+      "governs": "Rohini is growth from a seed — sowing, the founding of a settlement, cattle and increase, and anything whose value comes from having been left in place to fill out.",
+      "demand": "It runs at the speed of the season and never at the speed of whoever is waiting on it.",
+      "source": "Prajapati, maker of creatures; an ox-cart.",
+      "source_ref": "Brihat Samhita 98.4–5 — Prajapati as presiding devata; Brihat Samhita 98.6 — the dhruva group, for sowing and founding",
+      "distinct_from": {
+        "entry": "Pushya",
+        "because": "Pushya keeps a living creature fed; Rohini brings it into being"
+      }
+    },
+    "Mrigashira": {
+      "title": "The search before the finding",
+      "governs": "Mrigashira is the hunt — following a trail, testing one lead beside another, and the restless scanning that goes on while something is still being sought rather than held.",
+      "demand": "The search cannot be closed by choosing, only by finding, and a trail abandoned midway loses the scent.",
+      "source": "Soma, the moon-draught; a deer's head.",
+      "source_ref": "Brihat Samhita 98.4–5 — Soma as presiding devata; Brihat Samhita 98.10 — the mridu group",
+      "distinct_from": {
+        "entry": "Vishakha",
+        "because": "Vishakha has already chosen an aim; Mrigashira is still looking"
+      }
+    },
+    "Ardra": {
+      "title": "The storm that clears",
+      "governs": "Ardra is the breaking of weather — the disturbance that arrives uninvited, the release of pressure that has built with no outlet, and the clarity available only afterwards.",
+      "demand": "It cannot be scheduled, and the pressure it releases never announces in advance the direction it takes.",
+      "source": "Rudra, the roarer; a teardrop.",
+      "source_ref": "Brihat Samhita 98.4–5 — Rudra as presiding devata; Brihat Samhita 98.7 — the tikshna group",
+      "distinct_from": {
+        "entry": "Bharani",
+        "because": "Bharani contains a process to its term; Ardra interrupts one"
+      }
+    },
+    "Punarvasu": {
+      "title": "The return to good ground",
+      "governs": "Punarvasu is restoration — returning to a place once vacated, the repair of what was interrupted, and the shelter of a dwelling that can be entered again.",
+      "demand": "Whatever is restored comes back altered, and the version regained is never quite the version that went missing.",
+      "source": "Aditi, the boundless mother; a quiver of arrows.",
+      "source_ref": "Brihat Samhita 98.4–5 — Aditi as presiding devata; Taittiriya Brahmana 3.1.1–2 — the nakshatra devata list",
+      "distinct_from": {
+        "entry": "Ashwini",
+        "because": "Ashwini departs for the first time; Punarvasu comes back"
+      }
+    },
+    "Pushya": {
+      "title": "The milk and the feeding",
+      "governs": "Pushya is nourishment — the steady supply that keeps a family or an institution alive, care given without expecting return, and the slow filling out of what is tended.",
+      "demand": "It cannot be drawn on faster than it is replenished, and a source that is only drawn from runs dry.",
+      "source": "Brihaspati, counsellor of the gods; a cow's udder.",
+      "source_ref": "Brihat Samhita 98.4–5 — Brihaspati as presiding devata; Brihat Samhita 98.9 — the laghu group",
+      "distinct_from": {
+        "entry": "Shravana",
+        "because": "Shravana feeds what somebody knows; Pushya feeds the creature itself"
+      }
+    },
+    "Ashlesha": {
+      "title": "The coil that holds",
+      "governs": "Ashlesha is the embrace that does not release — attachment, influence exerted quietly, and the hold one part keeps on another well past the point of usefulness.",
+      "demand": "A grip is not loosened by wishing it loose, and what holds cannot also be free to leave.",
+      "source": "The serpents; a coiled snake.",
+      "source_ref": "Brihat Samhita 98.4–5 — the Sarpas as presiding devata; Brihat Samhita 98.7 — the tikshna group",
+      "distinct_from": {
+        "entry": "Anuradha",
+        "because": "Anuradha keeps a tie by consent; Ashlesha keeps one by hold"
+      }
+    },
+    "Magha": {
+      "title": "The seat and its line",
+      "governs": "Magha is an inherited seat — the office a person occupies because of who sat in it before, the debt owed to forebears, and the rite that marks precedence.",
+      "demand": "The seat is never the sitter's own, and it cannot be occupied except on terms laid down much earlier.",
+      "source": "The ancestors; a throne.",
+      "source_ref": "Brihat Samhita 98.4–5 — the Pitrs as presiding devata; Brihat Samhita 98.8 — the ugra group",
+      "distinct_from": {
+        "entry": "Jyeshtha",
+        "because": "Jyeshtha owes protection downward; Magha receives precedence from above"
+      }
+    },
+    "Purva Phalguni": {
+      "title": "The share and the ease",
+      "governs": "Purva Phalguni is enjoyment of a portion — leisure between labours, the ease of company, and the allotment each party receives when a thing of value is divided up.",
+      "demand": "A share taken is a share nobody else takes, and ease borrowed against unfinished labour never quite settles.",
+      "source": "Bhaga, who apportions; the front of a couch.",
+      "source_ref": "Brihat Samhita 98.4–5 — Bhaga as presiding devata; Brihat Samhita 98.8 — the ugra group",
+      "distinct_from": {
+        "entry": "Purva Bhadrapada",
+        "because": "Purva Bhadrapada spends itself on austerity; Purva Phalguni spends itself on ease"
+      }
+    },
+    "Uttara Phalguni": {
+      "title": "The bond that is agreed",
+      "governs": "Uttara Phalguni is the kept agreement — patronage, hospitality, marriage as a contract rather than an attraction, and the ordinary reliability that makes an alliance worth entering.",
+      "demand": "An agreement costs something at the moment it stops being convenient, and one that never costs anything was never agreed.",
+      "source": "Aryaman, patron of hospitality; the back of a couch.",
+      "source_ref": "Brihat Samhita 98.4–5 — Aryaman as presiding devata; Brihat Samhita 98.6 — the dhruva group",
+      "distinct_from": {
+        "entry": "Magha",
+        "because": "Magha is a seat received without asking; Uttara Phalguni is a bond entered into"
+      }
+    },
+    "Hasta": {
+      "title": "The hand and its grip",
+      "governs": "Hasta is manual skill — craft, dexterity, the sleight that puts a part exactly where it must sit, and any labour whose proof is what comes out of it.",
+      "demand": "The grip cannot be selective: what is strong enough to shape a form is strong enough to refuse to let it go.",
+      "source": "Savitr, the impelling sun; an open palm.",
+      "source_ref": "Brihat Samhita 98.4–5 — Savitr as presiding devata; Brihat Samhita 98.9 — the laghu group, favouring craft and the arts",
+      "distinct_from": {
+        "entry": "Krittika",
+        "because": "Krittika separates what is fit from what is not; Hasta shapes what was kept"
+      }
+    },
+    "Chitra": {
+      "title": "The made thing that shines",
+      "governs": "Chitra is design — proportion, ornament, architecture, and the whole difference between what merely functions and what is also worth the attention it quietly asks for.",
+      "demand": "Surface is never neutral: what is shaped to be seen cannot then object to being judged on how it looks.",
+      "source": "Tvashtr, the divine artisan; a bright jewel.",
+      "source_ref": "Brihat Samhita 98.4–5 — Tvashtr as presiding devata; Brihat Samhita 98.10 — the mridu group",
+      "distinct_from": {
+        "entry": "Hasta",
+        "because": "Hasta is the grip that does the work; Chitra is what the eye is left with"
+      }
+    },
+    "Swati": {
+      "title": "Movement without an anchor",
+      "governs": "Swati is unattached motion — wind, trade, the going to and fro that moves value between places, and the give of anything not pinned to one spot.",
+      "demand": "What is free to move is free to be moved, and nothing that travels unburdened can also refuse to be carried off.",
+      "source": "Vayu, the wind; a young shoot in motion.",
+      "source_ref": "Brihat Samhita 98.4–5 — Vayu as presiding devata; Brihat Samhita 98.11 — the chara group",
+      "distinct_from": {
+        "entry": "Dhanishta",
+        "because": "Dhanishta keeps a beat a crowd moves to; Swati keeps none"
+      }
+    },
+    "Vishakha": {
+      "title": "The fork before the goal",
+      "governs": "Vishakha is purpose held over a distance — the aim pursued past the point of ease, and the branching where one ambition has to be surrendered for another.",
+      "demand": "Two aims cannot be carried the whole way, and the one kept is paid for by the one put down.",
+      "source": "Indra and Agni together; a forked branch.",
+      "source_ref": "Brihat Samhita 98.4–5 — Indragni as presiding devata; Brihat Samhita 98.11 — the mishra group",
+      "distinct_from": {
+        "entry": "Purva Ashadha",
+        "because": "Purva Ashadha declares without proof; Vishakha weighs one aim against another"
+      }
+    },
+    "Anuradha": {
+      "title": "The tie kept at distance",
+      "governs": "Anuradha is the pact that survives being inconvenient — loyalty maintained across separation, the bond that outlives its convenience, and cooperation among those who share only an agreement.",
+      "demand": "A pact costs most at the moment it is least convenient, and one never tested that way cannot be relied on.",
+      "source": "Mitra, keeper of covenants; a lotus.",
+      "source_ref": "Brihat Samhita 98.4–5 — Mitra as presiding devata; Brihat Samhita 98.10 — the mridu group",
+      "distinct_from": {
+        "entry": "Uttara Phalguni",
+        "because": "Uttara Phalguni is the bond as a public arrangement; Anuradha is one kept privately"
+      }
+    },
+    "Jyeshtha": {
+      "title": "The eldest and the shield",
+      "governs": "Jyeshtha is seniority — the protection an elder owes those behind them, precedence in a line, and the burden of being the one others are measured against.",
+      "demand": "Rank cannot be set aside for an afternoon, and the protection owed is owed whether or not it is returned.",
+      "source": "Indra, the chief among gods; a round amulet.",
+      "source_ref": "Brihat Samhita 98.4–5 — Indra as presiding devata; Brihat Samhita 98.7 — the tikshna group",
+      "distinct_from": {
+        "entry": "Ashlesha",
+        "because": "Ashlesha holds without title; Jyeshtha holds rank in the open"
+      }
+    },
+    "Mula": {
+      "title": "The root and the digging",
+      "governs": "Mula is the bottom of a matter — the origin nobody examines, the tangle beneath a smooth surface, and the digging up that must happen before a cause is visible.",
+      "demand": "A root cannot be reached without disturbing what grew from it, and little goes back exactly as it was.",
+      "source": "Nirriti, who unmakes; a bunch of tied roots.",
+      "source_ref": "Brihat Samhita 98.4–5 — Nirriti as presiding devata; Brihat Samhita 98.7 — the tikshna group",
+      "distinct_from": {
+        "entry": "Ardra",
+        "because": "Ardra breaks a surface open from outside; Mula digs beneath one"
+      }
+    },
+    "Purva Ashadha": {
+      "title": "The claim made early",
+      "governs": "Purva Ashadha is the unarguable claim — conviction stated ahead of proof, water that finds its way around a wall, and the force that comes of refusing to be persuaded otherwise.",
+      "demand": "A claim made ahead of proof cannot be quietly withdrawn later, since everybody heard it made.",
+      "source": "The waters, unstoppable; a winnowing fan.",
+      "source_ref": "Brihat Samhita 98.4–5 — Apas as presiding devata; Brihat Samhita 98.8 — the ugra group",
+      "distinct_from": {
+        "entry": "Uttara Ashadha",
+        "because": "Uttara Ashadha wins by lasting; Purva Ashadha wins by declaring"
+      }
+    },
+    "Uttara Ashadha": {
+      "title": "The victory that holds",
+      "governs": "Uttara Ashadha is the settlement that sticks — accord wide enough that nobody reopens it, the later victory rather than the first, and integrity that survives being checked.",
+      "demand": "A settlement that holds cannot be reopened when it turns inconvenient, and that is the whole cost of its holding.",
+      "source": "The all-gods; an elephant's tusk.",
+      "source_ref": "Brihat Samhita 98.4–5 — the Vishvedevas as presiding devata; Brihat Samhita 98.6 — the dhruva group",
+      "distinct_from": {
+        "entry": "Mrigashira",
+        "because": "Mrigashira is still testing leads; Uttara Ashadha has settled the matter"
+      }
+    },
+    "Shravana": {
+      "title": "What arrives by ear",
+      "governs": "Shravana is transmission by ear — instruction received rather than reasoned out, a name as it travels in other mouths, and the accuracy of what is repeated from one person to the next.",
+      "demand": "What is taken in by ear cannot be checked at the moment it is taken in, and a distortion travels as easily as the original.",
+      "source": "Vishnu, who crosses in three strides; an ear.",
+      "source_ref": "Brihat Samhita 98.4–5 — Vishnu as presiding devata; Brihat Samhita 98.11 — the chara group",
+      "distinct_from": {
+        "entry": "Rohini",
+        "because": "Rohini grows a crop in place; Shravana carries a report from mouth to mouth"
+      }
+    },
+    "Dhanishta": {
+      "title": "The beat others keep",
+      "governs": "Dhanishta is measure and abundance — music, a beat held in common, the wealth that gathers where many contribute, and the drum that tells a crowd when to move as one.",
+      "demand": "A beat kept for others cannot also be kept for oneself, and whoever sets it never gets to drift.",
+      "source": "The Vasus, bright ones of abundance; a drum.",
+      "source_ref": "Brihat Samhita 98.4–5 — the Vasus as presiding devata; Brihat Samhita 98.11 — the chara group",
+      "distinct_from": {
+        "entry": "Purva Phalguni",
+        "because": "Purva Phalguni is the portion enjoyed; Dhanishta is the measure everybody keeps to"
+      }
+    },
+    "Shatabhisha": {
+      "title": "The circle around a cause",
+      "governs": "Shatabhisha is the hidden cause — what is screened from sight, the enclosure that keeps a matter contained, healing aimed at a source rather than a symptom, and secrecy.",
+      "demand": "What is kept covered cannot be corrected by anybody outside the circle, and little screened stays screened forever.",
+      "source": "Varuna, keeper of oaths and order; an empty circle.",
+      "source_ref": "Brihat Samhita 98.4–5 — Varuna as presiding devata; Brihat Samhita 98.11 — the chara group",
+      "distinct_from": {
+        "entry": "Swati",
+        "because": "Swati scatters whatever it carries; Shatabhisha encloses it"
+      }
+    },
+    "Purva Bhadrapada": {
+      "title": "The heat that transforms",
+      "governs": "Purva Bhadrapada is severity turned inward — austerity practised on oneself, fire that alters a substance instead of warming it, and devotion pushed past what is comfortable.",
+      "demand": "Heat applied hard enough to alter a substance cannot be dialled back to leave it as it was.",
+      "source": "Aja Ekapada, the one-footed; a sword.",
+      "source_ref": "Brihat Samhita 98.4–5 — Aja Ekapada as presiding devata; Brihat Samhita 98.8 — the ugra group",
+      "distinct_from": {
+        "entry": "Uttara Bhadrapada",
+        "because": "Uttara Bhadrapada settles what Purva Bhadrapada sets alight"
+      }
+    },
+    "Uttara Bhadrapada": {
+      "title": "The still water underneath",
+      "governs": "Uttara Bhadrapada is depth at rest — the reserve that is never drawn on in public, patience that looks like inaction, and the steadiness of something too large to be stirred quickly.",
+      "demand": "Depth cannot be demonstrated on request, and a reserve that is displayed stops being a reserve.",
+      "source": "Ahir Budhnya, serpent of the deep; the back of a bed.",
+      "source_ref": "Brihat Samhita 98.4–5 — Ahir Budhnya as presiding devata; Brihat Samhita 98.6 — the dhruva group",
+      "distinct_from": {
+        "entry": "Shatabhisha",
+        "because": "Shatabhisha conceals on purpose; Uttara Bhadrapada is simply too deep to show"
+      }
+    },
+    "Revati": {
+      "title": "Safe passage to the end",
+      "governs": "Revati is safe conduct — the shepherding of travellers and herds, the last part of a road, and the care given to how something is passed along to whoever follows.",
+      "demand": "A crossing cannot be half-made, and what is not passed along properly is simply lost at the door.",
+      "source": "Pushan, protector of paths and herds; a fish.",
+      "source_ref": "Brihat Samhita 98.4–5 — Pushan as presiding devata; Brihat Samhita 98.10 — the mridu group",
+      "distinct_from": {
+        "entry": "Punarvasu",
+        "because": "Punarvasu reopens a passage; Revati completes one"
+      }
+    }
+  },
+  "planet": {
+    "Sun": {
+      "title": "Standing in the open",
+      "governs": "The Sun is command answerable in the open — office, rank, whoever must be seen deciding, and the bone and constitution that hold a public role upright.",
+      "demand": "It cannot be exercised from behind anybody, since a rank nobody can see is not a rank that answers for anything.",
+      "source": "The soul and the king; Sunday's planet, and the eastern quarter.",
+      "source_ref": "BPHS 3 — the Sun as soul, king and father; Phaladeepika 2.1–7 — intrinsic natures of the seven grahas",
+      "distinct_from": {
+        "entry": "Moon",
+        "because": "The Moon is the changing inner weather; the Sun is the standing outward office"
+      }
+    },
+    "Moon": {
+      "title": "The tide of the mind",
+      "governs": "The Moon is the changing inner state — appetite, sleep, memory, the pull toward whoever raised a child, and every measure that rises and falls instead of holding a level.",
+      "demand": "It cannot be held at one setting, and a reading taken at any single hour is never the whole account.",
+      "source": "The mind and the mother; Monday's planet, and the tides.",
+      "source_ref": "BPHS 3 — the Moon as mind and mother; Phaladeepika 2.1–7 — intrinsic natures of the seven grahas",
+      "distinct_from": {
+        "entry": "Mercury",
+        "because": "Mercury handles what is said; the Moon handles what is felt"
+      }
+    },
+    "Mars": {
+      "title": "The cut and the defence",
+      "governs": "Mars is force applied deliberately — the boundary defended, the contest entered, surgery, machinery, land held by whoever can hold it, and acting before agreement arrives.",
+      "demand": "It cannot be aimed at anything that has to be negotiated instead, and force spent on the wrong obstacle is simply wasted.",
+      "source": "Strength and the younger brother; Tuesday's planet.",
+      "source_ref": "BPHS 3 — Mars as strength and valour; Uttara Kalamrita V.22½–54½ — graha karakatva",
+      "distinct_from": {
+        "entry": "Saturn",
+        "because": "Saturn outlasts an obstacle; Mars removes one"
+      }
+    },
+    "Mercury": {
+      "title": "The reckoning in the middle",
+      "governs": "Mercury is exchange — speech, accounts, commerce, the translation of one party's terms into another's, and every skill that consists of handling symbols accurately and at speed.",
+      "demand": "Accuracy cannot be delegated to the party being spoken to, and a figure carried across wrongly is wrong wherever it lands.",
+      "source": "Speech and reckoning; Wednesday's planet, and the merchant's craft.",
+      "source_ref": "BPHS 3 — Mercury as speech and intellect; Phaladeepika 2.1–7 — intrinsic natures of the seven grahas",
+      "distinct_from": {
+        "entry": "Jupiter",
+        "because": "Jupiter weighs whether a course is worth taking; Mercury works out how"
+      }
+    },
+    "Jupiter": {
+      "title": "The counsel that sanctions",
+      "governs": "Jupiter is sanction — advice with weight behind it, doctrine, the law as it is taught, offspring as an inheritance of standing, and the enlargement of whatever it is set beside.",
+      "demand": "Enlargement is not selective: what is made bigger here cannot be kept small where the growth is unwelcome.",
+      "source": "Knowledge, counsel and increase; Thursday's planet.",
+      "source_ref": "BPHS 3 — Jupiter as knowledge and counsel; Uttara Kalamrita V.22½–54½ — graha karakatva",
+      "distinct_from": {
+        "entry": "Venus",
+        "because": "Venus is drawn toward a thing; Jupiter approves of it"
+      }
+    },
+    "Venus": {
+      "title": "What draws two together",
+      "governs": "Venus is attraction and its arrangements — marriage, the arts, refinement of surroundings, vehicles and finery, and the whole apparatus by which people are made agreeable to each other.",
+      "demand": "Attraction cannot be argued into existence, and taste that is only agreed to in public never becomes anybody's own.",
+      "source": "Marriage, vehicles and the arts; Friday's planet.",
+      "source_ref": "BPHS 3 — Venus as marriage and vehicles; Phaladeepika 2.1–7 — intrinsic natures of the seven grahas",
+      "distinct_from": {
+        "entry": "Mars",
+        "because": "Mars takes by force; Venus is given by consent"
+      }
+    },
+    "Saturn": {
+      "title": "What only elapsed time makes",
+      "governs": "Saturn is what only elapsed duration produces — age, endurance, the trade a person practises for decades, structures that settle rather than assemble, and the plain arithmetic of consequence.",
+      "demand": "It accepts no substitute for elapsed duration, and nothing bought early under it is the same object as the one waited for.",
+      "source": "Age, long labour, endurance; Saturday's planet.",
+      "source_ref": "BPHS 3 — Saturn as the graha of age and labour; Phaladeepika 2.1–7 — intrinsic natures of the seven grahas; Uttara Kalamrita V.22½–54½ — graha karakatva",
+      "distinct_from": {
+        "entry": "Rahu",
+        "because": "Rahu wants what has no precedent; Saturn wants what has already proved itself"
+      }
+    },
+    "Rahu": {
+      "title": "Hunger without a precedent",
+      "governs": "Rahu is craving for what a household has no experience of — the foreign, sudden magnification, the borrowed manner, and any ambition whose model came from outside the line it was born into.",
+      "demand": "It offers no sense of scale, since there is nothing behind it yet to measure against.",
+      "source": "The head of the eclipse-serpent; the shadow that swallows.",
+      "source_ref": "BPHS 3 — Rahu among the nine grahas; Uttara Kalamrita V.22½–54½ — graha karakatva",
+      "distinct_from": {
+        "entry": "Ketu",
+        "because": "Ketu has finished with a subject; Rahu has never yet had it"
+      }
+    },
+    "Ketu": {
+      "title": "Where interest has gone out",
+      "governs": "Ketu is the finished business — a skill retained long after the wish to use it faded, detachment, and the part of a chart where the searching has already concluded.",
+      "demand": "Nothing there can be kept by wanting to keep it, and what has been let go does not return by being missed.",
+      "source": "The tail of the eclipse-serpent; the banner left standing.",
+      "source_ref": "BPHS 3 — Ketu among the nine grahas; Uttara Kalamrita V.22½–54½ — graha karakatva",
+      "distinct_from": {
+        "entry": "Sun",
+        "because": "The Sun is the office on show; Ketu is the part no longer attending"
+      }
+    }
+  },
+  "house": {
+    "house_1": {
+      "title": "The physical starting point",
+      "governs": "The first house is where a chart touches physical fact — constitution, bearing, the impression made on arrival, and the vitality every later division is counted against.",
+      "demand": "It cannot be exchanged for a better one, because every other division is counted from where this one stands.",
+      "source": "Tanu bhava — the limb, measured from the ascendant.",
+      "source_ref": "BPHS 11 — the first bhava: physique, appearance and vigour; Uttara Kalamrita IV — bhava karakatva",
+      "distinct_from": {
+        "entry": "house_2",
+        "because": "The second is what accumulates; the first is what does the accumulating"
+      }
+    },
+    "house_2": {
+      "title": "Holdings and the mouth",
+      "governs": "The second house is accumulation and voice — savings, possessions, what is eaten, the household one is raised inside, and the plain question of what can be said aloud.",
+      "demand": "Anything stored here does not stay stored, since what is kept is spent and what is said aloud cannot be unsaid.",
+      "source": "Dhana bhava — holdings, the mouth, and what a household keeps.",
+      "source_ref": "BPHS 11 — the second bhava: wealth, grains, family and metals; Phaladeepika 16 — general effects of the twelve bhavas",
+      "distinct_from": {
+        "entry": "house_3",
+        "because": "The third is effort spent outward; the second is what stays put"
+      }
+    },
+    "house_3": {
+      "title": "The reach of one's arm",
+      "governs": "The third house is initiative at close range — short travel, the nerve to act without permission, hands and arms, letters and errands, and the younger-born nearby.",
+      "demand": "Nerve cannot be borrowed for the occasion, and a reach never used shortens to the length actually practised.",
+      "source": "Sahaja bhava — the younger-born, the arms, short travel.",
+      "source_ref": "BPHS 11 — the third bhava: valour, brothers and sisters, journeys; Uttara Kalamrita IV — bhava karakatva",
+      "distinct_from": {
+        "entry": "house_4",
+        "because": "The fourth is the place returned to; the third is the going out from it"
+      }
+    },
+    "house_4": {
+      "title": "The ground under a life",
+      "governs": "The fourth house is the place returned to — land, dwellings, vehicles, the one who raised a child, schooling in childhood, and the settled sense of being from somewhere.",
+      "demand": "It cannot be carried along, and whatever is left behind at the door stays behind the door.",
+      "source": "Sukha bhava — land, dwellings, and the one who raised a child.",
+      "source_ref": "BPHS 11 — the fourth bhava: comforts, mother, vehicles and houses; Phaladeepika 16 — general effects of the twelve bhavas",
+      "distinct_from": {
+        "entry": "house_5",
+        "because": "The fifth is what issues outward; the fourth is what shelters whoever makes it"
+      }
+    },
+    "house_5": {
+      "title": "What issues outward",
+      "governs": "The fifth house is what issues outward — offspring, invention, speculation, intelligence applied for pleasure rather than for hire, and whatever is put out with a name attached.",
+      "demand": "Whatever issues from here carries a name, and what is put out under one cannot be taken back unsigned.",
+      "source": "Putra bhava — offspring, invention, and the mind at play.",
+      "source_ref": "BPHS 11 — the fifth bhava: children, wisdom and intelligence; Uttara Kalamrita IV — bhava karakatva",
+      "distinct_from": {
+        "entry": "house_6",
+        "because": "The sixth is the upkeep afterwards; the fifth is the making"
+      }
+    },
+    "house_6": {
+      "title": "The upkeep that never finishes",
+      "governs": "The sixth house is maintenance — the daily round of service and repair, debts owed and collected, opposition met at close quarters, and the upkeep a living arrangement quietly requires.",
+      "demand": "It is never finished, only kept up with, and a day skipped here is added onto some later one.",
+      "source": "Ripu bhava — service, debts, and what has to be kept up.",
+      "source_ref": "BPHS 11 — the sixth bhava: enemies, debts and obstacles; Phaladeepika 16 — general effects of the twelve bhavas",
+      "distinct_from": {
+        "entry": "house_7",
+        "because": "The seventh is the equal facing across; the sixth is the task in hand"
+      }
+    },
+    "house_7": {
+      "title": "The one across the table",
+      "governs": "The seventh house is the equal met directly — marriage, contracts, open rivals, trade conducted face to face, and every arrangement that requires a second signature to mean anything.",
+      "demand": "It cannot be occupied alone, and terms set without the other party present are not terms but a wish.",
+      "source": "Kalatra bhava — the spouse, the contract, the open rival.",
+      "source_ref": "BPHS 11 — the seventh bhava: marriage and partnership; Uttara Kalamrita IV — bhava karakatva",
+      "distinct_from": {
+        "entry": "house_8",
+        "because": "The eighth is what arrives unchosen; the seventh is what was agreed to"
+      }
+    },
+    "house_8": {
+      "title": "What arrives unchosen",
+      "governs": "The eighth house is what comes without being asked for — inheritance, other people's money, upheaval, research into what is concealed, and the length of a life taken as a fact.",
+      "demand": "Nothing in it can be arranged in advance, which is why planning is the wrong instrument to bring here.",
+      "source": "Ayush bhava — longevity, inheritance, and what is held in common.",
+      "source_ref": "BPHS 11 — the eighth bhava: longevity and hidden matters; Uttara Kalamrita IV — bhava karakatva; Phaladeepika 16 — general effects of the twelve bhavas",
+      "distinct_from": {
+        "entry": "house_9",
+        "because": "The ninth is the frame adopted on purpose; the eighth is the upheaval nobody adopts"
+      }
+    },
+    "house_9": {
+      "title": "What is taken on faith",
+      "governs": "The ninth house is the frame reasoning happens inside — teachers, doctrine, law, distant travel, the father as a source of principle, and luck nobody can account for.",
+      "demand": "A frame cannot be examined from inside itself, and luck that is counted on stops being luck.",
+      "source": "Dharma bhava — teachers, doctrine, distant travel, the father.",
+      "source_ref": "BPHS 11 — the ninth bhava: fortune, father and religious merit; Phaladeepika 16 — general effects of the twelve bhavas",
+      "distinct_from": {
+        "entry": "house_10",
+        "because": "The tenth is measured by result; the ninth by conviction alone"
+      }
+    },
+    "house_10": {
+      "title": "What the world sees done",
+      "governs": "The tenth house is the record left in public — office, trade, rank, the visible result of exertion, and whatever a stranger would name if asked what somebody does.",
+      "demand": "A record cannot be edited once it is public, and the version others hold is the one that counts.",
+      "source": "Karma bhava — office, trade, and the visible result of doing.",
+      "source_ref": "BPHS 11 — the tenth bhava: profession, rank and honour; Uttara Kalamrita IV — bhava karakatva",
+      "distinct_from": {
+        "entry": "house_11",
+        "because": "The eleventh is what accrues afterwards; the tenth is what was performed"
+      }
+    },
+    "house_11": {
+      "title": "What accrues from others",
+      "governs": "The eleventh house is what comes in through other people — income from many directions at once, elder siblings, associations, and the granting of wishes by somebody else's goodwill.",
+      "demand": "Nothing here is entirely earned, and a return that depends on other people cannot be commanded when it is most wanted.",
+      "source": "Labha bhava — income, associations, and the elder-born.",
+      "source_ref": "BPHS 11 — the eleventh bhava: gains and elder siblings; Phaladeepika 16 — general effects of the twelve bhavas",
+      "distinct_from": {
+        "entry": "house_12",
+        "because": "The twelfth is outflow with no receipt; the eleventh is inflow"
+      }
+    },
+    "house_12": {
+      "title": "The outflow and the retreat",
+      "governs": "The twelfth house is release — spending that does not come back, seclusion, distant residence, sleep and the unseen part of a day, and everything given away without a receipt.",
+      "demand": "What passes out here cannot be itemised afterwards, and an account of it is never quite complete.",
+      "source": "Vyaya bhava — outflow, seclusion, sleep, and the unseen.",
+      "source_ref": "BPHS 11 — the twelfth bhava: expenditure, foreign residence and seclusion; Uttara Kalamrita IV — bhava karakatva",
+      "distinct_from": {
+        "entry": "house_1",
+        "because": "The first is where somebody shows; the twelfth is where they withdraw"
+      }
+    }
+  }
+}

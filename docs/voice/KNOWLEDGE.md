@@ -755,3 +755,88 @@ Carried unchanged from `docs/voice/*.md`, `dasha_content_v2` and
 * **Not in scope here or in the authoring task:** any screen or UI, rendering
   `distinct_from`, the mantra/affirmation corpora (CUT in Block 5B and staying
   cut), compatibility, and anything remedial.
+
+---
+
+## 11. Amendments made by the authoring task (2026-07-26)
+
+`knowledge_content_v1` is authored: 48 of 48 entries, `tests/test_knowledge_content_seed.py`
+running every §7 and §8 gate with none skipped, and `tests/test_knowledge_gates_falsify.py`
+proving each one fires. Four things changed against this document, and per §6's
+standing rule they are recorded **here, with their justification**, rather than
+added quietly to a test file.
+
+### 11a. A sixth field: `source_ref`
+
+§5's spine gains one field. `source` is unchanged and stays what §5 defines —
+the traditional basis in plain English, ≤15 words, the field that renders.
+`source_ref` is the **citation**: `<Text> <locator> — <gloss>`, clauses joined
+by `; `, over a closed list of six texts (BPHS, Phaladeepika, Uttara Kalamrita,
+Brihat Samhita, Brihat Jataka, Taittiriya Brahmana).
+
+Why a field and not a longer `source`. The authoring task made grounding the
+accuracy standard: *"correct" means "traceable to the tradition"*, the same way
+the engine cites AstroSage and DrikPanchang for its numbers. That makes the
+citation **auditable data**, not prose — Rohan spot-checks a 48-row table of
+`entry → claim → locus`, and the app renders none of it. Collapsing the two into
+one field would have made the rendered line unreadable and the audit trail
+unqueryable at the same time. `test_source_field_is_plain_english_not_a_citation`
+keeps them apart in both directions.
+
+**What the citation gate proves, and what it does not.** It proves every entry
+names a text and a place inside it, and that no category rests on a single
+chapter. It does **not** prove the cited text says what the entry says. That
+distance is §8's, and §11d below is explicit that the gate narrows it rather
+than closing it.
+
+### 11b. Two words added to the §7a frame exemption: `bhava`, `graha`
+
+§7a's exemption list named `house`, `houses`, `planet`, `planets` and so on,
+because those name the unit each category is about. Their Sanskrit counterparts
+were omitted, and twelve house entries each naming their bhava in `source` put
+the word in 12 of 12 entries against a cap of 3.
+
+The exemption is the identical argument, and its scope is narrow: both words
+appear only inside `source` and `source_ref`, never in `governs` or `demand`.
+No other word was exempted, and no threshold was moved. `graha` is exempted on
+the same basis for the nine planets.
+
+### 11c. §7d's density gate needed a zero-baseline branch
+
+`test_heavy_token_density_parity` compares the hard group's mean heavy-token
+density against the rest of its category. Falsifying it in the **inverse**
+direction — leave the hard entries untouched, rewrite the easy ones into
+weightless reassurance — makes the denominator zero, and the gate raised
+`ZeroDivisionError` from inside its own failure message. It still stopped CI,
+but with a stack trace naming arithmetic instead of the defect. A zero baseline
+is now its own assertion with its own sentence, because §7d.3's failure is the
+one authors forget and it deserves to be legible when it fires.
+
+### 11d. §8 is NOT satisfied, and the corpus is marked unshippable
+
+This is the amendment that matters, and it is a deviation, not a clarification.
+
+* **Checkpoint A was met by a non-astrologer** — Rohan, as product owner —
+  reviewing the axis and the fear approach. That is a real approval of the
+  **voice and the editorial rules**. It is not the approval §8 asks for.
+* **Checkpoint A's sample missed two of its three mandatory slots.** §8 requires
+  Ketu, the 8th house, and one of Ashlesha/Mula, chosen to be the hardest cases.
+  The sample reviewed was Saturn, Hasta and the 8th house. Hasta is in no hard
+  group, so the sample under-tested exactly what §8 says a sample is for.
+* **Checkpoint B has not happened.** No astrologer is engaged. §8's prerequisite
+  section predicted this and it is what happened.
+* **The source-citation gate was substituted for the astrologer** as the accuracy
+  mechanism. It is enforced and it is not equivalent.
+
+None of that is left as a note. The seed carries `_about.shippable: false`, the
+gate `test_corpus_is_not_marked_shippable_without_checkpoint_b` allows that flag
+to be `true` **only** when `checkpoint_b` is approved by a reviewer explicitly
+recorded as an astrologer with zero entries marked inaccurate, and
+`/v1/knowledge/content` echoes the flag so a screen can refuse to render. The
+falsification suite proves the flag cannot be flipped by hand, and proves that
+an honest, complete sign-off by a stated non-astrologer still fails.
+
+> **The knowledge-base screens are the next task and MUST honour
+> `shippable: false`.** §8 Checkpoint B blocks ship "through any surface". The
+> corpus existing and being gated is not the same as it being allowed in front
+> of a reader, and this is the sentence that has to be argued with before it is.

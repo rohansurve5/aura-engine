@@ -42,6 +42,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine.content import DASHA_SEED_PATH as CONTENT_DASHA_SEED_PATH
 from engine.content import IDENTITY_SEED_PATH as CONTENT_IDENTITY_SEED_PATH
+from engine.content import KNOWLEDGE_SEED_PATH as CONTENT_KNOWLEDGE_SEED_PATH
 from engine.content import REPORT_SEED_PATH as CONTENT_REPORT_SEED_PATH
 from engine.content import SEED_PATH as CONTENT_SEED_PATH  # noqa: E402
 from engine.reports import KEY_TYPES  # noqa: E402
@@ -58,6 +59,7 @@ SEED = CONTENT_SEED_PATH
 DASHA_SEED = CONTENT_DASHA_SEED_PATH
 IDENTITY_SEED = CONTENT_IDENTITY_SEED_PATH
 REPORT_SEED = CONTENT_REPORT_SEED_PATH
+KNOWLEDGE_SEED = CONTENT_KNOWLEDGE_SEED_PATH
 
 
 def _dsn() -> str:
@@ -259,6 +261,74 @@ def seed_report_content(conn: psycopg.Connection) -> None:
     )
 
 
+def seed_knowledge_content(conn: psycopg.Connection) -> None:
+    """Seed the active knowledge_content corpus AND mark it active, atomically.
+
+    The interpretive significations corpus — 27 nakshatra + 9 planet + 12 house
+    entries authored against docs/voice/KNOWLEDGE.md. Same contract as the four
+    above, and like identity_content and report_content it uses the
+    `active_content` marker from its FIRST version.
+
+    ALL THREE CATEGORIES in one transaction with one marker, for a reason that
+    is sharper here than anywhere else in this file. KNOWLEDGE.md §7d's
+    fear-symmetry gates are COMPARATIVE: a `demand` is legal only relative to
+    its category's median length, and the traditionally-hard group's heavy-token
+    density is legal only relative to the rest of its own category. Those are
+    properties of a SET, not of a row. A marker per category would make
+    "planets at v2, houses at v1" expressible, and the v2 planets would then be
+    live having been symmetry-gated against a median that is no longer in the
+    database. That is not a stale row — it is a gate silently voided. Made
+    unreachable rather than detected.
+
+    NOTE ON WHAT IS SEEDED: `_about` is metadata, not an entry, and is not
+    written as a row. It carries the astrologer-review record that
+    tests/test_knowledge_content_seed.py enforces (KNOWLEDGE.md §8), and the
+    `definitional_baseline` copy of the shipped Block 7 house card (§6c). Both
+    live in the seed file where the gates read them; neither is content the
+    Worker serves.
+    """
+    data = json.loads(KNOWLEDGE_SEED.read_text())
+    version = data["version"]
+    count = 0
+    with conn.cursor() as cur:
+        for key_type in ("nakshatra", "planet", "house"):
+            for key, payload in data[key_type].items():
+                cur.execute(
+                    "INSERT INTO knowledge_content (version, key_type, key, payload) "
+                    "VALUES (%s, %s, %s, %s) "
+                    "ON CONFLICT (version, key_type, key) "
+                    "DO UPDATE SET payload = EXCLUDED.payload",
+                    (version, key_type, key, Json(payload)),
+                )
+                count += 1
+        about = data["_about"]
+        cur.execute(
+            "INSERT INTO knowledge_content (version, key_type, key, payload) "
+            "VALUES (%s, 'corpus', '_about', %s) "
+            "ON CONFLICT (version, key_type, key) "
+            "DO UPDATE SET payload = EXCLUDED.payload",
+            (
+                version,
+                Json({
+                    "spec": about["spec"],
+                    "status": about["status"],
+                    "shippable": about["shippable"],
+                }),
+            ),
+        )
+        cur.execute(
+            "INSERT INTO active_content (kind, version) VALUES ('knowledge_content', %s) "
+            "ON CONFLICT (kind) DO UPDATE SET "
+            "version = EXCLUDED.version, updated_at = now()",
+            (version,),
+        )
+    conn.commit()
+    print(
+        f"seeded {count} knowledge_content entries + the corpus row "
+        f"(shippable={data['_about']['shippable']}) and marked ACTIVE (version {version})"
+    )
+
+
 #: The seeded span of `transit_ingress`. The START is not a free choice — it
 #: must equal `engine.transits.INGRESS_EPOCH` exactly, because the Worker
 #: derives `ingress_index` by COUNTING rows in this table and the engine
@@ -328,7 +398,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
         description=(
             "apply migrations and seed score_rules + dasha_content + "
-            "identity_content + report_content"
+            "identity_content + report_content + knowledge_content"
         )
     )
     ap.add_argument("--seed-only", action="store_true", help="skip migrations")
@@ -343,6 +413,7 @@ def main(argv: list[str] | None = None) -> int:
             seed_dasha_content(conn)
             seed_identity_content(conn)
             seed_report_content(conn)
+            seed_knowledge_content(conn)
             seed_transit_ingress(conn)
     return 0
 
