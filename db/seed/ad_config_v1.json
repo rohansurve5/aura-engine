@@ -1,0 +1,101 @@
+{
+  "version": "ad_config_v1",
+  "_about": {
+    "spec": "Aura docs/backlog/PHASE_1.md — Block 2A, server-driven ad configuration",
+    "status": "SEEDED DISABLED",
+    "note": "Every placement and the master switch ship DISABLED. Enabling any of them is a deliberate act in the admin panel, so no build can ship ads before a human turns them on. The numbers below are the safe STARTING points a placement gets when it is first enabled — they are inert while enabled is false, and they exist so that switching a placement on never produces an unbounded config by accident. daily_cap 0 means SERVE NOTHING, never unlimited."
+  },
+  "master": {
+    "enabled": false
+  },
+  "placements": {
+    "reports_unlock": {
+      "format": "rewarded",
+      "enabled": false,
+      "daily_cap": 4,
+      "cooldown_seconds": 60,
+      "min_sessions": 2,
+      "params": { "unlock_scope": "session" }
+    },
+    "compat_detail_unlock": {
+      "format": "rewarded",
+      "enabled": false,
+      "daily_cap": 4,
+      "cooldown_seconds": 60,
+      "min_sessions": 2,
+      "params": { "unlock_scope": "session" }
+    },
+    "muhurat_result_unlock": {
+      "format": "rewarded",
+      "enabled": false,
+      "daily_cap": 4,
+      "cooldown_seconds": 60,
+      "min_sessions": 2,
+      "params": { "unlock_scope": "session" }
+    },
+    "dasha_detail_unlock": {
+      "format": "rewarded",
+      "enabled": false,
+      "daily_cap": 4,
+      "cooldown_seconds": 60,
+      "min_sessions": 2,
+      "params": { "unlock_scope": "session" }
+    },
+    "calendar_list": {
+      "format": "native",
+      "enabled": false,
+      "daily_cap": 6,
+      "cooldown_seconds": 0,
+      "min_sessions": 1,
+      "params": { "first_slot": 4, "repeat_every": 8 }
+    },
+    "timeline_list": {
+      "format": "native",
+      "enabled": false,
+      "daily_cap": 6,
+      "cooldown_seconds": 0,
+      "min_sessions": 1,
+      "params": { "first_slot": 4, "repeat_every": 8 }
+    },
+    "placements_list": {
+      "format": "native",
+      "enabled": false,
+      "daily_cap": 6,
+      "cooldown_seconds": 0,
+      "min_sessions": 1,
+      "params": { "first_slot": 4, "repeat_every": 8 }
+    },
+    "knowledge_list": {
+      "format": "native",
+      "enabled": false,
+      "daily_cap": 6,
+      "cooldown_seconds": 0,
+      "min_sessions": 1,
+      "params": { "first_slot": 4, "repeat_every": 8 }
+    },
+    "deep_screen_bottom": {
+      "format": "banner",
+      "enabled": false,
+      "daily_cap": 20,
+      "cooldown_seconds": 0,
+      "min_sessions": 1,
+      "params": { "anchor": "bottom", "collapsible": false }
+    },
+    "section_transition": {
+      "format": "interstitial",
+      "enabled": false,
+      "daily_cap": 2,
+      "cooldown_seconds": 300,
+      "min_sessions": 3,
+      "params": {}
+    },
+    "cold_start": {
+      "format": "app_open",
+      "enabled": false,
+      "daily_cap": 1,
+      "cooldown_seconds": 14400,
+      "min_sessions": 3,
+      "params": {}
+    }
+  }
+}

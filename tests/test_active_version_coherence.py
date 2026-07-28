@@ -23,11 +23,13 @@ from pathlib import Path
 import pytest
 
 from engine.content import (
+    ACTIVE_AD_CONFIG_VERSION,
     ACTIVE_DASHA_CONTENT_VERSION,
     ACTIVE_IDENTITY_CONTENT_VERSION,
     ACTIVE_KNOWLEDGE_CONTENT_VERSION,
     ACTIVE_REPORT_CONTENT_VERSION,
     ACTIVE_SCORE_RULES_VERSION,
+    AD_CONFIG_SEED_PATH,
     DASHA_SEED_PATH,
     IDENTITY_SEED_PATH,
     KNOWLEDGE_SEED_PATH,
@@ -396,6 +398,7 @@ def test_no_kind_selects_its_version_by_inference():
         migrate.seed_identity_content,
         migrate.seed_report_content,
         migrate.seed_knowledge_content,
+        migrate.seed_ad_config,
     ):
         code = _code_only(fn).lower()
         assert "max(version)" not in code, f"{fn.__name__} infers a version via max()"
@@ -596,5 +599,132 @@ def test_active_knowledge_version_is_the_newest_seed():
     assert KNOWLEDGE_SEED_PATH.name == newest, (
         f"the newest knowledge seed is {newest} but engine/content.py activates "
         f"{KNOWLEDGE_SEED_PATH.name}. If that is a deliberate rollback, update "
+        "this test's expectation in the same commit."
+    )
+
+
+# ── ad_config: the same activation contract, the OPPOSITE write discipline ───
+#
+# The sixth kind on the marker table, and the first that is not a content
+# corpus. It inherits everything about how a version is chosen — declared in the
+# seed file, stamped into `active_content` in the same transaction, never
+# inferred with max(version) — and deliberately breaks the upsert rule that the
+# five corpora share. The tests below hold BOTH halves, because getting either
+# one wrong is silent: an inferred version rolls the config back at v10, and an
+# upserting seeder reverts the panel's edits at 01:00 IST every night.
+
+
+def test_active_ad_config_seed_file_exists():
+    assert AD_CONFIG_SEED_PATH.is_file(), f"active ad_config seed missing: {AD_CONFIG_SEED_PATH}"
+
+
+def test_active_ad_config_version_matches_seed_filename():
+    expected = f"{ACTIVE_AD_CONFIG_VERSION}.json"
+    assert AD_CONFIG_SEED_PATH.name == expected, (
+        f"ad_config seed {AD_CONFIG_SEED_PATH.name} declares version "
+        f"{ACTIVE_AD_CONFIG_VERSION!r}; expected the file named {expected}"
+    )
+    assert ACTIVE_AD_CONFIG_VERSION == declared_version(AD_CONFIG_SEED_PATH)
+
+
+def test_migrate_seeds_the_exact_ad_config_file_content_py_activates():
+    """One declaration of the ad_config seed path, not two."""
+    migrate = _migrate_module()
+    assert migrate.AD_CONFIG_SEED == AD_CONFIG_SEED_PATH, (
+        f"db/migrate.py seeds {migrate.AD_CONFIG_SEED} but engine/content.py "
+        f"activates {AD_CONFIG_SEED_PATH}. Two declarations is how seeded and "
+        "served diverge."
+    )
+
+
+def test_seeding_ad_config_also_marks_it_active():
+    """Seed-without-activate must not be expressible for this kind either."""
+    import inspect
+
+    src = inspect.getsource(_migrate_module().seed_ad_config)
+    assert "active_content" in src and "'ad_config'" in src, (
+        "seed_ad_config does not stamp active_content. Seeding and activating "
+        "must be one act."
+    )
+
+
+def test_ad_config_seeder_never_overwrites_operational_state():
+    """The regression that would cost money quietly, asserted on the code.
+
+    `db/migrate.py` runs at 01:00 IST from the nightly precompute workflow.
+    `ad_config` is the only table here that a human edits from the admin panel
+    between runs. An upserting seeder would therefore revert every ad decision
+    made that day, every night, with nothing red anywhere to say so — the
+    content_v3_2 signature, aimed at the one table where being wrong costs
+    revenue and retention together.
+
+    Checked on the ad_config writes specifically. The marker write in the same
+    function IS an upsert and must stay one: the marker records intent declared
+    by the seed file, and the panel never edits it.
+    """
+    code = _code_only(_migrate_module().seed_ad_config)
+    ad_writes = [
+        stmt for stmt in code.split("cur.execute") if "INTO ad_config" in stmt
+    ]
+    assert len(ad_writes) == 2, (
+        f"expected exactly two ad_config writes (master + placements), found "
+        f"{len(ad_writes)}"
+    )
+    for stmt in ad_writes:
+        assert "DO NOTHING" in stmt, (
+            "an ad_config write does not use ON CONFLICT DO NOTHING. Re-seeding "
+            "must never touch a row the admin panel owns."
+        )
+        assert "DO UPDATE" not in stmt, (
+            "an ad_config write upserts. The nightly job would revert the "
+            "panel's edits every night, silently."
+        )
+    assert code.count("active_content") == 1, "exactly one activation write"
+    assert "DO UPDATE" in code, (
+        "the marker write must stay an upsert — it records the seed file's "
+        "declared intent, which is not panel-owned state"
+    )
+
+
+def test_ad_config_seeder_refuses_a_seed_that_ships_anything_enabled():
+    """The fail-safe, asserted on the seeder rather than only on the file.
+
+    tests/test_ad_config_seed.py checks the shipped seed. This checks that a
+    DIFFERENT seed — a hand-edited one, a future version authored in a hurry —
+    could not be written to the database enabled either. Two independent
+    barriers, because CI has no Neon and the first thing to reach production is
+    whatever this function writes.
+    """
+    code = _code_only(_migrate_module().seed_ad_config)
+    assert "SystemExit" in code, (
+        "seed_ad_config does not refuse an enabled seed. The seed file's "
+        "posture must be enforced at the write, not only in a test of the file."
+    )
+    assert "is not False" in code, (
+        "the enabled check must be identity against False — a truthy-falsy "
+        "check would let 0, '' or None through as 'disabled'"
+    )
+
+
+def test_every_ad_config_seed_file_declares_a_version_matching_its_name():
+    for path in sorted(SEED_DIR.glob("ad_config_v*.json")):
+        version = json.loads(path.read_text()).get("version")
+        assert path.name == f"{version}.json", (
+            f"{path.name} declares version {version!r}; name and version disagree"
+        )
+
+
+def test_active_ad_config_version_is_the_newest_seed():
+    """Numeric ordering, as for the five kinds above."""
+
+    def key(name: str) -> tuple[int, ...]:
+        stem = name.removesuffix(".json").removeprefix("ad_config_v")
+        return tuple(int(p) for p in stem.split("_") if p.isdigit())
+
+    names = [p.name for p in SEED_DIR.glob("ad_config_v*.json")]
+    newest = max(names, key=key)
+    assert AD_CONFIG_SEED_PATH.name == newest, (
+        f"the newest ad_config seed is {newest} but engine/content.py activates "
+        f"{AD_CONFIG_SEED_PATH.name}. If that is a deliberate rollback, update "
         "this test's expectation in the same commit."
     )

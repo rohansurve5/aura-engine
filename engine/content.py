@@ -50,6 +50,8 @@ IDENTITY_SEED_PATH = _SEED_DIR / "identity_content_v2.json"
 REPORT_SEED_PATH = _SEED_DIR / "report_content_v4.json"
 # ── THE ONE LINE THAT SETS THE ACTIVE knowledge_content VERSION ──────────────
 KNOWLEDGE_SEED_PATH = _SEED_DIR / "knowledge_content_v1.json"
+# ── THE ONE LINE THAT SETS THE ACTIVE ad_config VERSION ──────────────────────
+AD_CONFIG_SEED_PATH = _SEED_DIR / "ad_config_v1.json"
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -101,3 +103,19 @@ ACTIVE_REPORT_CONTENT_VERSION = declared_version(REPORT_SEED_PATH)
 #: so a per-category marker would let a half-rolled-back corpus be live with the
 #: comparison that licensed it no longer in the database. See migration 015.
 ACTIVE_KNOWLEDGE_CONTENT_VERSION = declared_version(KNOWLEDGE_SEED_PATH)
+
+#: The active advertising configuration version — derived, never typed. Written
+#: to `active_content` by migrate; served by /v1/ads/config.
+#:
+#: NOT A CONTENT CORPUS, and the difference matters here more than the similarity.
+#: The other five kinds are immutable once seeded — new copy is a new version.
+#: This one is turned up and down by a human in the admin panel during the day,
+#: and `db/migrate.py` runs every night at 01:00 IST from the precompute
+#: workflow. So `seed_ad_config` inserts ON CONFLICT DO NOTHING: the seed file
+#: owns a version's CATALOGUE (which placements exist, in which format, with
+#: which safe starting numbers), and once a row exists the panel owns its
+#: operational state. An upserting seeder would revert every ad decision made
+#: that day, every night, silently — the same shape as the content_v3_2
+#: incident, and worse, because the reverted state is the one that costs money.
+#: Changing a default for an existing placement is a new version, not an edit.
+ACTIVE_AD_CONFIG_VERSION = declared_version(AD_CONFIG_SEED_PATH)

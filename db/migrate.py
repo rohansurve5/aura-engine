@@ -14,6 +14,12 @@ are one act, never two. Nothing infers the live version from the data itself:
 `max(version)` is a lexical max over TEXT and would serve `dasha_content_v2`
 once `dasha_content_v10` exists.
 
+One seeder breaks the upsert rule on purpose: `seed_ad_config` inserts
+**if-absent**, never updating. `ad_config` is operational state edited from the
+admin panel, and this script runs nightly from the precompute workflow — an
+upsert there would revert every ad decision made that day, every night, in
+silence. See that function's docstring.
+
     NEON_DATABASE_URL=postgres://... uv run python db/migrate.py
     ...                              uv run python db/migrate.py --seed-only
     ...                              uv run python db/migrate.py --no-seed
@@ -40,6 +46,7 @@ from psycopg.types.json import Json
 # declaration of the active version is worth three lines of path setup.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from engine.content import AD_CONFIG_SEED_PATH as CONTENT_AD_CONFIG_SEED_PATH
 from engine.content import DASHA_SEED_PATH as CONTENT_DASHA_SEED_PATH
 from engine.content import IDENTITY_SEED_PATH as CONTENT_IDENTITY_SEED_PATH
 from engine.content import KNOWLEDGE_SEED_PATH as CONTENT_KNOWLEDGE_SEED_PATH
@@ -60,6 +67,7 @@ DASHA_SEED = CONTENT_DASHA_SEED_PATH
 IDENTITY_SEED = CONTENT_IDENTITY_SEED_PATH
 REPORT_SEED = CONTENT_REPORT_SEED_PATH
 KNOWLEDGE_SEED = CONTENT_KNOWLEDGE_SEED_PATH
+AD_CONFIG_SEED = CONTENT_AD_CONFIG_SEED_PATH
 
 
 def _dsn() -> str:
@@ -329,6 +337,93 @@ def seed_knowledge_content(conn: psycopg.Connection) -> None:
     )
 
 
+def seed_ad_config(conn: psycopg.Connection) -> None:
+    """Seed the ad_config CATALOGUE and mark it active — WITHOUT clobbering state.
+
+    This is the one seeder in this file that does NOT upsert, and the exception
+    is load-bearing rather than a shortcut.
+
+    Every other corpus here is immutable once seeded: new copy is a new version,
+    so re-seeding the same version can only ever rewrite a row with its own
+    content. `ad_config` is different in kind. It is OPERATIONAL state that a
+    human turns up and down from the admin panel during the day — and this very
+    script runs at 01:00 IST every night, from the nightly-precompute workflow,
+    before it writes guidance. An upserting seeder would therefore silently
+    revert every ad decision Rohan made that day, every day, with nothing red
+    anywhere. That is the content_v3_2 signature (each step verified, the JOIN
+    between steps not), pointed at the one table where being wrong costs revenue
+    and user trust at the same time.
+
+    So: ON CONFLICT DO NOTHING. The seed file establishes what a version's
+    placements ARE — which exist, in which format, with which safe starting
+    numbers — and the moment a row exists the panel owns its enabled flag, cap,
+    cooldown and warm-up. Adding a placement is additive and lands on the next
+    run. Changing an existing placement's defaults is a NEW VERSION, not an edit
+    to the active seed file, exactly as it is for every corpus above.
+
+    The marker write is still an upsert, because the marker is intent declared
+    by the seed file and is not something the panel edits.
+
+    FAIL-SAFE. The seed ships every placement disabled AND the master switch
+    disabled, so the first row this ever writes cannot serve an ad. `enabled`
+    means the same thing on every row — "this may serve" — so there is no
+    inverted boolean anywhere in the path. Enabling is a deliberate admin act,
+    twice over: the master, then the placement.
+    """
+    data = json.loads(AD_CONFIG_SEED.read_text())
+    version = data["version"]
+    master = data["master"]
+    placements = data["placements"]
+
+    # A seed that shipped anything enabled would defeat the whole point, and the
+    # cheapest place to catch it is before it reaches the database — CI has no
+    # Neon, so tests/test_ad_config_seed.py asserts the file and this asserts the
+    # write. Belt and braces on the one default that must never drift open.
+    if master.get("enabled") is not False:
+        raise SystemExit(f"{AD_CONFIG_SEED.name}: master must seed DISABLED")
+    hot = [k for k, p in placements.items() if p.get("enabled") is not False]
+    if hot:
+        raise SystemExit(f"{AD_CONFIG_SEED.name}: placements must seed DISABLED: {sorted(hot)}")
+
+    with conn.cursor() as cur:
+        cur.execute(
+            "INSERT INTO ad_config (version, kind, key, format, enabled) "
+            "VALUES (%s, 'global', 'master', NULL, %s) "
+            "ON CONFLICT (version, kind, key) DO NOTHING",
+            (version, master["enabled"]),
+        )
+        for key, p in placements.items():
+            cur.execute(
+                "INSERT INTO ad_config "
+                "(version, kind, key, format, enabled, daily_cap, "
+                " cooldown_seconds, min_sessions, params) "
+                "VALUES (%s, 'placement', %s, %s, %s, %s, %s, %s, %s) "
+                "ON CONFLICT (version, kind, key) DO NOTHING",
+                (
+                    version,
+                    key,
+                    p["format"],
+                    p["enabled"],
+                    p["daily_cap"],
+                    p["cooldown_seconds"],
+                    p["min_sessions"],
+                    Json(p.get("params", {})),
+                ),
+            )
+        cur.execute(
+            "INSERT INTO active_content (kind, version) VALUES ('ad_config', %s) "
+            "ON CONFLICT (kind) DO UPDATE SET "
+            "version = EXCLUDED.version, updated_at = now()",
+            (version,),
+        )
+    conn.commit()
+    print(
+        f"seeded {len(placements)} ad_config placements + the master switch "
+        f"(insert-if-absent; existing rows left as the panel set them) "
+        f"and marked ACTIVE (version {version})"
+    )
+
+
 #: The seeded span of `transit_ingress`. The START is not a free choice — it
 #: must equal `engine.transits.INGRESS_EPOCH` exactly, because the Worker
 #: derives `ingress_index` by COUNTING rows in this table and the engine
@@ -398,7 +493,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
         description=(
             "apply migrations and seed score_rules + dasha_content + "
-            "identity_content + report_content + knowledge_content"
+            "identity_content + report_content + knowledge_content + ad_config"
         )
     )
     ap.add_argument("--seed-only", action="store_true", help="skip migrations")
@@ -414,6 +509,7 @@ def main(argv: list[str] | None = None) -> int:
             seed_identity_content(conn)
             seed_report_content(conn)
             seed_knowledge_content(conn)
+            seed_ad_config(conn)
             seed_transit_ingress(conn)
     return 0
 
