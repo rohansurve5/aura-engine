@@ -57,6 +57,17 @@ product API can be closed without ever touching AGPL-covered code.
   (Swiss rise/set), tithi, nakshatra, yoga, karana — every boundary root-found
   on the driving angle (never sampled), so kshaya/adhika cases fall out
   naturally — plus vaar, paksha and moon phase.
+- **`engine/chart_file.py`** (reshape B) — the **chart file's facts**, the
+  source of truth behind aura-api `POST /v1/chart-file`: every graha's
+  nakshatra/pada, **D9 navamsa** (sign + house + vargottama), **dignity**
+  (BPHS exaltation / moolatrikona / own / debilitated), **combustion**
+  (classical orbs), the **birth panchang** (`panchang.panchang_at` +
+  `panchang.vara_at`, sunrise-to-sunrise vara), **pratyantar** for the running
+  and next antar (`vimshottari.rounded_pratyantar`), today's **transit
+  snapshot** and the next 365 days of exact **Saturn/Jupiter/Rahu ingresses**.
+  Golden-tested against AstroSage (planets at sunrise, panchang boundaries)
+  and DrikPanchang (ingress instants, the golden birth's panchang); the Worker
+  port is gated by `scripts/crossval_chart_file.py` (see "Chart file" below).
 - **`engine/choghadiya.py`** — day/night choghadiya (8 splits each) and rahu
   kaal / gulika kaal / yamaganda, pure arithmetic on sunrise/sunset.
 - **`engine/compatibility.py`** — Ashtakoota (Guna Milan): the classical
@@ -146,6 +157,33 @@ curl "http://localhost:8000/v1/natal?dob=1989-09-23&time=04:47"
 # {"nakshatra_index":5,"nakshatra":"Ardra","pada":4,"lord":"Rahu",
 #  "moon_sign":"Gemini","sun_sign":"Virgo","time_assumed":false}
 ```
+
+## Chart file: facts here, text in the Worker (reshape B)
+
+The product is one plain-text file a user shares into ChatGPT / Claude. The
+Worker (`aura-api/src/chartFacts.ts`) computes its values with astronomy-engine
+and renders the text; **this repo decides the values** (`engine/chart_file.py`).
+`scripts/crossval_chart_file.py` runs both over 300 births (India-weighted,
+world panel, seeded stations, the golden chart, the B1 births abroad) and 51
+skies (incl. the real 8–27-day sign stays an over-stepping ingress search
+would miss), compares every value the file states, and writes the golden that
+gates every aura-api deploy. Measured (2026-10-19): **105,707 values, 0
+disagreements, 7 contested boundary cases** (a value within 1′ of the edge that
+decides it — recorded, never adjudicated); worst longitude 20″, sunrise 26 s,
+dasha dates ±1 day, ingress instants 10.6″ of motion.
+
+```bash
+uv run python scripts/crossval_chart_file.py
+```
+
+Conventions the file states to its reader (and the tests pin): lahiri_vp285,
+mean node, Whole Sign houses, 365.25-day dasha year; the **birth panchang uses
+the chart's vp285 zodiac** (not DrikPanchang's plain Lahiri, as the daily
+panchang does) so its nakshatra can never contradict the Moon's row; transits
+are read at **local noon** of the as-of date; dasha rows are day-rounded on the
+AstroSage cascade and each period's **last child row ends on the parent's
+printed end** (measured: otherwise the golden chart's Sun maha would end a day
+before its last antar).
 
 ## Install & run
 
@@ -274,6 +312,23 @@ Conventions proven by the golden set:
   sites evaluate time-driven quantities in the **TT frame** (~ΔT ≈ 57–69 s
   ahead of UT); see `docs/ASCENDANT.md` > Discovery 1.
 
+### Chart file vs AstroSage / DrikPanchang (reshape B4)
+
+* **Planets (AstroSage, sunrise, New Delhi, 2026-10-19):** sign, nakshatra and
+  pada agree for all nine. The Moon (−6″) and mean Rahu (−3.5″) pin the
+  convention; the other planets sit within 2′ (Jupiter +106″, Saturn +74″) —
+  AstroSage's planet theory, the same order as its known ascendant residual.
+* **Ingresses (DrikPanchang, Oct 2026 – Nov 2027):** same seven events, order,
+  directions and IST dates. DrikPanchang's Lahiri is neither of ours: its
+  Jupiter/Saturn instants fall between our plain-lahiri and vp285 instants (up
+  to ~50 min from vp285); the slow mean node lands 10 min (~1.3″) past vp285.
+  Asserted in arc: within 40″ of the boundary at DrikPanchang's minute. The
+  file therefore prints ingress **dates**, not times.
+* **Not yet externally referenced** (engine-pinned + Worker-crossval'd only):
+  the golden chart's D9, combustion and dignity as AstroSage shows them, and
+  pratyantar dates — `tests/golden/chart_file_rohan.json` holds a skipped
+  AstroSage slot for the first three.
+
 ### Historical timezones and India's war-time DST (1941–45)
 
 Two timezone spec forms exist, and the distinction is deliberate
@@ -372,7 +427,8 @@ engine/
   ephemeris.py     swe config, ayanamsa registry, IST<->UTC
   positions.py     sidereal longitudes Sun..Ketu
   vimshottari.py   nakshatra, balance, maha/antar/pratyantar, rendering
-  panchang.py      sunrise/sunset, tithi/nakshatra/yoga/karana solvers
+  panchang.py      sunrise/sunset, tithi/nakshatra/yoga/karana solvers, panchang/vara at an instant
+  chart_file.py    the chart file's facts: D9, dignity, combustion, transits, ingresses
   choghadiya.py    choghadiya windows + rahu/gulika/yamaganda kaals
   daily.py         deterministic daily_sky payload builder
   scoring.py       v1 heuristic guidance (Tarabala + weekday/paksha), rules-driven

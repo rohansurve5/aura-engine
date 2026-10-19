@@ -26,12 +26,14 @@ the same element type).
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta, tzinfo
 
 import swisseph as swe
 
 from .ephemeris import DRIKPANCHANG_AYANAMSA, IST, julday_utc, set_ayanamsa
+from .timezones import local_to_utc, resolve_tz
 from .vimshottari import NAKSHATRA_ARC, NAKSHATRAS
 
 # ── Names ───────────────────────────────────────────────────────────────────
@@ -255,3 +257,106 @@ def compute_panchang(
         phase_fraction=elong / 360,
         waxing=elong < 180,
     )
+
+
+# ── Panchang AT AN INSTANT (the chart file's birth panchang) ────────────────
+# compute_panchang above lists a DAY's elements with solved boundaries. A birth
+# needs the other question: which tithi / nakshatra / yoga / karana prevailed
+# AT one instant. That is a pure read of the same angle functions — no root
+# finding — so it is exact wherever the angles are, and the only judgement
+# call is the zodiac, which is the CALLER'S: the chart file passes the chart's
+# own lahiri_vp285 so the birth nakshatra here can never disagree with the
+# Moon's nakshatra in the planet table (the ~23″ flavour gap to plain Lahiri
+# would otherwise split them for a Moon within ~1 minute of birth time of a
+# boundary). Tithi and karana are ayanamsa-free; yoga and nakshatra are not.
+
+@dataclass(frozen=True)
+class InstantPanchang:
+    """The five limbs (minus vara, which needs a place) at one instant."""
+
+    tithi_index: int        # 0–29: 0 = Shukla Pratipada … 14 Purnima … 29 Amavasya
+    tithi: str
+    paksha: str             # "Shukla" | "Krishna"
+    nakshatra_index: int    # 0–26
+    nakshatra: str
+    pada: int               # 1–4
+    yoga_index: int         # 0–26
+    yoga: str
+    karana_index: int       # 0–59
+    karana: str
+    elongation: float       # Moon − Sun, degrees — the tithi/karana driver
+    yoga_sum: float         # sidereal Sun + Moon, degrees (mod 360)
+    moon_longitude: float   # sidereal Moon, degrees
+
+
+def panchang_at(when_utc: datetime, *, ayanamsa: str = DRIKPANCHANG_AYANAMSA) -> InstantPanchang:
+    """Tithi, nakshatra (+pada), yoga and karana prevailing at `when_utc`.
+
+    Indices use floor(angle / arc) — written with math.floor, not `//`, so the
+    Worker's Math.floor port takes the identical branch at every non-boundary
+    angle (Python's float `//` is fmod-based and can differ at an exact edge).
+    """
+    set_ayanamsa(ayanamsa)
+    jd = julday_utc(when_utc)
+    elong = _elongation(jd)
+    ysum = _yoga_sum(jd)
+    moon = _sidereal_moon(jd)
+
+    tithi = math.floor(elong / TITHI_ARC) % 30
+    karana = math.floor(elong / KARANA_ARC) % 60
+    yoga = math.floor(ysum / YOGA_ARC) % 27
+    nak = math.floor(moon / NAKSHATRA_ARC) % 27
+    pada = math.floor((moon - nak * NAKSHATRA_ARC) / (NAKSHATRA_ARC / 4)) + 1
+    return InstantPanchang(
+        tithi_index=tithi,
+        tithi=tithi_name(tithi),
+        paksha="Shukla" if tithi < 15 else "Krishna",
+        nakshatra_index=nak,
+        nakshatra=NAKSHATRAS[nak],
+        pada=min(pada, 4),
+        yoga_index=yoga,
+        yoga=YOGA_NAMES[yoga],
+        karana_index=karana,
+        karana=karana_name(karana),
+        elongation=elong,
+        yoga_sum=ysum,
+        moon_longitude=moon,
+    )
+
+
+@dataclass(frozen=True)
+class Vara:
+    """The Vedic weekday of an instant: it runs sunrise to sunrise."""
+
+    vara: str                     # Sanskrit name of the Vedic weekday
+    weekday: str                  # its English name
+    civil_weekday: str            # the calendar weekday of the local date
+    sunrise: datetime | None      # local sunrise on the civil date; None = none
+    before_sunrise: bool          # True → the vara is the PREVIOUS civil day's
+
+
+def vara_at(local: datetime, tz_spec: str, lat: float, lon: float) -> Vara:
+    """Vara for a local wall-clock instant at a place.
+
+    A Hindu day begins at sunrise, so a birth at 04:47 on a Saturday, before
+    that morning's sunrise, is born on Friday's vara (Shukrawara) — the
+    calendar weekday and the vara differ. Sunrise here is compute_panchang's
+    (upper limb + refraction, ±1 min of DrikPanchang). If the Sun does not
+    rise on that civil date (polar day/night) the vara falls back to the civil
+    weekday and `sunrise` is None — stated, never invented.
+    """
+    tz = resolve_tz(tz_spec)
+    day = local.date()
+    civil = day.strftime("%A")
+    jd_birth = julday_utc(local_to_utc(local, tz_spec))
+    jd_midnight = julday_utc(datetime.combine(day, time()).replace(tzinfo=tz))
+    try:
+        jd_rise = _rise_set(jd_midnight, lat, lon, rise=True)
+    except ValueError:
+        jd_rise = None
+    sunrise = _jd_to_local(jd_rise, tz) if jd_rise is not None else None
+    if sunrise is None or sunrise.date() != day:
+        return Vara(VAAR_NAMES[day.weekday()], civil, civil, None, False)
+    before = jd_birth < jd_rise
+    vara_day = day - timedelta(days=1) if before else day
+    return Vara(VAAR_NAMES[vara_day.weekday()], vara_day.strftime("%A"), civil, sunrise, before)

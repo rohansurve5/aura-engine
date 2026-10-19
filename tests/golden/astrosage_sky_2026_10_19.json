@@ -1,0 +1,32 @@
+{
+ "_about": "External reference for the chart file's transit snapshot and birth panchang (reshape B4). Copied verbatim from AstroSage's daily panchang page as served on 2026-10-19 (the page ignores ?date= and always serves today). Positions are AstroSage's 'Planetary Position at Sunrise' table (sidereal, AstroSage's Lahiri = the engine's lahiri_vp285; Rahu/Ketu = MEAN node, proven by the 3.5\" agreement — the true node is 76' away). The Sun's '01-25-60' is printed that way by AstroSage (a seconds-rounding artefact = 01-26-00). Planet-table nakshatra names are mapped to engine spellings (AstroSage prints Uttarashadha and Uttarabhadra there); karana rows keep AstroSage's spelling alongside; 'upto' times are local IST; 24:35:04 means 00:35:04 the next civil day.",
+ "source": "https://panchang.astrosage.com/panchang/aajkapanchang (fetched 2026-10-19)",
+ "place": "New Delhi, India",
+ "lat": 28.6356,
+ "lon": 77.2244,
+ "coords_note": "AstroSage does not print its New Delhi coordinates; these are DrikPanchang's (28°38'08\" N, 77°13'28\" E). They only affect sunrise, compared at ±2 min.",
+ "zone": "Asia/Kolkata",
+ "date": "2026-10-19",
+ "day": "Somavara",
+ "paksha": "Shukla",
+ "sunrise": "06:24:00",
+ "sunset": "17:47:58",
+ "positions_at_sunrise": {
+  "Sun":     {"sign": "Libra",     "dms": "01-25-60", "nakshatra": "Chitra",            "pada": 3},
+  "Moon":    {"sign": "Capricorn", "dms": "05-22-50", "nakshatra": "Uttara Ashadha",    "pada": 3},
+  "Mars":    {"sign": "Cancer",    "dms": "17-35-59", "nakshatra": "Ashlesha",          "pada": 1},
+  "Mercury": {"sign": "Libra",     "dms": "25-08-34", "nakshatra": "Vishakha",          "pada": 2},
+  "Jupiter": {"sign": "Cancer",    "dms": "28-17-43", "nakshatra": "Ashlesha",          "pada": 4},
+  "Venus":   {"sign": "Libra",     "dms": "09-32-42", "nakshatra": "Swati",             "pada": 1},
+  "Saturn":  {"sign": "Pisces",    "dms": "15-55-15", "nakshatra": "Uttara Bhadrapada", "pada": 4},
+  "Rahu":    {"sign": "Aquarius",  "dms": "02-31-15", "nakshatra": "Dhanishta",         "pada": 3},
+  "Ketu":    {"sign": "Leo",       "dms": "02-31-15", "nakshatra": "Magha",             "pada": 1}
+ },
+ "elements": {
+  "tithi":     [{"name": "Ashtami", "upto": "10:53:30"}],
+  "nakshatra": [{"name": "Uttara Ashadha", "upto": "15:39:23"}],
+  "karana":    [{"name": "Bava", "astrosage_spelling": "Bhav", "upto": "10:53:30"},
+                {"name": "Balava", "astrosage_spelling": "Baalav", "upto": "23:56:45"}],
+  "yoga":      [{"name": "Dhriti", "upto": "24:35:04"}]
+ }
+}

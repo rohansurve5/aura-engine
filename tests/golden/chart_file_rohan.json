@@ -1,0 +1,240 @@
+{
+ "_about": "The golden chart (1989-09-23 04:47 Asia/Kolkata, Pune 18.5204 N 73.8567 E — Rohan's birth, the chart every other golden pins) as the chart file states it (reshape B2–B4). 'engine_pinned' is the engine's own output (Swiss Ephemeris, lahiri_vp285, mean node, Whole Sign) pinned as a REGRESSION GUARD — not an external reference. 'astrosage' is null until Rohan reads the same chart off AstroSage's Free Kundli (Pune, default Lahiri settings): the planet table (sign, nakshatra, pada, R/C marks), the Navamsa (D9) chart, and the birth panchang; tests/test_chart_file.py then compares exactly. The birth panchang already has an external check: DrikPanchang's Pune page for that date (drik_panchang.json).",
+ "birth": {
+  "dob": "1989-09-23",
+  "time": "04:47",
+  "zone": "Asia/Kolkata",
+  "place": "Pune, Maharashtra, India",
+  "lat": 18.5204,
+  "lon": 73.8567
+ },
+ "engine_pinned": {
+  "ascendant": {
+   "sign": "Leo",
+   "nakshatra": "Magha",
+   "pada": 4,
+   "navamsa_sign": "Cancer"
+  },
+  "planets": {
+   "Sun": {
+    "sign": "Virgo",
+    "nakshatra": "Uttara Phalguni",
+    "pada": 3,
+    "navamsa_sign": "Aquarius",
+    "house": 2,
+    "retrograde": false,
+    "combust": null,
+    "dignity": null,
+    "navamsa_house": 8
+   },
+   "Moon": {
+    "sign": "Gemini",
+    "nakshatra": "Ardra",
+    "pada": 4,
+    "navamsa_sign": "Pisces",
+    "house": 11,
+    "retrograde": false,
+    "combust": false,
+    "dignity": null,
+    "navamsa_house": 9
+   },
+   "Mars": {
+    "sign": "Virgo",
+    "nakshatra": "Uttara Phalguni",
+    "pada": 4,
+    "navamsa_sign": "Pisces",
+    "house": 2,
+    "retrograde": false,
+    "combust": true,
+    "dignity": null,
+    "navamsa_house": 9
+   },
+   "Mercury": {
+    "sign": "Virgo",
+    "nakshatra": "Hasta",
+    "pada": 1,
+    "navamsa_sign": "Aries",
+    "house": 2,
+    "retrograde": true,
+    "combust": true,
+    "dignity": "exalted",
+    "navamsa_house": 10
+   },
+   "Jupiter": {
+    "sign": "Gemini",
+    "nakshatra": "Ardra",
+    "pada": 3,
+    "navamsa_sign": "Aquarius",
+    "house": 11,
+    "retrograde": false,
+    "combust": false,
+    "dignity": null,
+    "navamsa_house": 8
+   },
+   "Venus": {
+    "sign": "Libra",
+    "nakshatra": "Swati",
+    "pada": 4,
+    "navamsa_sign": "Pisces",
+    "house": 3,
+    "retrograde": false,
+    "combust": false,
+    "dignity": "own sign",
+    "navamsa_house": 9
+   },
+   "Saturn": {
+    "sign": "Sagittarius",
+    "nakshatra": "Purva Ashadha",
+    "pada": 1,
+    "navamsa_sign": "Leo",
+    "house": 5,
+    "retrograde": false,
+    "combust": false,
+    "dignity": null,
+    "navamsa_house": 2
+   },
+   "Rahu": {
+    "sign": "Aquarius",
+    "nakshatra": "Dhanishta",
+    "pada": 3,
+    "navamsa_sign": "Libra",
+    "house": 7,
+    "retrograde": true,
+    "combust": null,
+    "dignity": null,
+    "navamsa_house": 4
+   },
+   "Ketu": {
+    "sign": "Leo",
+    "nakshatra": "Magha",
+    "pada": 1,
+    "navamsa_sign": "Aries",
+    "house": 1,
+    "retrograde": true,
+    "combust": null,
+    "dignity": null,
+    "navamsa_house": 10
+   }
+  },
+  "panchang": {
+   "tithi": "Navami",
+   "paksha": "Krishna",
+   "nakshatra": "Ardra",
+   "pada": 4,
+   "yoga": "Variyana",
+   "karana": "Taitila",
+   "vara": "Shukrawara",
+   "civil_weekday": "Saturday",
+   "before_sunrise": true
+  },
+  "as_of": "2026-10-19",
+  "running": {
+   "maha": 2,
+   "antar": 8,
+   "pratyantar": 1
+  },
+  "pratyantar_current": {
+   "maha": 2,
+   "antar": 8,
+   "rows": [
+    {
+     "lord": "Jupiter",
+     "start": "2026-02-03",
+     "end": "2026-06-07"
+    },
+    {
+     "lord": "Saturn",
+     "start": "2026-06-07",
+     "end": "2026-10-31"
+    },
+    {
+     "lord": "Mercury",
+     "start": "2026-10-31",
+     "end": "2027-03-11"
+    },
+    {
+     "lord": "Ketu",
+     "start": "2027-03-11",
+     "end": "2027-05-04"
+    },
+    {
+     "lord": "Venus",
+     "start": "2027-05-04",
+     "end": "2027-10-06"
+    },
+    {
+     "lord": "Sun",
+     "start": "2027-10-06",
+     "end": "2027-11-21"
+    },
+    {
+     "lord": "Moon",
+     "start": "2027-11-21",
+     "end": "2028-02-06"
+    },
+    {
+     "lord": "Mars",
+     "start": "2028-02-06",
+     "end": "2028-03-31"
+    },
+    {
+     "lord": "Rahu",
+     "start": "2028-03-31",
+     "end": "2028-08-17"
+    }
+   ]
+  },
+  "pratyantar_next": {
+   "maha": 3,
+   "antar": 0,
+   "rows": [
+    {
+     "lord": "Mercury",
+     "start": "2028-08-17",
+     "end": "2028-12-20"
+    },
+    {
+     "lord": "Ketu",
+     "start": "2028-12-20",
+     "end": "2029-02-09"
+    },
+    {
+     "lord": "Venus",
+     "start": "2029-02-09",
+     "end": "2029-07-06"
+    },
+    {
+     "lord": "Sun",
+     "start": "2029-07-06",
+     "end": "2029-08-19"
+    },
+    {
+     "lord": "Moon",
+     "start": "2029-08-19",
+     "end": "2029-10-31"
+    },
+    {
+     "lord": "Mars",
+     "start": "2029-10-31",
+     "end": "2029-12-21"
+    },
+    {
+     "lord": "Rahu",
+     "start": "2029-12-21",
+     "end": "2030-05-02"
+    },
+    {
+     "lord": "Jupiter",
+     "start": "2030-05-02",
+     "end": "2030-08-27"
+    },
+    {
+     "lord": "Saturn",
+     "start": "2030-08-27",
+     "end": "2031-01-14"
+    }
+   ]
+  }
+ },
+ "astrosage": null
+}

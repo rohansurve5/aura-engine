@@ -1,0 +1,15 @@
+{
+ "_about": "External reference for the chart file's 12-month slow-planet ingresses (reshape B4). Copied verbatim from DrikPanchang's planet-transit pages for New Delhi (geoname-id 1261481, Asia/Kolkata), fetched 2026-10-19: /planet/transit/{guru,shani,rahu}-transit-date-time.html?geoname-id=1261481&year={2026,2027}. Times are IST as printed (minute precision). drik_retro_mark = DrikPanchang printed its retrograde mark (U+21BA) on the row; it never prints one for the nodes, which always move backward. DrikPanchang lists the MEAN Rahu (it prints 'True Rahu' separately: 2026-11-25 16:34). Its Lahiri is neither of the engine's two flavours: the six Jupiter/Saturn events lie BETWEEN the engine's plain-lahiri and lahiri_vp285 instants (up to ~50 min from vp285); the slow mean node's lies 10 min (~1.3\") past vp285. The test asserts, in ARC: at each printed minute the engine's vp285 longitude is within 40\" of the boundary; plus identical bodies, signs, order and IST dates.",
+ "source": "https://www.drikpanchang.com/planet/transit/ (fetched 2026-10-19)",
+ "zone": "Asia/Kolkata",
+ "window": ["2026-10-19", "2027-12-31"],
+ "events": [
+  {"body": "Jupiter", "to": "Leo",       "ist": "2026-10-31 12:50", "drik_retro_mark": false},
+  {"body": "Rahu",    "to": "Capricorn", "ist": "2026-12-05 19:28", "drik_retro_mark": false},
+  {"body": "Jupiter", "to": "Cancer",    "ist": "2027-01-25 00:52", "drik_retro_mark": true},
+  {"body": "Saturn",  "to": "Aries",     "ist": "2027-06-03 06:23", "drik_retro_mark": false},
+  {"body": "Jupiter", "to": "Leo",       "ist": "2027-06-26 05:43", "drik_retro_mark": false},
+  {"body": "Saturn",  "to": "Pisces",    "ist": "2027-10-20 06:05", "drik_retro_mark": true},
+  {"body": "Jupiter", "to": "Virgo",     "ist": "2027-11-26 19:17", "drik_retro_mark": false}
+ ]
+}

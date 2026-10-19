@@ -255,6 +255,46 @@ def rounded_table(result: DashaResult, birth: datetime, *, blocks: int = 10) -> 
     return out
 
 
+@dataclass(frozen=True)
+class RoundedPeriod:
+    """One day-rounded sub-period: [start, end), end = the next one's start."""
+
+    lord: str
+    start: date
+    end: date
+
+
+def rounded_pratyantar(
+    result: DashaResult, maha_index: int, antar_index: int
+) -> tuple[RoundedPeriod, ...]:
+    """Day-rounded pratyantar rows of one antar, on rounded_table's cascade.
+
+    The cascade root is the SAME rounded maha start rounded_table uses, with
+    exact float durations accumulated from it — so the first pratyantar starts
+    on the antar's printed start and the last ends on its printed end, exactly.
+    Re-rooting at the rounded ANTAR start instead would let the two drift a day
+    apart, and a file that contradicts itself is worse than either date.
+    No AstroSage reference exists for this level yet; it is engine-pinned and
+    cross-validated against the Worker port (reshape B2).
+    """
+    maha = result.mahas[maha_index]
+    antar = maha.children[antar_index]
+    if not antar.children:
+        raise ValueError("pratyantar needs compute_dasha(levels=3)")
+    base = datetime.combine(_round_day(maha.start), datetime.min.time())
+    cum = 0.0
+    for sub in maha.children[:antar_index]:
+        cum += sub.years * result.year_days
+    start = _round_day(base + timedelta(days=cum))
+    rows: list[RoundedPeriod] = []
+    for prat in antar.children:
+        cum += prat.years * result.year_days
+        end = _round_day(base + timedelta(days=cum))
+        rows.append(RoundedPeriod(prat.lord, start, end))
+        start = end
+    return tuple(rows)
+
+
 # ── AstroSage-style rendering (for eyeball comparison) ──────────────────────
 def _fmt_date(d: datetime, birth: datetime) -> str:
     """`d/ m/yy` like the AstroSage doc; dates at/before birth read 00/00/00."""
