@@ -12,9 +12,15 @@ value the file states:
   dasha   identity, balance ±1 day, every maha / antar row ±1 day with the
           same lords, the running maha/antar/pratyantar, both pratyantar
           tables ±1 day
+          Mangal dosha (houses from lagna and Moon, cancellations, verdict) —
+          exact
   sky     today's 9 grahas as natal; every Saturn/Jupiter/Rahu ingress in
           365 days — same body, signs, direction, order; instant within the
-          time it takes the body to move 40″ (≥ 30 min)
+          time it takes the body to move 40″ (≥ 30 min); Saturn's sign changes
+          over the 42-year Saturn-cycle window, same rule (the Worker reads
+          them from its generated table, src/saturnTable.ts); and the Saturn
+          cycles (Sade Sati, Kantaka, Ashtama) for all 12 Moon signs — state,
+          phase, every date exact
 
 "Exact" admits ONE exception, the same boundary-honesty policy every crossval
 in this repo uses (crossval_chart.py, crossval_ascendant.py): a value whose
@@ -26,9 +32,11 @@ identical rules to the golden this writes.
 
 Inputs: 240 Indian births (population-weighted) + 50 world births + 5 seeded
 near-station births (so Mercury/Venus retro-dependent combustion is exercised)
-+ the golden chart + the four B1 births abroad; each with an as-of date in
-2024–2040 (≥ birth). Plus 48 skies (as-of dates × zones). Seeded: identical
-runs produce byte-identical goldens.
++ the golden chart (Thane) + the four B1 births abroad; each with an as-of
+date in 2024–2040 (≥ birth). The endpoint itself takes births in India only;
+the world and abroad births exercise the same shared functions. Plus 51 skies
+— as-of dates, always India time. Seeded: identical runs produce
+byte-identical goldens.
 
 Run:  uv run python scripts/crossval_chart_file.py
 Exit: non-zero on ANY uncontested disagreement (do not tune — investigate).
@@ -63,6 +71,7 @@ from engine.chart_file import (  # noqa: E402
     combust_orb,
     dasha_facts,
     natal_facts,
+    saturn_cycles,
     separation,
     sky_facts,
 )
@@ -85,8 +94,9 @@ BIRTH_END = datetime(2025, 12, 31, 23, 59)
 AS_OF_START = date(2024, 1, 1)
 AS_OF_END = date(2040, 12, 31)
 
-GOLDEN_BIRTH = {"dob": "1989-09-23", "time": "04:47", "zone": "Asia/Kolkata",
-                "lat": 18.5204, "lon": 73.8567, "as_of": "2026-10-19"}
+GOLDEN_BIRTH = {"dob": "1989-09-23", "time": "04:47", "zone": "Asia/Kolkata",  # Thane
+                "lat": round(19 + 11 / 60, 6), "lon": round(72 + 58 / 60, 6),
+                "as_of": "2026-10-19"}
 ABROAD = [  # reshape B1's dasha_abroad.json births
     ("1990-07-04", "10:00", "America/New_York", 40.7128, -74.0060),
     ("1985-06-15", "08:30", "Europe/London", 51.5074, -0.1278),
@@ -133,20 +143,18 @@ def generate_births() -> list[dict]:
 
 def generate_skies() -> list[dict]:
     rng = random.Random(SEED + 1)
-    zones = ["Asia/Kolkata"] * 4 + [c[3] for c in WORLD_CITIES]
     span = (AS_OF_END - AS_OF_START).days
     skies = [
-        {"as_of": "2026-10-19", "zone": "Asia/Kolkata"},
+        {"as_of": "2026-10-19"},
         # Real short sign stays (Swiss, 1900–2100) — the cases an over-stepping
         # ingress walk would miss: Jupiter 24 d in Sagittarius from 2019-03-30,
         # Saturn 8 d in Libra from 2041-01-29, Saturn 27 d from 1993-10-15.
-        {"as_of": "2019-01-01", "zone": "Asia/Kolkata"},
-        {"as_of": "2040-11-01", "zone": "Europe/London"},
-        {"as_of": "1993-06-01", "zone": "America/New_York"},
+        {"as_of": "2019-01-01"},
+        {"as_of": "2040-11-01"},
+        {"as_of": "1993-06-01"},
     ]
     for _ in range(47):
-        day = AS_OF_START + timedelta(days=rng.randrange(span + 1))
-        skies.append({"as_of": day.isoformat(), "zone": rng.choice(zones)})
+        skies.append({"as_of": (AS_OF_START + timedelta(days=rng.randrange(span + 1))).isoformat()})
     return skies
 
 
@@ -160,11 +168,15 @@ def engine_birth(b: dict) -> dict:
 
 
 def engine_sky(s: dict) -> dict:
-    sky = sky_facts(date.fromisoformat(s["as_of"]), s["zone"])
+    as_of = date.fromisoformat(s["as_of"])
+    sky = sky_facts(as_of)
     # The tolerance an ingress instant gets is set by how fast the body moves
     # there, so the golden carries the engine's speed at each event.
     for e in sky["ingresses"]:
         e["speed"] = sidereal_positions(_utc_from_ms(e["utc_ms"]))[e["body"]].speed
+    for c in sky["saturn"]["changes"]:
+        c["speed"] = sidereal_positions(_utc_from_ms(c["utc_ms"]))["Saturn"].speed
+    sky["cycles"] = [saturn_cycles(moon, sky["saturn"], as_of) for moon in range(12)]
     return sky
 
 
@@ -248,6 +260,13 @@ def compare_natal(t: Tally, tag: str, e: dict, w: dict) -> None:
     moon_edge = near_multiple(e["planets"]["Moon"]["longitude"], PADA, ARC)
     for k in ("nakshatra_index", "pada"):
         t.check(f"{tag}.panchang.{k}", p[k] == q[k], moon_edge, k)
+    # Mangal dosha is sign arithmetic on Mars, Moon, Jupiter and the lagna:
+    # contested only if one of those sits within 1′ of a sign edge.
+    sign_edge = any(near_multiple(lon, 30, ARC) for lon in (
+        e["ascendant"]["longitude"],
+        *(e["planets"][b]["longitude"] for b in ("Mars", "Moon", "Jupiter"))))
+    t.check(f"{tag}.mangal_dosha", e["mangal_dosha"] == w["mangal_dosha"], sign_edge,
+            f"{e['mangal_dosha']} vs {w['mangal_dosha']}")
     v, x = e["vara"], w["vara"]
     if v["sunrise_ms"] is not None and x["sunrise_ms"] is not None:
         ds = abs(v["sunrise_ms"] - x["sunrise_ms"]) / 1000
@@ -334,6 +353,45 @@ def compare_sky(t: Tally, tag: str, e: dict, w: dict) -> None:
             t.worst["ingress_arcsec"] = max(t.worst["ingress_arcsec"], arc)
             t.check(f"{tag}.ingress.{a['body']}", dt <= tol(a), False,
                     f"{dt / 60000:.1f} min apart ({arc:.1f}″ of motion)")
+    compare_saturn(t, tag, e, w)
+
+
+IST_MS = 330 * 60_000
+
+
+def compare_saturn(t: Tally, tag: str, e: dict, w: dict) -> None:
+    """Saturn's 42-year sign-change list, then the cycles built on it."""
+    es, ws = e["saturn"], w["saturn"]
+    for k in ("window_start_ms", "window_end_ms"):
+        t.check(f"{tag}.saturn.{k}", es[k] == ws[k], False, f"{es[k]} vs {ws[k]}")
+
+    def tol(c: dict) -> float:
+        return max(INGRESS_MIN_TOL_MS, INGRESS_ARC / max(abs(c["speed"]), 1e-6) * DAY_MS)
+
+    ec, wc = es["changes"], ws["changes"]
+    edgy = any(c["utc_ms"] - es["window_start_ms"] < tol(c)
+               or es["window_end_ms"] - c["utc_ms"] < tol(c)
+               or abs(c["speed"]) < STATION_EPS for c in ec)
+    t.check(f"{tag}.saturn.start_sign", es["start_sign_index"] == ws["start_sign_index"], edgy,
+            f"{es['start_sign_index']} vs {ws['start_sign_index']}")
+    same = [c["to_sign_index"] for c in ec] == [c["to_sign_index"] for c in wc]
+    t.check(f"{tag}.saturn.changes", same, edgy, f"{len(ec)} vs {len(wc)} changes")
+    if not same:
+        return
+    for a, b in zip(ec, wc, strict=True):
+        dt = abs(a["utc_ms"] - b["utc_ms"])
+        arc = dt / DAY_MS * abs(a["speed"]) * 3600
+        t.worst["ingress_arcsec"] = max(t.worst["ingress_arcsec"], arc)
+        t.check(f"{tag}.saturn.change", dt <= tol(a), False,
+                f"{dt / 60000:.1f} min apart ({arc:.1f}″ of motion)")
+    # A cycle date is the IST date of a change, its state is read at 12:00
+    # IST: contested if a change sits within tolerance of an IST midnight (its
+    # date may flip) or of the as-of noon (the state may flip).
+    noon = e["instant_ms"]
+    flip = any(min((c["utc_ms"] + IST_MS) % DAY_MS, DAY_MS - (c["utc_ms"] + IST_MS) % DAY_MS)
+               < tol(c) or abs(c["utc_ms"] - noon) < tol(c) for c in ec)
+    for moon, (a, b) in enumerate(zip(e["cycles"], w["cycles"], strict=True)):
+        t.check(f"{tag}.cycles[moon={moon}]", a == b, flip, f"{a} vs {b}")
 
 
 def main() -> int:
@@ -354,7 +412,7 @@ def main() -> int:
         compare_dasha(t, f"{tag}.dasha", e["dasha"], wb["dasha"],
                       e["natal"]["planets"]["Moon"]["longitude"], b["dob"], b["as_of"])
     for i, (s, e, ws) in enumerate(zip(skies, es, w["skies"], strict=True)):
-        compare_sky(t, f"sky[{i}] {s['as_of']} {s['zone']}", e, ws)
+        compare_sky(t, f"sky[{i}] {s['as_of']}", e, ws)
 
     n_ing = sum(len(s["ingresses"]) for s in es)
     print(f"checked {t.checked} values ({n_ing} ingresses); worst: "

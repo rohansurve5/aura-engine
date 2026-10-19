@@ -219,12 +219,19 @@ def test_subpolar_placidus_present():
 
 
 # ── The golden chart, fully placed ─────────────────────────────────────────
+THANE = (19 + 11 / 60, 72 + 58 / 60)
+
+
 def test_golden_chart_placements():
-    """1989-09-23 04:47 IST, Pune — the chart every other golden pins."""
-    chart = chart_from_local(datetime(1989, 9, 23, 4, 47), "+05:30", 18.5204, 73.8567)
+    """1989-09-23 04:47 IST, Thane — Rohan's birth, the chart every other
+    golden pins. AstroSage (Kundli, Lahiri, Thane 19:11 N 72:58 E) prints the
+    lagna Leo 11-48-42 and the 10th bhav madhya (the MC) Taurus 12-10-45;
+    both held to 15″ (measured: 6.0″ and 3.5″)."""
+    chart = chart_from_local(datetime(1989, 9, 23, 4, 47), "+05:30", *THANE)
     asc = chart.ascendant
     assert asc.sign == "Leo"
-    assert asc.sign_degrees == pytest.approx(12.5266, abs=0.01)
+    assert abs(asc.sign_degrees - (11 + 48 / 60 + 42 / 3600)) * 3600 <= 15
+    assert abs(chart.midheaven - (30 + 12 + 10 / 60 + 45 / 3600)) * 3600 <= 15
     assert asc.nakshatra.name == "Magha"
     assert asc.nakshatra.pada == 4
     assert chart.house_signs[0] == "Leo"
@@ -255,8 +262,8 @@ def test_golden_chart_placements():
 def test_ascendant_speed_one_degree_per_four_minutes():
     """The number that makes birth time load-bearing: ~1 deg / 4 min."""
     base = local_to_utc(datetime(1989, 9, 23, 4, 47), "+05:30")
-    a0 = ascendant_sidereal(base, 18.5204, 73.8567).longitude
-    a1 = ascendant_sidereal(base + timedelta(minutes=4), 18.5204, 73.8567).longitude
+    a0 = ascendant_sidereal(base, *THANE).longitude
+    a1 = ascendant_sidereal(base + timedelta(minutes=4), *THANE).longitude
     moved = (a1 - a0) % 360
     assert 0.7 < moved < 1.4
 

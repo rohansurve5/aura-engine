@@ -10,14 +10,25 @@ sweep established (see README > "Ayanamsa discovery"):
 
 Confirmed-matching facts are asserted strictly (balance, nakshatra, all maha
 boundaries). The antar level matches to ±1 day for 77/85 dates; the remaining 8
-are off by exactly 2 days (sub-arcsecond ayanamsa residue). That gap is reported
-honestly via `test_antar_strict_one_day_is_the_open_question` (xfail) rather than
-fudged.
+are off by exactly 2 days. That gap is reported via
+`test_antar_strict_one_day_is_the_open_question` (xfail) rather than fudged.
+
+Its cause is now pinned (reshape B review, `test_astrosage_dasha_is_a_360_day_calendar`):
+AstroSage does not count dasha time in real days. It lays a 360-day year of
+twelve 30-day months onto the calendar as if every month had 30 days, so a
+date never reads 31, and a "29/30 February" rolls into March. One model with
+one free constant reproduces all 942 Lahiri dates AstroSage printed for this
+chart (432 of them to the hour) and all 434 of its KP dates. Adopting it is
+Rohan's decision; until then the engine keeps 365.25 real days.
 """
 
 from __future__ import annotations
 
+import json
+import math
+import os
 from datetime import timedelta
+from fractions import Fraction
 
 import pytest
 
@@ -75,8 +86,9 @@ def test_antar_within_two_days_and_mostly_one(result, golden):
 
 @pytest.mark.xfail(
     reason="antar dates off by exactly 2 days remain (8 exact-float / 4 with "
-    "cascading rounding, see Prompt A.1) — residual gap vs AstroSage's exact "
-    "internal ayanamsa constant; reported, not fudged. README > Known deviations",
+    "cascading rounding): AstroSage counts dasha time on a 360-day calendar of "
+    "30-day months, this engine on 365.25 real days — see "
+    "test_astrosage_dasha_is_a_360_day_calendar and README > Known deviations",
     strict=True,
 )
 def test_antar_strict_one_day_is_the_open_question(result, golden):
@@ -163,3 +175,142 @@ def test_pratyantar_structure_and_ballpark(result, golden):
             )
             checked += 1
     assert checked > 100  # we actually exercised the pratyantar tree
+
+
+# ── Why: AstroSage's dasha calendar (reshape B review) ──────────────────────
+# Not the engine's arithmetic — a model of AstroSage's, fitted to its own
+# printed dates, so the cause of the xfail above is a tested fact and not a
+# guess. Positions on AstroSage's dasha timeline are LABELS in a calendar of
+# 30-day months: serial = 360·year + 30·(month − 1) + (day − 1) + hour/24.
+# Every boundary is epoch + (cumulative dasha years) × 360 in that serial;
+# turning a label back into a date, a day past the real month's length rolls
+# into the next month (February always as 28 days, leap years included).
+TABLES = None
+_YEARS = {"KET": 7, "VEN": 20, "SUN": 6, "MON": 10, "MAR": 7, "RAH": 18,
+          "JUP": 16, "SAT": 19, "MER": 17}
+_SEQ = ["KET", "VEN", "SUN", "MON", "MAR", "RAH", "JUP", "SAT", "MER"]
+_MONTH_LEN = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+
+
+def _tables() -> dict:
+    global TABLES
+    if TABLES is None:
+        path = os.path.join(os.path.dirname(__file__), "golden", "astrosage_dasha_tables.json")
+        with open(path) as f:
+            TABLES = json.load(f)
+    return TABLES
+
+
+def _cumulative_years() -> dict[tuple, Fraction]:
+    """End of every maha/antar/pratyantar/sookshma, in dasha years from the
+    virtual start of the birth (Rahu) maha — exact fractions."""
+    order = lambda lord: _SEQ[_SEQ.index(lord):] + _SEQ[:_SEQ.index(lord)]  # noqa: E731
+    ends, t = {}, Fraction(0)
+    for m in order("RAH"):
+        at = t
+        for a in order(m):
+            la = Fraction(_YEARS[m] * _YEARS[a], 120)
+            pt = at
+            for p in order(a):
+                lp = la * _YEARS[p] / 120
+                st = pt
+                for x in order(p):
+                    st += lp * _YEARS[x] / 120
+                    ends[(m, a, p, x)] = st
+                pt += lp
+                ends[(m, a, p)] = pt
+            at += la
+            ends[(m, a)] = at
+        t += _YEARS[m]
+    return ends
+
+
+def _serial(d: int, mo: int, y: int, h: float = 0.0) -> float:
+    return y * 360 + (mo - 1) * 30 + (d - 1) + h / 24
+
+
+def _label(s: float) -> tuple[int, int, int, float]:
+    y = math.floor(s / 360)
+    r = s - y * 360
+    mo = math.floor(r / 30) + 1
+    r -= (mo - 1) * 30
+    d, h = math.floor(r) + 1, (r - math.floor(r)) * 24
+    if d > _MONTH_LEN[mo - 1]:
+        d, mo = d - _MONTH_LEN[mo - 1], mo + 1
+        if mo == 13:
+            mo, y = 1, y + 1
+    return d, mo, y, h
+
+
+def _year4(path: tuple, y2: int, ends: dict) -> int:
+    near = 1975 + float(ends[path])   # this chart's timeline starts in 1975
+    return min((c + y2 for c in (1900, 2000, 2100)), key=lambda y: abs(y - near))
+
+
+def _fit(obs: list, ends: dict) -> tuple[float, float]:
+    """The epoch interval every observation allows (hour-level ones bound it
+    to the hour, dates to the day). 1–2 March may be a rolled 29/30 Feb label,
+    so those are scored but not used to fit."""
+    lo, hi = -math.inf, math.inf
+    for path, d, mo, y, h in obs:
+        if mo == 3 and d <= 2:
+            continue
+        c = float(ends[path]) * 360
+        width = 1 / 24 if h is not None else 1.0
+        base = _serial(d, mo, y, h or 0.0)
+        lo, hi = max(lo, base - c), min(hi, base + width - c)
+    return lo, hi
+
+
+def _misses(obs: list, ends: dict, epoch: float) -> list:
+    out = []
+    for path, d, mo, y, h in obs:
+        pd, pm, py, ph = _label(epoch + float(ends[path]) * 360)
+        if (pd, pm, py) != (d, mo, y) or (h is not None and int(ph) != h):
+            out.append((path, (d, mo, y, h), (pd, pm, py, round(ph, 2))))
+    return out
+
+
+def test_astrosage_dasha_is_a_360_day_calendar():
+    """Every Lahiri dasha date AstroSage printed for the golden chart — the
+    PDF's 76 antar ends, the docx's 434 pratyantar ends and 432 sookshma ends
+    to the hour — follows the 30-day-month model from ONE epoch, fitted here
+    to a window under a minute wide. The engine's 365.25-day arithmetic, by
+    contrast, gets 42/76 antar ends exact (2 off by two days)."""
+    t, ends = _tables(), _cumulative_years()
+    obs = []
+    for maha, rows in t["antar"].items():
+        for lord, v in rows:
+            if v is not None:
+                obs.append(((maha, lord), v[0], v[1], _year4((maha, lord), v[2], ends), None))
+    for b in t["blocks"]:
+        for lord, v in b["rows"]:
+            if v is not None:
+                obs.append((tuple(b["label"] + [lord]), v[0], v[1], v[2], v[3]))
+    assert len(obs) == 942 and sum(o[4] is not None for o in obs) == 432
+    lo, hi = _fit(obs, ends)
+    assert 0 < (hi - lo) * 24 * 60 < 1.0          # one epoch, pinned to < 1 minute
+    assert _misses(obs, ends, (lo + hi) / 2) == []
+    # The birth (23 Sep 1989) lands on the timeline at its DAY LABEL, its 04:47
+    # dropped: that is the anchor under which the epoch implies AstroSage's own
+    # printed Moon (Gemini 17-06-43) — 17-06-42.9.
+    f = (_serial(23, 9, 1989) + 1 - (lo + hi) / 2) / (18 * 360)
+    moon = 66 + 2 / 3 + f * 40 / 3
+    assert abs(moon - (60 + 17 + 6 / 60 + 43 / 3600)) * 3600 < 0.5
+
+
+def test_astrosage_kp_dasha_follows_the_same_calendar():
+    """Same report, KP ayanamsa (a different Moon): 434 more dates, one epoch,
+    zero misses — and that epoch implies the KP Moon AstroSage prints
+    (077-12-06) under the same day-label anchor."""
+    t, ends = _tables(), _cumulative_years()
+    obs = [(tuple(r["path"]), r["date"][0], r["date"][1],
+            _year4(tuple(r["path"]), r["date"][2], ends), None) for r in t["kp"]]
+    assert len(obs) == 434
+    lo, hi = _fit(obs, ends)
+    assert hi > lo and _misses(obs, ends, (lo + hi) / 2) == []
+    for epoch in (lo, hi):
+        f = (_serial(23, 9, 1989) + 1 - epoch) / (18 * 360)
+        moon = 66 + 2 / 3 + f * 40 / 3
+        assert abs(moon - (77 + 12 / 60 + 6 / 3600)) * 3600 < 1.0
+

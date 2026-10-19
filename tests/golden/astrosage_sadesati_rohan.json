@@ -1,0 +1,366 @@
+{
+ "_about": "AstroSage's Sadesati Report for Rohan (natal Moon sign Gemini), pages 10-12 of the Vedic report PDF printed 2026-10-20 00:18:12, all 45 rows transcribed by hand. 'Small Panoti' = Dhaiya: Saturn in Virgo (4th from Gemini, Kantaka) or Capricorn (8th, Ashtama). 'start' is the first day AstroSage puts Saturn in the sign, 'end' the last. AstroSage's own Saturn sits up to ~74\" from Swiss (astrosage_sky_2026_10_19.json), which near a station is hours to a day of time, so tests/test_chart_file.py holds every date to +/-1 day and every row's sign, order and phase exactly. Rows after 2099-12 are past the engine's 1900-2100 ephemeris range and are not compared.",
+ "moon_sign": "Gemini",
+ "rows": [
+  {
+   "n": 1,
+   "kind": "Small Panoti",
+   "sign": "Capricorn",
+   "start": "1990-03-21",
+   "end": "1990-06-20",
+   "phase": null
+  },
+  {
+   "n": 2,
+   "kind": "Small Panoti",
+   "sign": "Capricorn",
+   "start": "1990-12-15",
+   "end": "1993-03-05",
+   "phase": null
+  },
+  {
+   "n": 3,
+   "kind": "Small Panoti",
+   "sign": "Capricorn",
+   "start": "1993-10-16",
+   "end": "1993-11-09",
+   "phase": null
+  },
+  {
+   "n": 4,
+   "kind": "Sade Sati",
+   "sign": "Taurus",
+   "start": "2000-06-07",
+   "end": "2002-07-22",
+   "phase": "Rising"
+  },
+  {
+   "n": 5,
+   "kind": "Sade Sati",
+   "sign": "Gemini",
+   "start": "2002-07-23",
+   "end": "2003-01-08",
+   "phase": "Peak"
+  },
+  {
+   "n": 6,
+   "kind": "Sade Sati",
+   "sign": "Taurus",
+   "start": "2003-01-09",
+   "end": "2003-04-07",
+   "phase": "Rising"
+  },
+  {
+   "n": 7,
+   "kind": "Sade Sati",
+   "sign": "Gemini",
+   "start": "2003-04-08",
+   "end": "2004-09-05",
+   "phase": "Peak"
+  },
+  {
+   "n": 8,
+   "kind": "Sade Sati",
+   "sign": "Cancer",
+   "start": "2004-09-06",
+   "end": "2005-01-13",
+   "phase": "Setting"
+  },
+  {
+   "n": 9,
+   "kind": "Sade Sati",
+   "sign": "Gemini",
+   "start": "2005-01-14",
+   "end": "2005-05-25",
+   "phase": "Peak"
+  },
+  {
+   "n": 10,
+   "kind": "Sade Sati",
+   "sign": "Cancer",
+   "start": "2005-05-26",
+   "end": "2006-10-31",
+   "phase": "Setting"
+  },
+  {
+   "n": 11,
+   "kind": "Sade Sati",
+   "sign": "Cancer",
+   "start": "2007-01-11",
+   "end": "2007-07-15",
+   "phase": "Setting"
+  },
+  {
+   "n": 12,
+   "kind": "Small Panoti",
+   "sign": "Virgo",
+   "start": "2009-09-10",
+   "end": "2011-11-14",
+   "phase": null
+  },
+  {
+   "n": 13,
+   "kind": "Small Panoti",
+   "sign": "Virgo",
+   "start": "2012-05-16",
+   "end": "2012-08-03",
+   "phase": null
+  },
+  {
+   "n": 14,
+   "kind": "Small Panoti",
+   "sign": "Capricorn",
+   "start": "2020-01-24",
+   "end": "2022-04-28",
+   "phase": null
+  },
+  {
+   "n": 15,
+   "kind": "Small Panoti",
+   "sign": "Capricorn",
+   "start": "2022-07-13",
+   "end": "2023-01-17",
+   "phase": null
+  },
+  {
+   "n": 16,
+   "kind": "Sade Sati",
+   "sign": "Taurus",
+   "start": "2029-08-08",
+   "end": "2029-10-05",
+   "phase": "Rising"
+  },
+  {
+   "n": 17,
+   "kind": "Sade Sati",
+   "sign": "Taurus",
+   "start": "2030-04-17",
+   "end": "2032-05-30",
+   "phase": "Rising"
+  },
+  {
+   "n": 18,
+   "kind": "Sade Sati",
+   "sign": "Gemini",
+   "start": "2032-05-31",
+   "end": "2034-07-12",
+   "phase": "Peak"
+  },
+  {
+   "n": 19,
+   "kind": "Sade Sati",
+   "sign": "Cancer",
+   "start": "2034-07-13",
+   "end": "2036-08-27",
+   "phase": "Setting"
+  },
+  {
+   "n": 20,
+   "kind": "Small Panoti",
+   "sign": "Virgo",
+   "start": "2038-10-23",
+   "end": "2039-04-05",
+   "phase": null
+  },
+  {
+   "n": 21,
+   "kind": "Small Panoti",
+   "sign": "Virgo",
+   "start": "2039-07-13",
+   "end": "2041-01-27",
+   "phase": null
+  },
+  {
+   "n": 22,
+   "kind": "Small Panoti",
+   "sign": "Virgo",
+   "start": "2041-02-06",
+   "end": "2041-09-25",
+   "phase": null
+  },
+  {
+   "n": 23,
+   "kind": "Small Panoti",
+   "sign": "Capricorn",
+   "start": "2049-03-07",
+   "end": "2049-07-09",
+   "phase": null
+  },
+  {
+   "n": 24,
+   "kind": "Small Panoti",
+   "sign": "Capricorn",
+   "start": "2049-12-04",
+   "end": "2052-02-24",
+   "phase": null
+  },
+  {
+   "n": 25,
+   "kind": "Sade Sati",
+   "sign": "Taurus",
+   "start": "2059-05-28",
+   "end": "2061-07-10",
+   "phase": "Rising"
+  },
+  {
+   "n": 26,
+   "kind": "Sade Sati",
+   "sign": "Gemini",
+   "start": "2061-07-11",
+   "end": "2062-02-13",
+   "phase": "Peak"
+  },
+  {
+   "n": 27,
+   "kind": "Sade Sati",
+   "sign": "Taurus",
+   "start": "2062-02-14",
+   "end": "2062-03-06",
+   "phase": "Rising"
+  },
+  {
+   "n": 28,
+   "kind": "Sade Sati",
+   "sign": "Gemini",
+   "start": "2062-03-07",
+   "end": "2063-08-23",
+   "phase": "Peak"
+  },
+  {
+   "n": 29,
+   "kind": "Sade Sati",
+   "sign": "Cancer",
+   "start": "2063-08-24",
+   "end": "2064-02-05",
+   "phase": "Setting"
+  },
+  {
+   "n": 30,
+   "kind": "Sade Sati",
+   "sign": "Gemini",
+   "start": "2064-02-06",
+   "end": "2064-05-09",
+   "phase": "Peak"
+  },
+  {
+   "n": 31,
+   "kind": "Sade Sati",
+   "sign": "Cancer",
+   "start": "2064-05-10",
+   "end": "2065-10-12",
+   "phase": "Setting"
+  },
+  {
+   "n": 32,
+   "kind": "Sade Sati",
+   "sign": "Cancer",
+   "start": "2066-02-04",
+   "end": "2066-07-02",
+   "phase": "Setting"
+  },
+  {
+   "n": 33,
+   "kind": "Small Panoti",
+   "sign": "Virgo",
+   "start": "2068-08-30",
+   "end": "2070-11-04",
+   "phase": null
+  },
+  {
+   "n": 34,
+   "kind": "Small Panoti",
+   "sign": "Capricorn",
+   "start": "2079-01-15",
+   "end": "2081-04-11",
+   "phase": null
+  },
+  {
+   "n": 35,
+   "kind": "Small Panoti",
+   "sign": "Capricorn",
+   "start": "2081-08-03",
+   "end": "2082-01-06",
+   "phase": null
+  },
+  {
+   "n": 36,
+   "kind": "Sade Sati",
+   "sign": "Taurus",
+   "start": "2088-07-18",
+   "end": "2088-10-30",
+   "phase": "Rising"
+  },
+  {
+   "n": 37,
+   "kind": "Sade Sati",
+   "sign": "Taurus",
+   "start": "2089-04-06",
+   "end": "2090-09-18",
+   "phase": "Rising"
+  },
+  {
+   "n": 38,
+   "kind": "Sade Sati",
+   "sign": "Gemini",
+   "start": "2090-09-19",
+   "end": "2090-10-24",
+   "phase": "Peak"
+  },
+  {
+   "n": 39,
+   "kind": "Sade Sati",
+   "sign": "Taurus",
+   "start": "2090-10-25",
+   "end": "2091-05-20",
+   "phase": "Rising"
+  },
+  {
+   "n": 40,
+   "kind": "Sade Sati",
+   "sign": "Gemini",
+   "start": "2091-05-21",
+   "end": "2093-07-02",
+   "phase": "Peak"
+  },
+  {
+   "n": 41,
+   "kind": "Sade Sati",
+   "sign": "Cancer",
+   "start": "2093-07-03",
+   "end": "2095-08-18",
+   "phase": "Setting"
+  },
+  {
+   "n": 42,
+   "kind": "Small Panoti",
+   "sign": "Virgo",
+   "start": "2097-10-12",
+   "end": "2098-05-02",
+   "phase": null
+  },
+  {
+   "n": 43,
+   "kind": "Small Panoti",
+   "sign": "Virgo",
+   "start": "2098-06-20",
+   "end": "2099-12-25",
+   "phase": null
+  },
+  {
+   "n": 44,
+   "kind": "Small Panoti",
+   "sign": "Virgo",
+   "start": "2100-03-18",
+   "end": "2100-09-16",
+   "phase": null
+  },
+  {
+   "n": 45,
+   "kind": "Small Panoti",
+   "sign": "Capricorn",
+   "start": "2108-02-25",
+   "end": "2108-07-28",
+   "phase": null
+  }
+ ]
+}

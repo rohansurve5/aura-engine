@@ -215,6 +215,10 @@ def compute_dasha(
 #     2 days — the hypothesis does NOT fully close the gap.
 # Therefore this stays an *option* (`astrosage_rounding=True`), not the
 # default; internal float datetimes remain the canonical representation.
+# The cause of the remaining 2-day gaps was found in the reshape B review:
+# AstroSage places dasha time on a 360-day calendar of 30-day months (every
+# month treated as 30 days long), not on 365.25 real days — pinned by
+# tests/test_vimshottari.py::test_astrosage_dasha_is_a_360_day_calendar.
 # See README > "Known deviations".
 
 
@@ -274,7 +278,9 @@ def rounded_pratyantar(
     on the antar's printed start and the last ends on its printed end, exactly.
     Re-rooting at the rounded ANTAR start instead would let the two drift a day
     apart, and a file that contradicts itself is worse than either date.
-    No AstroSage reference exists for this level yet; it is engine-pinned and
+    AstroSage's own pratyantar dates sit 0–2 days from these (194/434 exact
+    for the golden chart) for the same reason its antar dates do: its
+    360-day dasha calendar (README > Known deviations). Engine-pinned and
     cross-validated against the Worker port (reshape B2).
     """
     maha = result.mahas[maha_index]

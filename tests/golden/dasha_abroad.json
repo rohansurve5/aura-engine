@@ -1,5 +1,5 @@
 {
- "_about": "Dasha goldens for births OUTSIDE India (reshape B1). 'utc' and 'utc_offset_minutes' are tz-database facts written by hand, independent of the engine. 'engine_pinned' is the engine's own output (Swiss Ephemeris, Lahiri VP285, 365.25-day year) pinned as a regression guard \u2014 it is NOT an external reference. 'astrosage' is null until Rohan reads the values off AstroSage for the cases with ask_astrosage=true; tests/test_dasha_abroad.py then compares against them the same way test_vimshottari.py does for the India golden. Dates are in the birth place's own calendar (day-rounded, AstroSage presentation).",
+ "_about": "Dasha goldens for births OUTSIDE India (reshape B1). 'utc' and 'utc_offset_minutes' are tz-database facts written by hand, independent of the engine. 'engine_pinned' is the engine's own output (Swiss Ephemeris, Lahiri VP285, 365.25-day year) pinned as a regression guard — it is NOT an external reference. (The planned AstroSage comparison for three of these births was dropped in the reshape B review: Aura is India-only.) Dates are in the birth place's own calendar (day-rounded, AstroSage presentation).",
  "cases": [
   {
    "label": "New York, summer (EDT)",
@@ -11,7 +11,6 @@
    "zone": "America/New_York",
    "utc": "1990-07-04T14:00:00",
    "utc_offset_minutes": -240,
-   "ask_astrosage": true,
    "engine_pinned": {
     "nakshatra": "Anuradha",
     "pada": 2,
@@ -59,8 +58,7 @@
       "end": "2101-02-05"
      }
     ]
-   },
-   "astrosage": null
+   }
   },
   {
    "label": "London, summer (BST)",
@@ -72,7 +70,6 @@
    "zone": "Europe/London",
    "utc": "1985-06-15T07:30:00",
    "utc_offset_minutes": 60,
-   "ask_astrosage": true,
    "engine_pinned": {
     "nakshatra": "Bharani",
     "pada": 4,
@@ -120,8 +117,7 @@
       "end": "2088-05-04"
      }
     ]
-   },
-   "astrosage": null
+   }
   },
   {
    "label": "Dubai (no DST)",
@@ -133,7 +129,6 @@
    "zone": "Asia/Dubai",
    "utc": "1995-03-10T10:00:00",
    "utc_offset_minutes": 240,
-   "ask_astrosage": true,
    "engine_pinned": {
     "nakshatra": "Mrigashira",
     "pada": 4,
@@ -181,8 +176,7 @@
       "end": "2108-05-08"
      }
     ]
-   },
-   "astrosage": null
+   }
   },
   {
    "label": "New York, winter (EST)",
@@ -194,7 +188,6 @@
    "zone": "America/New_York",
    "utc": "1990-01-15T15:00:00",
    "utc_offset_minutes": -300,
-   "ask_astrosage": false,
    "engine_pinned": {
     "nakshatra": "Purva Phalguni",
     "pada": 4,
@@ -242,8 +235,7 @@
       "end": "2092-01-17"
      }
     ]
-   },
-   "astrosage": null
+   }
   }
  ]
 }

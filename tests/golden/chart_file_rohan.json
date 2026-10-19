@@ -1,12 +1,166 @@
 {
- "_about": "The golden chart (1989-09-23 04:47 Asia/Kolkata, Pune 18.5204 N 73.8567 E — Rohan's birth, the chart every other golden pins) as the chart file states it (reshape B2–B4). 'engine_pinned' is the engine's own output (Swiss Ephemeris, lahiri_vp285, mean node, Whole Sign) pinned as a REGRESSION GUARD — not an external reference. 'astrosage' is null until Rohan reads the same chart off AstroSage's Free Kundli (Pune, default Lahiri settings): the planet table (sign, nakshatra, pada, R/C marks), the Navamsa (D9) chart, and the birth panchang; tests/test_chart_file.py then compares exactly. The birth panchang already has an external check: DrikPanchang's Pune page for that date (drik_panchang.json).",
+ "_about": "The golden chart — Rohan's birth: 1989-09-23 04:47 Asia/Kolkata, THANE 19°11′N 72°58′E (corrected from Pune in the reshape B review) — as the chart file states it. 'astrosage' is the EXTERNAL reference (AstroSage Kundli, Lahiri, Thane), transcribed from Rohan's screenshots and Vedic-report PDF of 2026-10-20; tests/test_chart_file.py compares exactly where AstroSage is exact (signs, nakshatras, padas, D9, houses, R/C marks, BPHS dignity, birth panchang, dasha balance, Manglik houses) and within stated arc tolerances for degrees. 'engine_pinned' is the engine's own output (Swiss Ephemeris, lahiri_vp285, mean node, Whole Sign) pinned as a REGRESSION GUARD for what AstroSage does not print (pratyantars, the running markers, Saturn cycles as of 2026-10-19).",
  "birth": {
   "dob": "1989-09-23",
   "time": "04:47",
   "zone": "Asia/Kolkata",
-  "place": "Pune, Maharashtra, India",
-  "lat": 18.5204,
-  "lon": 73.8567
+  "place": "Thane, Maharashtra, India",
+  "lat": 19.183333,
+  "lon": 72.966667
+ },
+ "astrosage": {
+  "source": "AstroSage Kundli for Rohan (the golden chart), 23 Sep 1989 04:47, Thane (19:11 N, 72:58 E, time zone 5.5), Lahiri: ascloud.astrosage.com/cloud/planetposition.asp screenshots (2026-10-20 00:18-00:20) and the 56-page Vedic report PDF printed 2026-10-20 00:18:12 (pages 2-3 basic details + planets + Vimshottari, page 9 Manglik, page 39 Shodashvarga tables). Transcribed by hand, values verbatim; nakshatra/yoga/karana names mapped to engine spellings (AstroSage prints Uttaraphal, Purvashadha, Variyan, Tetil).",
+  "ascendant": {
+   "sign": "Leo",
+   "dms": "11-48-42",
+   "nakshatra": "Magha",
+   "pada": 4,
+   "navamsa_sign": "Cancer"
+  },
+  "planets": {
+   "Sun": {
+    "sign": "Virgo",
+    "dms": "06-12-41",
+    "nakshatra": "Uttara Phalguni",
+    "pada": 3,
+    "navamsa_sign": "Aquarius",
+    "house": 2,
+    "navamsa_house": 8,
+    "retrograde": false,
+    "combust": null,
+    "relation": "Neutral"
+   },
+   "Moon": {
+    "sign": "Gemini",
+    "dms": "17-06-43",
+    "nakshatra": "Ardra",
+    "pada": 4,
+    "navamsa_sign": "Pisces",
+    "house": 11,
+    "navamsa_house": 9,
+    "retrograde": false,
+    "combust": false,
+    "relation": "Friendly"
+   },
+   "Mars": {
+    "sign": "Virgo",
+    "dms": "08-29-02",
+    "nakshatra": "Uttara Phalguni",
+    "pada": 4,
+    "navamsa_sign": "Pisces",
+    "house": 2,
+    "navamsa_house": 9,
+    "retrograde": false,
+    "combust": true,
+    "relation": "Enemy"
+   },
+   "Mercury": {
+    "sign": "Virgo",
+    "dms": "10-15-07",
+    "nakshatra": "Hasta",
+    "pada": 1,
+    "navamsa_sign": "Aries",
+    "house": 2,
+    "navamsa_house": 10,
+    "retrograde": true,
+    "combust": true,
+    "relation": "Exalted"
+   },
+   "Jupiter": {
+    "sign": "Gemini",
+    "dms": "15-05-16",
+    "nakshatra": "Ardra",
+    "pada": 3,
+    "navamsa_sign": "Aquarius",
+    "house": 11,
+    "navamsa_house": 8,
+    "retrograde": false,
+    "combust": false,
+    "relation": "Enemy"
+   },
+   "Venus": {
+    "sign": "Libra",
+    "dms": "18-24-50",
+    "nakshatra": "Swati",
+    "pada": 4,
+    "navamsa_sign": "Pisces",
+    "house": 3,
+    "navamsa_house": 9,
+    "retrograde": false,
+    "combust": false,
+    "relation": "Own"
+   },
+   "Saturn": {
+    "sign": "Sagittarius",
+    "dms": "13-41-29",
+    "nakshatra": "Purva Ashadha",
+    "pada": 1,
+    "navamsa_sign": "Leo",
+    "house": 5,
+    "navamsa_house": 2,
+    "retrograde": false,
+    "combust": false,
+    "relation": "Neutral"
+   },
+   "Rahu": {
+    "sign": "Aquarius",
+    "dms": "00-02-17",
+    "nakshatra": "Dhanishta",
+    "pada": 3,
+    "navamsa_sign": "Libra",
+    "house": 7,
+    "navamsa_house": 4,
+    "retrograde": true,
+    "combust": null,
+    "relation": null
+   },
+   "Ketu": {
+    "sign": "Leo",
+    "dms": "00-02-17",
+    "nakshatra": "Magha",
+    "pada": 1,
+    "navamsa_sign": "Aries",
+    "house": 1,
+    "navamsa_house": 10,
+    "retrograde": true,
+    "combust": null,
+    "relation": null
+   }
+  },
+  "panchang": {
+   "tithi": "Navami",
+   "paksha": "Krishna",
+   "yoga": "Variyana",
+   "karana": "Taitila",
+   "hindu_weekday": "Friday",
+   "vara": "Shukrawara",
+   "civil_day": "Saturday",
+   "sunrise": "06:27:05",
+   "sunset": "18:34:00"
+  },
+  "dasha_balance": {
+   "lord": "Rahu",
+   "years": 3,
+   "months": 10,
+   "days": 24
+  },
+  "manglik": {
+   "text": "In the birth chart, Mangal is placed in Second house from Lagna, while in the Moon chart Mangal is placed in Fourth house. Hence Mangal Dosha is not present in Lagna Chart while present in Moon Chart.",
+   "from_lagna_house": 2,
+   "from_moon_house": 4,
+   "lagna_chart": false,
+   "moon_chart": true
+  },
+  "printed": {
+   "ayanamsa": "023-42-47",
+   "obliquity": "023-26-26",
+   "sidereal_time": "04.15.59",
+   "mid_bhav_10": {
+    "sign": "Taurus",
+    "dms": "12-10-45"
+   }
+  },
+  "notes": "relation = AstroSage's planet-sign relation column (friendship-based); the engine computes only BPHS dignity, so only 'Exalted'/'Own' are comparable. Rahu/Ketu combust is not applicable (null). C/R marks: C = combust, R = retrograde (Rahu/Ketu printed [R])."
  },
  "engine_pinned": {
   "ascendant": {
@@ -127,6 +281,18 @@
    "civil_weekday": "Saturday",
    "before_sunrise": true
   },
+  "mangal_dosha": {
+   "from_lagna": {
+    "house": 2,
+    "dosha": true
+   },
+   "from_moon": {
+    "house": 4,
+    "dosha": true
+   },
+   "cancelled_by": [],
+   "present": true
+  },
   "as_of": "2026-10-19",
   "running": {
    "maha": 2,
@@ -234,7 +400,120 @@
      "end": "2031-01-14"
     }
    ]
-  }
- },
- "astrosage": null
+  },
+  "saturn_cycles": [
+   {
+    "kind": "sade_sati",
+    "houses": [
+     12,
+     1,
+     2
+    ],
+    "signs": [
+     1,
+     2,
+     3
+    ],
+    "state": "none",
+    "phase": null,
+    "start": "2029-08-08",
+    "end": "2036-08-27",
+    "segments": [
+     {
+      "sign_index": 1,
+      "house": 12,
+      "phase": "rising",
+      "start": "2029-08-08",
+      "end": "2029-10-05"
+     },
+     {
+      "sign_index": 1,
+      "house": 12,
+      "phase": "rising",
+      "start": "2030-04-17",
+      "end": "2032-05-31"
+     },
+     {
+      "sign_index": 2,
+      "house": 1,
+      "phase": "peak",
+      "start": "2032-05-31",
+      "end": "2034-07-13"
+     },
+     {
+      "sign_index": 3,
+      "house": 2,
+      "phase": "setting",
+      "start": "2034-07-13",
+      "end": "2036-08-27"
+     }
+    ]
+   },
+   {
+    "kind": "kantaka",
+    "houses": [
+     4
+    ],
+    "signs": [
+     5
+    ],
+    "state": "none",
+    "phase": null,
+    "start": "2038-10-22",
+    "end": "2041-09-26",
+    "segments": [
+     {
+      "sign_index": 5,
+      "house": 4,
+      "phase": null,
+      "start": "2038-10-22",
+      "end": "2039-04-05"
+     },
+     {
+      "sign_index": 5,
+      "house": 4,
+      "phase": null,
+      "start": "2039-07-13",
+      "end": "2041-01-28"
+     },
+     {
+      "sign_index": 5,
+      "house": 4,
+      "phase": null,
+      "start": "2041-02-05",
+      "end": "2041-09-26"
+     }
+    ]
+   },
+   {
+    "kind": "ashtama",
+    "houses": [
+     8
+    ],
+    "signs": [
+     9
+    ],
+    "state": "none",
+    "phase": null,
+    "start": "2049-03-06",
+    "end": "2052-02-25",
+    "segments": [
+     {
+      "sign_index": 9,
+      "house": 8,
+      "phase": null,
+      "start": "2049-03-06",
+      "end": "2049-07-09"
+     },
+     {
+      "sign_index": 9,
+      "house": 8,
+      "phase": null,
+      "start": "2049-12-04",
+      "end": "2052-02-25"
+     }
+    ]
+   }
+  ]
+ }
 }

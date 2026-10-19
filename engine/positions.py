@@ -97,6 +97,18 @@ def sidereal_positions(
     return out
 
 
+def sidereal_longitude(body: str, when_utc: datetime, *, ayanamsa: str = DEFAULT_AYANAMSA) -> float:
+    """One body's sidereal longitude — the same swe call `sidereal_positions`
+    makes for it (mean node for Rahu/Ketu), without computing the other eight.
+    For long searches (the chart file's 42-year Saturn walk)."""
+    set_ayanamsa(ayanamsa)
+    jd = julday_utc(when_utc)
+    flags = swe.FLG_SWIEPH | swe.FLG_SIDEREAL | swe.FLG_SPEED
+    code = swe.MEAN_NODE if body in ("Rahu", "Ketu") else _SWE_BODY[body]
+    lon = swe.calc_ut(jd, code, flags)[0][0]
+    return (lon + (180 if body == "Ketu" else 0)) % 360
+
+
 def positions_from_ist(
     local_birth: datetime,
     *,

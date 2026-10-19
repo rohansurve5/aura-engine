@@ -15,13 +15,19 @@ What this module adds (everything else is reused, already golden-tested):
   * dignity ........... dignity()            — BPHS exaltation / moolatrikona /
                                                own sign / debilitation
   * combustion ........ is_combust()         — classical orbs, see COMBUST_ORB
-  * transit snapshot .. sky_facts()
+  * transit snapshot .. sky_facts()          — always India time (TRANSIT_ZONE)
   * 12-month ingresses  ingresses()          — exact instants, root-found
+  * Saturn cycles ..... saturn_changes() + saturn_cycles() — Sade Sati and
+                                               Dhaiya from the natal Moon sign
+  * Mangal dosha ...... mangal_dosha()       — houses 1/2/4/7/8/12 from the
+                                               lagna and the Moon, exact
+                                               cancellations only
   * the assembly ...... chart_file_facts()
 
 plus panchang.panchang_at / panchang.vara_at (birth panchang) and
-vimshottari.rounded_pratyantar (pratyantar). Aspects and yogas are
-deliberately absent — not in this phase.
+vimshottari.rounded_pratyantar (pratyantar). Aspects and yogas are not
+computed: the file lets the assistant interpret them from these values,
+labelled as its own interpretation (reshape B review).
 
 Every field is JSON-ready (plain dicts, epoch-ms instants, ISO dates) because
 its first consumer is the crossval golden.
@@ -35,7 +41,7 @@ from datetime import UTC, date, datetime, time, timedelta
 from .chart import compute_chart
 from .ephemeris import DEFAULT_AYANAMSA
 from .panchang import panchang_at, vara_at
-from .positions import BODIES, sidereal_positions
+from .positions import BODIES, sidereal_longitude, sidereal_positions
 from .timezones import local_to_utc, offset_minutes_at
 from .vimshottari import (
     NAKSHATRA_ARC,
@@ -160,6 +166,46 @@ def is_combust(body: str, longitude: float, sun_longitude: float, retrograde: bo
     return separation(longitude, sun_longitude) < orb
 
 
+# ── Mangal dosha ────────────────────────────────────────────────────────────
+# The rule Rohan set (reshape B review): Mars in the 1st, 2nd, 4th, 7th, 8th or
+# 12th Whole Sign house, counted separately from the lagna and from the Moon
+# sign — compatibility.py's INCLUSIVE set. Traditions differ on the 2nd house
+# (compatibility.py's STRICT set drops it, and so does AstroSage's report), so
+# the file says so whenever the 2nd decides. Like compatibility.py, this is a
+# description of a placement, never a verdict on anyone's marriage.
+MANGAL_DOSHA_HOUSES = (1, 2, 4, 7, 8, 12)
+
+# Only cancellations that are a pure fact of sign positions — nothing that
+# needs a judgement of strength, the partner's chart or the person's age:
+#   own_sign / exalted — Mars in Aries or Scorpio / in Capricorn;
+#   with_jupiter       — Jupiter in Mars's sign;
+#   jupiter_aspect     — Mars in the 5th, 7th or 9th sign from Jupiter
+#                        (Jupiter's full aspects, counted by whole sign).
+MANGAL_CANCELLATIONS = ("own_sign", "exalted", "with_jupiter", "jupiter_aspect")
+
+
+def mangal_dosha(asc_sign: int, mars_sign: int, moon_sign: int, jupiter_sign: int) -> dict:
+    from_lagna = house_from(mars_sign, asc_sign)
+    from_moon = house_from(mars_sign, moon_sign)
+    cancelled_by = []
+    if mars_sign in OWN_SIGNS["Mars"]:
+        cancelled_by.append("own_sign")
+    if mars_sign == EXALTATION["Mars"][0]:
+        cancelled_by.append("exalted")
+    if mars_sign == jupiter_sign:
+        cancelled_by.append("with_jupiter")
+    if house_from(mars_sign, jupiter_sign) in (5, 7, 9):
+        cancelled_by.append("jupiter_aspect")
+    lagna = from_lagna in MANGAL_DOSHA_HOUSES
+    moon = from_moon in MANGAL_DOSHA_HOUSES
+    return {
+        "from_lagna": {"house": from_lagna, "dosha": lagna},
+        "from_moon": {"house": from_moon, "dosha": moon},
+        "cancelled_by": cancelled_by,
+        "present": (lagna or moon) and not cancelled_by,
+    }
+
+
 # ── Natal ───────────────────────────────────────────────────────────────────
 def _ms(when_utc: datetime) -> int:
     return round(when_utc.timestamp() * 1000)
@@ -203,11 +249,14 @@ def natal_facts(local_birth: datetime, zone: str, lat: float, lon: float) -> dic
 
     p = panchang_at(utc, ayanamsa=DEFAULT_AYANAMSA)
     v = vara_at(local_birth, zone, lat, lon)
+    sign_of = {body: planets[body]["sign_index"] for body in ("Mars", "Moon", "Jupiter")}
     return {
         "utc_ms": _ms(utc),
         "utc_offset_minutes": offset_minutes_at(zone, local_birth),
         "ascendant": _point(asc),
         "planets": planets,
+        "mangal_dosha": mangal_dosha(
+            asc_sign, sign_of["Mars"], sign_of["Moon"], sign_of["Jupiter"]),
         "panchang": {
             "tithi_index": p.tithi_index,
             "nakshatra_index": p.nakshatra_index,
@@ -342,20 +391,26 @@ _BISECT_STEPS = 24  # 1 day / 2^24 ≈ 5 ms of time — far below any meaningful
 # MAX_SPEED must equal this (its CPU budget is why the walk is adaptive).
 _MAX_SPEED = {"Saturn": 0.15, "Jupiter": 0.3, "Rahu": 0.06}
 
-# The instant "today's" transit positions are read at: local noon of the
-# as-of date in the requested zone — the middle of that person's day. (The
-# Moon moves ~13°/day, so the file says the instant out loud.)
+# Aura is for births in India (reshape B review), so "today" and the transit
+# picture are always India's: the as-of date is the date in India, positions
+# are read at 12:00 noon IST — the middle of the day; the Moon moves ~13°/day,
+# so the file says the instant out loud — and dates are IST dates.
+TRANSIT_ZONE = "Asia/Kolkata"
 TRANSIT_LOCAL_TIME = time(12, 0)
 
 
 def _lon(body: str, when_utc: datetime, ayanamsa: str) -> float:
-    return sidereal_positions(when_utc, ayanamsa=ayanamsa)[body].longitude
+    return sidereal_longitude(body, when_utc, ayanamsa=ayanamsa)
 
 
 def ingresses(
-    start_utc: datetime, days: int = INGRESS_WINDOW_DAYS, *, ayanamsa: str = DEFAULT_AYANAMSA
+    start_utc: datetime,
+    days: int = INGRESS_WINDOW_DAYS,
+    *,
+    ayanamsa: str = DEFAULT_AYANAMSA,
+    bodies: tuple[str, ...] = INGRESS_BODIES,
 ) -> list[dict]:
-    """Every sign change of Saturn, Jupiter and Rahu in [start, start + days].
+    """Every sign change of `bodies` (Saturn, Jupiter, Rahu) in [start, start + days].
 
     Per body, an adaptive walk over WHOLE days from `start_utc` (step =
     floor(distance to the nearest boundary / _MAX_SPEED), at least 1 day),
@@ -368,7 +423,7 @@ def ingresses(
     DrikPanchang's own zodiac; the file always uses the chart's lahiri_vp285.
     """
     out: list[dict] = []
-    for body in INGRESS_BODIES:
+    for body in bodies:
         t = 0
         lon = _lon(body, start_utc, ayanamsa)
         while t < days:
@@ -397,35 +452,151 @@ def ingresses(
     return sorted(out, key=lambda e: (e["utc_ms"], e["body"]))
 
 
-def sky_facts(as_of: date, zone: str) -> dict:
-    """Today's nine grahas (at local noon) and the next 365 days of ingresses."""
-    instant = local_to_utc(datetime.combine(as_of, TRANSIT_LOCAL_TIME), zone)
+def _ist_midnight(day: date) -> datetime:
+    return local_to_utc(datetime.combine(day, time()), TRANSIT_ZONE)
+
+
+def sky_facts(as_of: date) -> dict:
+    """Today's nine grahas (12:00 IST), the next 365 days of ingresses, and
+    Saturn's sign changes for the Saturn-cycle section."""
+    instant = local_to_utc(datetime.combine(as_of, TRANSIT_LOCAL_TIME), TRANSIT_ZONE)
     pos = sidereal_positions(instant, ayanamsa=DEFAULT_AYANAMSA)
     planets = {
         body: {**_point(p.longitude), "speed": p.speed, "retrograde": p.retrograde}
         for body, p in pos.items()
     }
-    window_start = local_to_utc(datetime.combine(as_of, time()), zone)
+    window_start = _ist_midnight(as_of)
     return {
         "as_of": as_of.isoformat(),
         "instant_ms": _ms(instant),
         "window_start_ms": _ms(window_start),
         "planets": planets,
         "ingresses": ingresses(window_start),
+        "saturn": saturn_changes(as_of),
     }
+
+
+# ── Saturn cycles: Sade Sati and Dhaiya ─────────────────────────────────────
+# Saturn's sign counted from the natal MOON sign (not the lagna):
+#   Sade Sati — Saturn in the 12th, 1st or 2nd sign: the rising, peak and
+#               setting phases, about 2½ years each, ~7½ in all;
+#   Dhaiya    — Saturn in the 4th sign (Kantaka Shani) or the 8th (Ashtama
+#               Shani), about 2½ years; AstroSage calls both "Small Panoti".
+#
+# transits.sade_sati_episodes (the retired daily app's reading) models the same
+# passage differently on two counts, and the chart file departs on purpose:
+#   * it splits an episode at ANY gap and flags detached dips as "not a full
+#     passage"; here a retrograde pause stays inside one cycle, so "when does
+#     it end?" is answered by the FINAL exit — the failure that module's own
+#     docstring warns about (an April 2022 "end" for a Sagittarius Moon that
+#     really ran to January 2023) cannot be printed;
+#   * it reads signs at 00:00 IST; here a stretch is dated by the IST day the
+#     sign change happens, which matches AstroSage's Sadesati report on 28/43
+#     start dates (00:00 sampling: 15/43) and never misses by more than a day.
+SATURN_CYCLES = (
+    ("sade_sati", {12: "rising", 1: "peak", 2: "setting"}),
+    ("kantaka", {4: None}),
+    ("ashtama", {8: None}),
+)
+
+# The search window around the as-of date. Back 10 years: a running Sade
+# Sati (the longest cycle, ≤ ~8½ years with its retrograde re-entries) began
+# inside it. Ahead 32 years: Saturn's 29½-year round brings every cycle back,
+# so the NEXT one has ended inside it. saturn_cycles refuses — never guesses —
+# if either assumption fails (tests sweep every Moon sign over 1960–2060).
+SATURN_LOOKBACK_DAYS = 3653
+SATURN_LOOKAHEAD_DAYS = 11688
+
+# Saturn's retrograde loop can carry it back out of the cycle's signs for a
+# few months (≤ ~8) before it re-enters; that is one cycle, paused. A return
+# of the same cycle is ~20+ years away, so 2 years separates them cleanly.
+SATURN_PAUSE_MAX_DAYS = 730
+
+
+def saturn_changes(as_of: date) -> dict:
+    """Every Saturn sign change in [as_of − 10 y, as_of + 32 y] (IST midnights)."""
+    start = _ist_midnight(as_of) - timedelta(days=SATURN_LOOKBACK_DAYS)
+    days = SATURN_LOOKBACK_DAYS + SATURN_LOOKAHEAD_DAYS
+    return {
+        "window_start_ms": _ms(start),
+        "window_end_ms": _ms(start + timedelta(days=days)),
+        "start_sign_index": sign_index(_lon("Saturn", start, DEFAULT_AYANAMSA)),
+        "changes": [
+            {"utc_ms": e["utc_ms"], "to_sign_index": e["to_sign_index"]}
+            for e in ingresses(start, days, bodies=("Saturn",))
+        ],
+    }
+
+
+def _ist_date(ms: int) -> str:
+    return (_utc_from_ms(ms) + timedelta(minutes=330)).date().isoformat()
+
+
+def saturn_cycles(moon_sign: int, saturn: dict, as_of: date) -> list[dict]:
+    """Sade Sati, Kantaka and Ashtama for a natal Moon sign: whether each runs
+    at 12:00 IST on `as_of`, and the current (else the next) one's dates.
+
+    A cycle is the stretch from Saturn's first entry into its signs to its
+    final exit, retrograde pauses included; `segments` are the in-sign runs
+    with their phase. Dates are IST dates of the sign changes — a segment
+    runs from the day Saturn enters to the day it leaves.
+    """
+    now = _ms(local_to_utc(datetime.combine(as_of, TRANSIT_LOCAL_TIME), TRANSIT_ZONE))
+    runs, sign, t = [], saturn["start_sign_index"], None   # t None = window edge
+    for c in saturn["changes"]:
+        runs.append((sign, t, c["utc_ms"]))
+        sign, t = c["to_sign_index"], c["utc_ms"]
+    runs.append((sign, t, None))
+
+    out = []
+    for kind, phases in SATURN_CYCLES:
+        cycles: list[list[tuple]] = []
+        for s, a, b in runs:
+            house = house_from(s, moon_sign)
+            if house not in phases:
+                continue
+            last = cycles[-1][-1] if cycles else None
+            if last is not None and a is not None and last[2] is not None \
+                    and a - last[2] <= SATURN_PAUSE_MAX_DAYS * 86_400_000:
+                cycles[-1].append((s, a, b, house))
+            else:
+                cycles.append([(s, a, b, house)])
+        current = next((c for c in cycles if (c[0][1] is None or c[0][1] <= now)
+                        and (c[-1][2] is None or now < c[-1][2])), None)
+        cycle = current or next((c for c in cycles if c[0][1] is not None and c[0][1] > now), None)
+        if cycle is None or cycle[0][1] is None or cycle[-1][2] is None:
+            raise RuntimeError(f"{kind}: the cycle runs past the search window")
+        here = next((seg for seg in cycle if seg[1] <= now < seg[2]), None) if current else None
+        out.append({
+            "kind": kind,
+            "houses": list(phases),
+            "signs": [(moon_sign + h - 1) % 12 for h in phases],
+            "state": "running" if here else "paused" if current else "none",
+            "phase": phases[here[3]] if here else None,
+            "start": _ist_date(cycle[0][1]),
+            "end": _ist_date(cycle[-1][2]),
+            "segments": [
+                {"sign_index": s, "house": h, "phase": phases[h],
+                 "start": _ist_date(a), "end": _ist_date(b)}
+                for s, a, b, h in cycle
+            ],
+        })
+    return out
 
 
 # ── The whole file's facts ──────────────────────────────────────────────────
 def chart_file_facts(
     local_birth: datetime, zone: str, lat: float, lon: float, as_of: date
 ) -> dict:
-    """Everything the chart file states, for one birth, as of one date."""
+    """Everything the chart file states, for one birth, as of one date (IST)."""
     natal = natal_facts(local_birth, zone, lat, lon)
     moon = natal["planets"]["Moon"]["longitude"]
+    sky = sky_facts(as_of)
     return {
         "natal": natal,
         "dasha": dasha_facts(moon, local_birth, as_of),
-        "sky": sky_facts(as_of, zone),
+        "sky": sky,
+        "saturn_cycles": saturn_cycles(sign_index(moon), sky["saturn"], as_of),
     }
 
 
@@ -435,9 +606,10 @@ def _utc_from_ms(ms: int) -> datetime:  # test/debug helper
 
 __all__ = [
     "ARCTIC_LIMIT", "COMBUST_ORB", "COMBUST_ORB_RETROGRADE", "DEBILITATION",
-    "EXALTATION", "INGRESS_BODIES", "INGRESS_WINDOW_DAYS", "MOOLATRIKONA",
-    "NAKSHATRA_ARC", "NAVAMSA_ARC", "OWN_SIGNS", "SIGN_LORDS",
+    "EXALTATION", "INGRESS_BODIES", "INGRESS_WINDOW_DAYS", "MANGAL_CANCELLATIONS",
+    "MANGAL_DOSHA_HOUSES", "MOOLATRIKONA", "NAKSHATRA_ARC", "NAVAMSA_ARC",
+    "OWN_SIGNS", "SATURN_CYCLES", "SIGN_LORDS", "TRANSIT_ZONE",
     "chart_file_facts", "combust_orb", "dasha_facts", "dignity", "house_from",
-    "ingresses", "is_combust", "natal_facts", "navamsa_sign", "separation",
-    "sign_index", "sky_facts",
+    "ingresses", "is_combust", "mangal_dosha", "natal_facts", "navamsa_sign",
+    "saturn_changes", "saturn_cycles", "separation", "sign_index", "sky_facts",
 ]

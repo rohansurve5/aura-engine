@@ -8,14 +8,18 @@ Strongest evidence first:
       - DrikPanchang's slow-planet ingress dates/times for Oct 2026 – Dec 2027
         (drik_ingress_2026_2027.json);
       - DrikPanchang's Pune day panchang for the golden birth date and nine
-        other days (drik_panchang.json, already the panchang golden).
+        other days (drik_panchang.json, already the panchang golden);
+      - AstroSage's own Kundli for the golden chart at Thane — planets, D9,
+        houses, R/C marks, dignity, birth panchang, Manglik houses
+        (chart_file_rohan.json) — and its 45-row Sadesati report
+        (astrosage_sadesati_rohan.json), from Rohan's screenshots and PDF.
   * CLASSICAL RULES restated independently of the code under test: the D9
     movable/fixed/dual rule, the BPHS dignity table, the combustion orbs.
   * STRUCTURAL invariants: pratyantar rows tile their antar exactly; dasha
     rows are contiguous; an ingress really is a sign change.
   * ENGINE-PINNED values for the golden chart (chart_file_rohan.json) — a
-    regression guard, not a reference; its AstroSage slot is skipped, visibly,
-    until Rohan reads the chart off AstroSage.
+    regression guard for what AstroSage does not print (pratyantar rows, the
+    running markers, the Saturn cycles as of a date).
 """
 
 from __future__ import annotations
@@ -30,7 +34,10 @@ from engine.chart_file import (
     ARCTIC_LIMIT,
     EXALTATION,
     INGRESS_BODIES,
+    MANGAL_DOSHA_HOUSES,
     OWN_SIGNS,
+    SATURN_LOOKAHEAD_DAYS,
+    SATURN_LOOKBACK_DAYS,
     SIGN_LORDS,
     _utc_from_ms,
     chart_file_facts,
@@ -39,15 +46,18 @@ from engine.chart_file import (
     house_from,
     ingresses,
     is_combust,
+    mangal_dosha,
     natal_facts,
     navamsa_sign,
+    saturn_changes,
+    saturn_cycles,
     separation,
     sign_index,
     sky_facts,
 )
 from engine.ephemeris import DRIKPANCHANG_AYANAMSA
 from engine.panchang import YOGA_NAMES, karana_name, panchang_at, tithi_name, vara_at
-from engine.positions import SIGNS, sidereal_positions
+from engine.positions import SIGNS, sidereal_longitude, sidereal_positions
 from engine.timezones import local_to_utc
 from engine.vimshottari import NAKSHATRAS, compute_dasha, nakshatra_of, rounded_pratyantar
 
@@ -55,7 +65,8 @@ GOLDEN_DIR = os.path.join(os.path.dirname(__file__), "golden")
 IST = "Asia/Kolkata"
 
 BIRTH = datetime(1989, 9, 23, 4, 47)
-PUNE = (18.5204, 73.8567)
+THANE = (19 + 11 / 60, 72 + 58 / 60)   # Rohan's birthplace, as AstroSage prints it: 19:11 N 72:58 E
+PUNE = (18.5204, 73.8567)              # DrikPanchang's place in drik_panchang.json
 AS_OF = date(2026, 10, 19)
 
 
@@ -66,7 +77,7 @@ def _load(name: str) -> dict:
 
 @pytest.fixture(scope="module")
 def facts() -> dict:
-    return chart_file_facts(BIRTH, IST, *PUNE, AS_OF)
+    return chart_file_facts(BIRTH, IST, *THANE, AS_OF)
 
 
 # ── D9 navamsa vs the classical rule ────────────────────────────────────────
@@ -258,9 +269,10 @@ def test_panchang_at_matches_drikpanchang_boundaries(day):
 
 
 def test_golden_birth_panchang_matches_drikpanchang():
-    """04:47 IST, Pune, 1989-09-23 — before that morning's 06:24 sunrise, so
-    the elements are the ones DrikPanchang lists as prevailing at sunrise and
-    the vara is the PREVIOUS day's (Friday)."""
+    """The golden birth instant (04:47 IST, 1989-09-23) read at DrikPanchang's
+    PUNE page — before that morning's 06:24 sunrise there, so the elements are
+    the ones DrikPanchang lists as prevailing at sunrise and the vara is the
+    PREVIOUS day's (Friday). AstroSage's Thane page agrees (see below)."""
     ref = next(d for d in DRIK["days"] if d["date"] == "1989-09-23")
     p = panchang_at(local_to_utc(BIRTH, IST), ayanamsa="lahiri_vp285")
     assert p.tithi == ref["tithi"][0]["name"] and p.paksha == ref["paksha"]
@@ -360,17 +372,19 @@ def test_adaptive_walk_finds_the_short_stays_a_daily_scan_finds(start):
     assert any(b != "Rahu" and (cur - prev) % 12 == 11 for b, prev, cur in brute)  # a dip
 
 
-def test_sky_reads_today_at_local_noon_and_scans_from_local_midnight():
-    sky = sky_facts(date(2026, 10, 19), "America/New_York")
-    assert _utc_from_ms(sky["instant_ms"]) == datetime(2026, 10, 19, 16, 0, tzinfo=UTC)  # EDT
-    assert _utc_from_ms(sky["window_start_ms"]) == datetime(2026, 10, 19, 4, 0, tzinfo=UTC)
+def test_sky_is_always_india_time():
+    """India-only (reshape B review): today's positions at 12:00 IST, the
+    12-month scan from IST midnight — whatever the birth zone was."""
+    sky = sky_facts(date(2026, 10, 19))
+    assert _utc_from_ms(sky["instant_ms"]) == datetime(2026, 10, 19, 6, 30, tzinfo=UTC)
+    assert _utc_from_ms(sky["window_start_ms"]) == datetime(2026, 10, 18, 18, 30, tzinfo=UTC)
     assert all(sky["window_start_ms"] <= e["utc_ms"] for e in sky["ingresses"])
 
 
 # ── Pratyantar and the dasha section ────────────────────────────────────────
 @pytest.fixture(scope="module")
 def dasha():
-    moon = natal_facts(BIRTH, IST, *PUNE)["planets"]["Moon"]["longitude"]
+    moon = natal_facts(BIRTH, IST, *THANE)["planets"]["Moon"]["longitude"]
     return compute_dasha(moon, BIRTH, levels=3, cycles=2), moon
 
 
@@ -432,13 +446,20 @@ def test_next_antar_rolls_into_the_next_maha(facts):
     assert p["next"]["rows"][0]["start"] == facts["dasha"]["mahas"][3]["start"]
 
 
-# ── The golden chart, engine-pinned (+ AstroSage, pending) ──────────────────
+# ── The golden chart: AstroSage (external) + engine-pinned ─────────────────
 ROHAN = _load("chart_file_rohan.json")
+AS = ROHAN["astrosage"]
 
 
 def _named(p: dict) -> dict:
     return {"sign": SIGNS[p["sign_index"]], "nakshatra": NAKSHATRAS[p["nakshatra_index"]],
             "pada": p["pada"], "navamsa_sign": SIGNS[p["navamsa_sign_index"]]}
+
+
+def test_golden_birth_is_thane():
+    b = ROHAN["birth"]
+    assert (b["place"], b["lat"], b["lon"]) == (
+        "Thane, Maharashtra, India", *(round(x, 6) for x in THANE))
 
 
 def test_golden_chart_engine_pinned(facts):
@@ -459,34 +480,250 @@ def test_golden_chart_engine_pinned(facts):
         "vara": v["vara"], "civil_weekday": v["civil_weekday"],
         "before_sunrise": v["before_sunrise"],
     } == pin["panchang"]
+    assert n["mangal_dosha"] == pin["mangal_dosha"]
     assert facts["dasha"]["running"] == pin["running"]
     assert facts["dasha"]["pratyantar"]["current"] == pin["pratyantar_current"]
     assert facts["dasha"]["pratyantar"]["next"] == pin["pratyantar_next"]
+    assert facts["saturn_cycles"] == pin["saturn_cycles"]
 
 
-def test_golden_chart_matches_astrosage(facts):
-    ref = ROHAN["astrosage"]
-    if ref is None:
-        pytest.skip("awaiting AstroSage planet table / D9 / birth panchang from Rohan "
-                    "(see chart_file_rohan.json)")
+def test_golden_chart_matches_astrosage_exactly(facts):
+    """Everything AstroSage prints exactly: sign, nakshatra, pada, D9 sign,
+    D1 and D9 houses, R and C marks, BPHS dignity where AstroSage states one."""
     n = facts["natal"]
-    # Expected shape once filled: {"ascendant": {sign, nakshatra, pada, navamsa_sign},
-    #   "planets": {body: {sign, nakshatra, pada, navamsa_sign[, retrograde][, combust]}},
-    #   "panchang": {tithi, paksha, yoga, karana[, vara]}} — only keys AstroSage shows.
-    for key, want in ref["ascendant"].items():
-        assert _named(n["ascendant"])[key] == want, ("ascendant", key)
-    for body, fields in ref["planets"].items():
+    assert {k: v for k, v in _named(n["ascendant"]).items()} == {
+        k: AS["ascendant"][k] for k in ("sign", "nakshatra", "pada", "navamsa_sign")}
+    dignity_word = {"Exalted": "exalted", "Own": "own sign", "Debilitated": "debilitated"}
+    for body, ref in AS["planets"].items():
         p = n["planets"][body]
-        got = {**_named(p), "retrograde": p["retrograde"], "combust": p["combust"]}
-        for key, want in fields.items():
-            assert got[key] == want, (body, key)
-    pp = n["panchang"]
-    got = {"tithi": tithi_name(pp["tithi_index"]),
-           "paksha": "Shukla" if pp["tithi_index"] < 15 else "Krishna",
-           "yoga": YOGA_NAMES[pp["yoga_index"]], "karana": karana_name(pp["karana_index"]),
-           "vara": n["vara"]["vara"]}
-    for key, want in ref["panchang"].items():
-        assert got[key] == want, ("panchang", key)
+        assert _named(p) == {k: ref[k] for k in ("sign", "nakshatra", "pada", "navamsa_sign")}, body
+        assert (p["house"], p["navamsa_house"]) == (ref["house"], ref["navamsa_house"]), body
+        assert p["retrograde"] == ref["retrograde"], body
+        assert p["combust"] == ref["combust"], body
+        # AstroSage's relation column is friendship-based; the file states BPHS
+        # dignity only, so the comparable words must agree and the rest be none.
+        assert p["dignity"] == dignity_word.get(ref["relation"]), body
+
+
+# Degrees: the Moon (0.5″/s of time), the mean node and the lagna pin the
+# CONVENTION (lahiri_vp285, mean node, Thane, IST) and are held to 15″. The
+# planets are held to 2′: AstroSage's planetary theory sits up to 112″ (Mars)
+# from Swiss Ephemeris here and changes sign over time — not a setting this
+# engine can match (README > "AstroSage's planet degrees").
+AS_TIGHT = {"Asc": 15.0, "Moon": 15.0, "Rahu": 15.0, "Ketu": 15.0}
+
+
+def test_golden_chart_degrees_match_astrosage(facts):
+    n = facts["natal"]
+    got = {"Asc": n["ascendant"]["longitude"],
+           **{b: p["longitude"] for b, p in n["planets"].items()}}
+    refs = {"Asc": AS["ascendant"], **AS["planets"]}
+    for body, ref in refs.items():
+        gap = abs((got[body] % 30) - _dms(ref["dms"])) * 3600
+        assert gap <= AS_TIGHT.get(body, LOOSE), f"{body} {gap:.1f}″ from AstroSage"
+
+
+def test_golden_birth_panchang_matches_astrosage(facts):
+    n = facts["natal"]
+    pp, v = n["panchang"], n["vara"]
+    ref = AS["panchang"]
+    assert tithi_name(pp["tithi_index"]) == ref["tithi"]
+    assert ("Shukla" if pp["tithi_index"] < 15 else "Krishna") == ref["paksha"]
+    assert YOGA_NAMES[pp["yoga_index"]] == ref["yoga"]
+    assert karana_name(pp["karana_index"]) == ref["karana"]
+    assert v["vara"] == ref["vara"] and v["civil_weekday"] == ref["civil_day"]
+    rise = vara_at(BIRTH, IST, *THANE).sunrise
+    assert abs((rise - _ist("1989-09-23", ref["sunrise"])).total_seconds()) <= 60
+
+
+def test_golden_dasha_balance_matches_astrosage(facts):
+    ref = AS["dasha_balance"]
+    b = facts["dasha"]["balance"]
+    assert (facts["dasha"]["lord"], b["years"], b["months"], b["days"]) == (
+        ref["lord"], ref["years"], ref["months"], ref["days"])
+
+
+# ── Mangal dosha ────────────────────────────────────────────────────────────
+@pytest.mark.parametrize("house", range(1, 13))
+def test_mangal_dosha_counts_the_six_houses_from_the_lagna(house):
+    # Mars fixed in Gemini (no own sign, no exaltation), Moon and Jupiter
+    # placed so neither the Moon rule nor a cancellation can fire.
+    mars = 2
+    asc = (mars - (house - 1)) % 12
+    d = mangal_dosha(asc, mars, (mars + 2) % 12, (mars + 2) % 12)
+    assert d["from_lagna"] == {"house": house, "dosha": house in (1, 2, 4, 7, 8, 12)}
+    assert d["from_moon"] == {"house": 11, "dosha": False}
+    assert d["cancelled_by"] == [] and d["present"] == (house in MANGAL_DOSHA_HOUSES)
+
+
+def test_mangal_dosha_counts_from_the_moon_separately():
+    d = mangal_dosha(asc_sign=0, mars_sign=5, moon_sign=2, jupiter_sign=7)   # 6th / 4th
+    assert d["from_lagna"]["dosha"] is False and d["from_moon"] == {"house": 4, "dosha": True}
+    assert d["present"] is True
+
+
+@pytest.mark.parametrize(("mars", "jupiter", "reasons"), [
+    (0, 3, ["own_sign"]),                  # Aries
+    (7, 3, ["own_sign", "jupiter_aspect"]),  # Scorpio, 5th from Jupiter in Cancer
+    (9, 1, ["exalted", "jupiter_aspect"]),   # Capricorn, 9th from Jupiter in Taurus
+    (5, 5, ["with_jupiter"]),
+    (5, 1, ["jupiter_aspect"]),            # Virgo is the 5th from Taurus
+    (5, 11, ["jupiter_aspect"]),           # 7th from Pisces
+    (5, 9, ["jupiter_aspect"]),            # 9th from Capricorn
+    (5, 2, []), (5, 4, []), (5, 8, []),    # 4th, 2nd, 10th from Jupiter: no aspect
+])
+def test_mangal_dosha_cancellations_are_exact_sign_facts(mars, jupiter, reasons):
+    asc = mars  # Mars in the 1st: the dosha is there unless cancelled
+    d = mangal_dosha(asc, mars, mars, jupiter)
+    assert d["cancelled_by"] == reasons
+    assert d["present"] is (not reasons)
+
+
+def test_golden_mangal_dosha_and_astrosages_report(facts):
+    """AstroSage: Mars 2nd from the lagna, 4th from the Moon; dosha in the Moon
+    chart only — because its rule omits the 2nd house. Same houses here; under
+    Rohan's 1/2/4/7/8/12 rule both count."""
+    d = facts["natal"]["mangal_dosha"]
+    ref = AS["manglik"]
+    assert (d["from_lagna"]["house"], d["from_moon"]["house"]) == (
+        ref["from_lagna_house"], ref["from_moon_house"])
+    without_2nd = (1, 4, 7, 8, 12)
+    assert (d["from_lagna"]["house"] in without_2nd, d["from_moon"]["house"] in without_2nd) == (
+        ref["lagna_chart"], ref["moon_chart"])
+    assert d["from_lagna"]["dosha"] and d["from_moon"]["dosha"] and d["present"]
+    assert d["cancelled_by"] == []
+
+
+# ── Saturn cycles: Sade Sati and Dhaiya ─────────────────────────────────────
+SADESATI = _load("astrosage_sadesati_rohan.json")
+IST_OFFSET = timedelta(hours=5, minutes=30)
+
+
+@pytest.fixture(scope="module")
+def saturn_runs_1990_2100():
+    """(sign, IST entry date, IST exit date) for every Saturn sign stay."""
+    start = local_to_utc(datetime(1990, 1, 1), IST)
+    ev = ingresses(start, (date(2100, 1, 1) - date(1990, 1, 1)).days, bodies=("Saturn",))
+    runs = []
+    for a, b in zip(ev, ev[1:], strict=False):
+        runs.append((a["to_sign_index"], (_utc_from_ms(a["utc_ms"]) + IST_OFFSET).date(),
+                     (_utc_from_ms(b["utc_ms"]) + IST_OFFSET).date()))
+    return runs
+
+
+def test_saturn_stays_match_astrosages_sadesati_report(saturn_runs_1990_2100):
+    """Every AstroSage Sade Sati / Small Panoti row is one of our Saturn sign
+    stays — same sign, same order, nothing missing or extra — with entry and
+    exit within a day. AstroSage's Saturn sits up to ~1′ from Swiss, which
+    near a station moves an instant across midnight; measured over 43 rows:
+    28 entries and 27 exits identical, the rest exactly one day apart."""
+    moon = SIGNS.index(SADESATI["moon_sign"])
+    rows = [r for r in SADESATI["rows"] if r["start"] < "2099-12-01"]
+    ours = [r for r in saturn_runs_1990_2100
+            if house_from(r[0], moon) in (12, 1, 2, 4, 8) and r[1] >= date(1990, 3, 1)]
+    assert len(ours) == len(rows) == 43
+    same = 0
+    for (sign, enter, leave), ref in zip(ours, rows, strict=True):
+        assert SIGNS[sign] == ref["sign"], ref
+        d_in = (enter - date.fromisoformat(ref["start"])).days
+        # AstroSage's end is the last day in the sign; ours the day Saturn leaves
+        d_out = (leave - date.fromisoformat(ref["end"])).days
+        assert abs(d_in) <= 1 and abs(d_out) <= 1, (ref, enter, leave)
+        same += d_in == 0
+        phase = {12: "Rising", 1: "Peak", 2: "Setting"}.get(house_from(sign, moon))
+        assert phase == ref["phase"] and (ref["kind"] == "Sade Sati") == (phase is not None)
+    assert same >= 28
+
+
+def test_golden_saturn_cycles_as_of_2026(facts):
+    """As of 2026-10-19 no cycle runs for a Gemini Moon (Saturn is in Pisces,
+    the 10th); the next Sade Sati is AstroSage's rows 16–19 to the day."""
+    c = {x["kind"]: x for x in facts["saturn_cycles"]}
+    assert [x["state"] for x in facts["saturn_cycles"]] == ["none", "none", "none"]
+    sade = c["sade_sati"]
+    assert (sade["start"], sade["end"]) == ("2029-08-08", "2036-08-27")
+    assert [(SIGNS[s["sign_index"]], s["phase"]) for s in sade["segments"]] == [
+        ("Taurus", "rising"), ("Taurus", "rising"), ("Gemini", "peak"), ("Cancer", "setting")]
+    assert [SIGNS[i] for i in sade["signs"]] == ["Taurus", "Gemini", "Cancer"]
+    assert [SIGNS[i] for i in c["kantaka"]["signs"]] == ["Virgo"]
+    assert [SIGNS[i] for i in c["ashtama"]["signs"]] == ["Capricorn"]
+    assert c["kantaka"]["start"] < c["ashtama"]["start"]
+
+
+def _cycles_on(day: date, moon_sign: int) -> dict:
+    return {c["kind"]: c for c in saturn_cycles(moon_sign, saturn_changes(day), day)}
+
+
+def test_saturn_cycle_states_running_paused_none():
+    gemini = 2
+    # 2003-02-15: Saturn had slipped back into Taurus — Sade Sati RISING again.
+    assert (_cycles_on(date(2003, 2, 15), gemini)["sade_sati"]["state"],
+            _cycles_on(date(2003, 2, 15), gemini)["sade_sati"]["phase"]) == ("running", "rising")
+    # 2006-12-01: Saturn in Leo between two Cancer stays — paused, not over.
+    c = _cycles_on(date(2006, 12, 1), gemini)["sade_sati"]
+    assert (c["state"], c["phase"], c["start"], c["end"]) == (
+        "paused", None, "2000-06-07", "2007-07-16")
+    # 2010-06-01: Kantaka (Virgo) is running; Sade Sati is not.
+    c = _cycles_on(date(2010, 6, 1), gemini)
+    assert c["kantaka"]["state"] == "running" and c["sade_sati"]["state"] == "none"
+
+
+def test_saturn_cycle_state_is_read_at_noon_ist():
+    """Saturn enters Taurus (the 12th from a Gemini Moon) at 15:36 IST on
+    2029-08-08: at 12:00 IST that day the Sade Sati has not begun — it is the
+    NEXT one, starting that very date — and on the 9th it is running."""
+    gemini = 2
+    on_the_day = _cycles_on(date(2029, 8, 8), gemini)["sade_sati"]
+    assert (on_the_day["state"], on_the_day["start"]) == ("none", "2029-08-08")
+    next_day = _cycles_on(date(2029, 8, 9), gemini)["sade_sati"]
+    assert (next_day["state"], next_day["phase"]) == ("running", "rising")
+
+
+def test_saturn_changes_equal_a_daily_scan():
+    """The adaptive walk over 42 years equals a brute-force scan of Saturn's
+    sign at the end of every IST day: same days, same signs."""
+    day = date(2026, 10, 19)
+    sat = saturn_changes(day)
+    got = [((_utc_from_ms(c["utc_ms"]) + IST_OFFSET).date(), c["to_sign_index"])
+           for c in sat["changes"]]
+    first = day - timedelta(days=SATURN_LOOKBACK_DAYS)   # the window's first IST day
+    scan, prev = [], sat["start_sign_index"]
+    for k in range(SATURN_LOOKBACK_DAYS + SATURN_LOOKAHEAD_DAYS):
+        d = first + timedelta(days=k)
+        end_of_day = local_to_utc(datetime.combine(d, datetime.max.time()), IST)
+        cur = sign_index(sidereal_longitude("Saturn", end_of_day))
+        if cur != prev:
+            scan.append((d, cur))
+        prev = cur
+    assert got == scan and len(got) >= 30
+
+
+def test_saturn_cycles_never_run_past_their_window():
+    """Every Moon sign, as-of dates every 15 days over 1960–2060: the 10-year
+    look-back and 32-year look-ahead always hold the current or next cycle
+    whole (saturn_cycles raises otherwise). Sliced from one long walk."""
+    t0 = local_to_utc(datetime(1949, 1, 1), IST)
+    long = ingresses(t0, (date(2096, 1, 1) - date(1949, 1, 1)).days, bodies=("Saturn",))
+    sign0 = sign_index(sidereal_longitude("Saturn", t0))
+    day, checked = date(1960, 1, 1), 0
+    while day < date(2060, 1, 1):
+        w0 = (local_to_utc(datetime.combine(day, datetime.min.time()), IST)
+              - timedelta(days=SATURN_LOOKBACK_DAYS))
+        w1 = w0 + timedelta(days=SATURN_LOOKBACK_DAYS + SATURN_LOOKAHEAD_DAYS)
+        before = [e for e in long if _utc_from_ms(e["utc_ms"]) < w0]
+        sat = {"start_sign_index": before[-1]["to_sign_index"] if before else sign0,
+               "changes": [{"utc_ms": e["utc_ms"], "to_sign_index": e["to_sign_index"]}
+                           for e in long if w0 <= _utc_from_ms(e["utc_ms"]) <= w1]}
+        for moon in range(12):
+            for c in saturn_cycles(moon, sat, day):
+                assert c["start"] <= c["end"] and c["segments"]
+                if c["state"] == "none":   # the NEXT cycle: not begun (may begin later today)
+                    assert c["start"] >= day.isoformat()
+                else:                          # the CURRENT one: today lies inside it
+                    assert c["start"] <= day.isoformat() <= c["end"]
+                checked += 1
+        day += timedelta(days=15)
+    assert checked > 80_000
 
 
 def test_whole_sign_houses_count_from_the_lagna(facts):

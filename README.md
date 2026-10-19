@@ -164,13 +164,17 @@ The product is one plain-text file a user shares into ChatGPT / Claude. The
 Worker (`aura-api/src/chartFacts.ts`) computes its values with astronomy-engine
 and renders the text; **this repo decides the values** (`engine/chart_file.py`).
 `scripts/crossval_chart_file.py` runs both over 300 births (India-weighted,
-world panel, seeded stations, the golden chart, the B1 births abroad) and 51
-skies (incl. the real 8–27-day sign stays an over-stepping ingress search
-would miss), compares every value the file states, and writes the golden that
-gates every aura-api deploy. Measured (2026-10-19): **105,707 values, 0
-disagreements, 7 contested boundary cases** (a value within 1′ of the edge that
-decides it — recorded, never adjudicated); worst longitude 20″, sunrise 26 s,
-dasha dates ±1 day, ingress instants 10.6″ of motion.
+world panel, seeded stations, the golden chart at Thane, the B1 births abroad)
+and 51 India-time skies (incl. the real 8–27-day sign stays an over-stepping
+ingress search would miss), compares every value the file states — now also
+Mangal dosha, Saturn's 42-year sign-change list and the Saturn cycles for all
+12 Moon signs on every sky — and writes the golden that gates every aura-api
+deploy. Measured (2026-10-20): **108,603 values, 0 disagreements, 5 contested
+boundary cases** (a value within 1′ of the edge that decides it — recorded,
+never adjudicated); worst longitude 20″, sunrise 26 s, dasha dates ±1 day,
+ingress and Saturn-change instants 10.6″ of motion. The endpoint itself takes
+births in India only (reshape B review); the world and abroad births exercise
+the same shared functions.
 
 ```bash
 uv run python scripts/crossval_chart_file.py
@@ -179,11 +183,18 @@ uv run python scripts/crossval_chart_file.py
 Conventions the file states to its reader (and the tests pin): lahiri_vp285,
 mean node, Whole Sign houses, 365.25-day dasha year; the **birth panchang uses
 the chart's vp285 zodiac** (not DrikPanchang's plain Lahiri, as the daily
-panchang does) so its nakshatra can never contradict the Moon's row; transits
-are read at **local noon** of the as-of date; dasha rows are day-rounded on the
-AstroSage cascade and each period's **last child row ends on the parent's
-printed end** (measured: otherwise the golden chart's Sun maha would end a day
-before its last antar).
+panchang does) so its nakshatra can never contradict the Moon's row; "today"
+is **India's date** and transits are read at **12:00 IST**; dasha rows are
+day-rounded on the AstroSage cascade and each period's **last child row ends
+on the parent's printed end** (measured: otherwise the golden chart's Sun maha
+would end a day before its last antar). **Saturn cycles** (Sade Sati 12/1/2,
+Kantaka 4, Ashtama 8 from the Moon sign) run from Saturn's first entry to its
+final exit, retrograde pauses inside one cycle, each stretch dated by the IST
+day of the sign change. **Mangal dosha**: houses 1/2/4/7/8/12 from the lagna
+and from the Moon, cancellations only where they are exact sign facts (own
+sign, exalted, with Jupiter, Jupiter's 5/7/9 aspect). The assistant reading
+the file may interpret aspects, yogas and house lords from these values,
+labelled as its own interpretation; it may never change one.
 
 ## Install & run
 
@@ -271,8 +282,9 @@ nakshatra and maha boundaries match (see table above). Analysis trail:
 
 1. *Ayanamsa* — resolved: `lahiri_vp285` (above). Wrong flavour costs ~3–4 days
    everywhere; this is not the residual.
-2. *Year length* — resolved: 365.25 real days. Tropical/sidereal/360-day years
-   are all measurably worse.
+2. *Year length* — 365.25 real days is the best REAL-DAY year (tropical,
+   sidereal and a 360-real-day year are all measurably worse). But see 4:
+   AstroSage does not count in real days at all.
 3. *Cascading day-rounding* (Prompt A.1) — **partially confirmed**. AstroSage
    rounds maha boundaries to whole days (round-half makes 9/10 maha ends exact),
    and deriving antar dates from the rounded parent then rounding again cuts the
@@ -280,10 +292,27 @@ nakshatra and maha boundaries match (see table above). Analysis trail:
    an opt-in presentation mode (`format_astrosage(..., astrosage_rounding=True)`,
    CLI `--astrosage-rounding`), while exact float datetimes stay the canonical
    internal representation.
-4. *Residual* — the remaining 4 two-day antar dates are consistent with a
-   sub-arcsecond difference between Swiss VP285 and AstroSage's exact internal
-   Lahiri constant. **Accepted**; reported, not fudged — see the `xfail` test
-   `test_antar_strict_one_day_is_the_open_question` and `scripts/compare.py`.
+4. *Residual* — **cause found (reshape B review, 2026-10-20)**; the earlier
+   guess ("a sub-arcsecond ayanamsa residue") was wrong. AstroSage places
+   dasha time on a **360-day calendar of twelve 30-day months**: every
+   boundary is a label `360·y + 30·(m−1) + (d−1) + h/24` = epoch + dasha years
+   × 360, read back as a date with every month treated as 30 days long (so no
+   AstroSage dasha date is ever the 31st, and a "29/30 February" rolls into
+   March as if February had 28 days). A sub-period of 5.6 dasha months is
+   therefore 5 calendar months + 18 days whatever the months' real lengths —
+   which is exactly where 365.25 real days drifts ±1–2 days inside a year.
+   Proof, from AstroSage's own printouts for the golden chart
+   (`tests/golden/astrosage_dasha_tables.json`): ONE epoch, fitted to a
+   window under a minute wide, reproduces **all 942 Lahiri dates** (76 antar
+   ends, 434 pratyantar ends, 432 sookshma ends to the hour) and, separately,
+   **all 434 KP dates** — 0 misses. The epoch implies AstroSage's own printed
+   Moon (Lahiri 17-06-43, KP 077-12-06) when the birth is placed on the
+   timeline at its day label with the clock time dropped. Pinned by
+   `test_astrosage_dasha_is_a_360_day_calendar`. The engine still uses 365.25
+   real days: switching the file to AstroSage's calendar is Rohan's call
+   (measured with our own Moon: antar ends 76/76 exact vs 42/76 today,
+   pratyantar ends 298/434 vs 194/434; the rest of the pratyantar gap is our
+   Moon sitting 2.4″ from AstroSage's — 7.9 hours of dasha time).
 
 ### Panchang vs DrikPanchang (Prompt B)
 
@@ -312,22 +341,50 @@ Conventions proven by the golden set:
   sites evaluate time-driven quantities in the **TT frame** (~ΔT ≈ 57–69 s
   ahead of UT); see `docs/ASCENDANT.md` > Discovery 1.
 
-### Chart file vs AstroSage / DrikPanchang (reshape B4)
+### Chart file vs AstroSage / DrikPanchang (reshape B4, B review)
 
+* **The golden chart at Thane (AstroSage Kundli + 56-page report, Lahiri,
+  19:11 N 72:58 E — `tests/golden/chart_file_rohan.json`):** every sign,
+  nakshatra, pada, D9 sign, D1 and D9 house, R/C mark, BPHS dignity AstroSage
+  states, the birth panchang (Krishna Navami, Variyana, Taitila, Friday
+  before the 06:27 sunrise — ours 06:26:55) and the dasha balance agree
+  exactly. Degrees: lagna 6.0″, Moon 2.3″, Rahu/Ketu 10.4″, the MC 3.5″.
 * **Planets (AstroSage, sunrise, New Delhi, 2026-10-19):** sign, nakshatra and
   pada agree for all nine. The Moon (−6″) and mean Rahu (−3.5″) pin the
-  convention; the other planets sit within 2′ (Jupiter +106″, Saturn +74″) —
-  AstroSage's planet theory, the same order as its known ascendant residual.
+  convention; the other planets sit within 2′ (Jupiter +106″, Saturn +74″).
+* **AstroSage's planet degrees** (the 1–2′ gaps Rohan saw: 1989 Sun +63″,
+  Mars +112″, Mercury +33″, Jupiter −49″, Venus +57″, Saturn +7″, AstroSage
+  minus engine) are AstroSage's planetary ephemeris, not a setting. Tested
+  against both datasets: a different ayanamsa moves every body by the same
+  amount (these differ per planet and change sign between 1989 and 2026 —
+  Mars +112″ → −10″, Saturn +7″ → −74″); geometric instead of apparent
+  positions, no aberration, no light deflection, no nutation, the Moshier
+  ephemeris, plain Lahiri, true Citra and the ecliptic-of-t0 projection all
+  leave the planet RMS between 49″ and 131″ (ours: 62″ in 1989, 57″ in
+  2026); and of the ayanamsas only vp285 keeps the Moon, the node and the
+  lagna within 10″ (plain Lahiri: 13–25″). Their Uranus is 265″ off. AstroSage prints the
+  plain-Lahiri MEAN ayanamsa (023-42-47 at birth, 024-13-47 at the 2026 solar
+  return — within 2″ of Swiss plain Lahiri) and the mean obliquity. No single
+  setting change makes this engine match AstroSage's planets; DrikPanchang
+  (Swiss Ephemeris) agrees with this engine to ~1″ (ingress instants above).
+* **Sade Sati / Dhaiya (AstroSage's 45-row Sadesati report, 1990–2108):**
+  every row through 2099 (43) is one of our Saturn stays — same sign, order
+  and phase; 28 entry and 27 exit dates identical, every other one exactly a
+  day off (AstroSage's Saturn sits up to ~1′ from Swiss; near a station that
+  is hours). `tests/golden/astrosage_sadesati_rohan.json`.
+* **Mangal dosha:** AstroSage names the same houses (Mars 2nd from the lagna,
+  4th from the Moon) but its rule omits the 2nd house, so it reports the
+  dosha in the Moon chart only; the file's rule (1/2/4/7/8/12, Rohan's) counts
+  both and says in the file that the 2nd-house placement would not count
+  under the other rule.
 * **Ingresses (DrikPanchang, Oct 2026 – Nov 2027):** same seven events, order,
   directions and IST dates. DrikPanchang's Lahiri is neither of ours: its
   Jupiter/Saturn instants fall between our plain-lahiri and vp285 instants (up
   to ~50 min from vp285); the slow mean node lands 10 min (~1.3″) past vp285.
   Asserted in arc: within 40″ of the boundary at DrikPanchang's minute. The
   file therefore prints ingress **dates**, not times.
-* **Not yet externally referenced** (engine-pinned + Worker-crossval'd only):
-  the golden chart's D9, combustion and dignity as AstroSage shows them, and
-  pratyantar dates — `tests/golden/chart_file_rohan.json` holds a skipped
-  AstroSage slot for the first three.
+* **Pratyantar dates** now have AstroSage's own (the docx Rohan supplied):
+  0–2 days from ours, for the 360-day-calendar reason above.
 
 ### Historical timezones and India's war-time DST (1941–45)
 
