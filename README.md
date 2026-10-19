@@ -157,6 +157,9 @@ uv sync
 # Vimshottari maha + antar table, AstroSage layout:
 uv run python -m engine dasha --dob 23/09/1989 --time 04:47 --lat 19.99 --lon 73.79
 
+# A birth outside India — the zone is resolved at the birth instant (DST applies):
+uv run python -m engine dasha --dob 04/07/1990 --time 10:00 --zone America/New_York
+
 # Sidereal graha longitudes:
 uv run python -m engine positions --dob 23/09/1989 --time 04:47
 
@@ -167,8 +170,12 @@ uv run python scripts/compare.py
 uv run python -m engine panchang --date 2026-07-18 --lat 18.5204 --lon 73.8567
 ```
 
-`--dob` is `dd/mm/yyyy`, `--time` is 24-hour `HH:MM`, both interpreted as **IST**
-(India has been a fixed UTC+05:30 since 1945). `--lat`/`--lon` are optional —
+`--dob` is `dd/mm/yyyy`, `--time` is 24-hour `HH:MM`, both the birth place's
+wall clock. `--zone` says which clock: an IANA id (`America/New_York`,
+`Asia/Kolkata` — historical DST and offset changes applied at the birth instant)
+or a fixed `+HH:MM`. It defaults to `+05:30` (IST), which is wrong for anyone born
+outside India — a New York birth read as IST samples the Moon 9½ hours early and
+can move the dasha balance by years. `--lat`/`--lon` are optional —
 Vimshottari depends only on the geocentric Moon and is unaffected by them.
 
 ## Ephemeris data range

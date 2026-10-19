@@ -1,0 +1,249 @@
+{
+ "_about": "Dasha goldens for births OUTSIDE India (reshape B1). 'utc' and 'utc_offset_minutes' are tz-database facts written by hand, independent of the engine. 'engine_pinned' is the engine's own output (Swiss Ephemeris, Lahiri VP285, 365.25-day year) pinned as a regression guard \u2014 it is NOT an external reference. 'astrosage' is null until Rohan reads the values off AstroSage for the cases with ask_astrosage=true; tests/test_dasha_abroad.py then compares against them the same way test_vimshottari.py does for the India golden. Dates are in the birth place's own calendar (day-rounded, AstroSage presentation).",
+ "cases": [
+  {
+   "label": "New York, summer (EDT)",
+   "place": "New York, NY, USA",
+   "lat": 40.7128,
+   "lon": -74.006,
+   "dob": "1990-07-04",
+   "time": "10:00",
+   "zone": "America/New_York",
+   "utc": "1990-07-04T14:00:00",
+   "utc_offset_minutes": -240,
+   "ask_astrosage": true,
+   "engine_pinned": {
+    "nakshatra": "Anuradha",
+    "pada": 2,
+    "lord": "Saturn",
+    "balance": {
+     "years": 9,
+     "months": 7,
+     "days": 2
+    },
+    "maha": [
+     {
+      "lord": "Saturn",
+      "end": "2000-02-05"
+     },
+     {
+      "lord": "Mercury",
+      "end": "2017-02-04"
+     },
+     {
+      "lord": "Ketu",
+      "end": "2024-02-05"
+     },
+     {
+      "lord": "Venus",
+      "end": "2044-02-05"
+     },
+     {
+      "lord": "Sun",
+      "end": "2050-02-04"
+     },
+     {
+      "lord": "Moon",
+      "end": "2060-02-05"
+     },
+     {
+      "lord": "Mars",
+      "end": "2067-02-05"
+     },
+     {
+      "lord": "Rahu",
+      "end": "2085-02-04"
+     },
+     {
+      "lord": "Jupiter",
+      "end": "2101-02-05"
+     }
+    ]
+   },
+   "astrosage": null
+  },
+  {
+   "label": "London, summer (BST)",
+   "place": "London, United Kingdom",
+   "lat": 51.5074,
+   "lon": -0.1278,
+   "dob": "1985-06-15",
+   "time": "08:30",
+   "zone": "Europe/London",
+   "utc": "1985-06-15T07:30:00",
+   "utc_offset_minutes": 60,
+   "ask_astrosage": true,
+   "engine_pinned": {
+    "nakshatra": "Bharani",
+    "pada": 4,
+    "lord": "Venus",
+    "balance": {
+     "years": 2,
+     "months": 10,
+     "days": 19
+    },
+    "maha": [
+     {
+      "lord": "Venus",
+      "end": "1988-05-04"
+     },
+     {
+      "lord": "Sun",
+      "end": "1994-05-05"
+     },
+     {
+      "lord": "Moon",
+      "end": "2004-05-04"
+     },
+     {
+      "lord": "Mars",
+      "end": "2011-05-05"
+     },
+     {
+      "lord": "Rahu",
+      "end": "2029-05-04"
+     },
+     {
+      "lord": "Jupiter",
+      "end": "2045-05-04"
+     },
+     {
+      "lord": "Saturn",
+      "end": "2064-05-04"
+     },
+     {
+      "lord": "Mercury",
+      "end": "2081-05-04"
+     },
+     {
+      "lord": "Ketu",
+      "end": "2088-05-04"
+     }
+    ]
+   },
+   "astrosage": null
+  },
+  {
+   "label": "Dubai (no DST)",
+   "place": "Dubai, United Arab Emirates",
+   "lat": 25.2048,
+   "lon": 55.2708,
+   "dob": "1995-03-10",
+   "time": "14:00",
+   "zone": "Asia/Dubai",
+   "utc": "1995-03-10T10:00:00",
+   "utc_offset_minutes": 240,
+   "ask_astrosage": true,
+   "engine_pinned": {
+    "nakshatra": "Mrigashira",
+    "pada": 4,
+    "lord": "Mars",
+    "balance": {
+     "years": 0,
+     "months": 1,
+     "days": 27
+    },
+    "maha": [
+     {
+      "lord": "Mars",
+      "end": "1995-05-07"
+     },
+     {
+      "lord": "Rahu",
+      "end": "2013-05-07"
+     },
+     {
+      "lord": "Jupiter",
+      "end": "2029-05-07"
+     },
+     {
+      "lord": "Saturn",
+      "end": "2048-05-07"
+     },
+     {
+      "lord": "Mercury",
+      "end": "2065-05-07"
+     },
+     {
+      "lord": "Ketu",
+      "end": "2072-05-07"
+     },
+     {
+      "lord": "Venus",
+      "end": "2092-05-07"
+     },
+     {
+      "lord": "Sun",
+      "end": "2098-05-07"
+     },
+     {
+      "lord": "Moon",
+      "end": "2108-05-08"
+     }
+    ]
+   },
+   "astrosage": null
+  },
+  {
+   "label": "New York, winter (EST)",
+   "place": "New York, NY, USA",
+   "lat": 40.7128,
+   "lon": -74.006,
+   "dob": "1990-01-15",
+   "time": "10:00",
+   "zone": "America/New_York",
+   "utc": "1990-01-15T15:00:00",
+   "utc_offset_minutes": -300,
+   "ask_astrosage": false,
+   "engine_pinned": {
+    "nakshatra": "Purva Phalguni",
+    "pada": 4,
+    "lord": "Venus",
+    "balance": {
+     "years": 2,
+     "months": 0,
+     "days": 1
+    },
+    "maha": [
+     {
+      "lord": "Venus",
+      "end": "1992-01-17"
+     },
+     {
+      "lord": "Sun",
+      "end": "1998-01-16"
+     },
+     {
+      "lord": "Moon",
+      "end": "2008-01-17"
+     },
+     {
+      "lord": "Mars",
+      "end": "2015-01-16"
+     },
+     {
+      "lord": "Rahu",
+      "end": "2033-01-16"
+     },
+     {
+      "lord": "Jupiter",
+      "end": "2049-01-16"
+     },
+     {
+      "lord": "Saturn",
+      "end": "2068-01-17"
+     },
+     {
+      "lord": "Mercury",
+      "end": "2085-01-16"
+     },
+     {
+      "lord": "Ketu",
+      "end": "2092-01-17"
+     }
+    ]
+   },
+   "astrosage": null
+  }
+ ]
+}

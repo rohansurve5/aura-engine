@@ -1,6 +1,7 @@
 """Command-line interface for the Aura Calculation Engine.
 
     python -m engine dasha --dob 23/09/1989 --time 04:47 --lat 19.99 --lon 73.79
+    python -m engine dasha --dob 04/07/1990 --time 10:00 --zone America/New_York
     python -m engine positions --dob 23/09/1989 --time 04:47
     python -m engine panchang --date 2026-07-18 --lat 18.5204 --lon 73.8567
 
@@ -25,12 +26,13 @@ from .choghadiya import (
 )
 from .ephemeris import ASTROSAGE_AYANAMSA, AYANAMSAS, DRIKPANCHANG_AYANAMSA
 from .panchang import compute_panchang
-from .positions import positions_from_ist
+from .positions import positions_from_local
+from .timezones import resolve_tz
 from .vimshottari import YEAR_MODES, compute_dasha, format_astrosage
 
 
 def _parse_birth(dob: str, time: str) -> datetime:
-    """Parse dd/mm/yyyy + HH:MM (IST wall-clock) into a naive datetime."""
+    """Parse dd/mm/yyyy + HH:MM (birth wall-clock, see --zone) into a naive datetime."""
     try:
         d, m, y = (int(x) for x in dob.split("/"))
         hh, mm = (int(x) for x in time.split(":"))
@@ -40,9 +42,21 @@ def _parse_birth(dob: str, time: str) -> datetime:
     return datetime(y, m, d, hh, mm)
 
 
+def _zone(spec: str) -> str:
+    """Validate --zone up front so a typo is an error, never a silent IST."""
+    try:
+        resolve_tz(spec)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from None
+    return spec
+
+
 def _add_common(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--dob", required=True, help="birth date, dd/mm/yyyy (IST)")
-    p.add_argument("--time", required=True, help="birth time, HH:MM (24h, IST)")
+    p.add_argument("--dob", required=True, help="birth date, dd/mm/yyyy (local)")
+    p.add_argument("--time", required=True, help="birth time, HH:MM (24h, local)")
+    p.add_argument("--zone", default="+05:30",
+                   help="birth timezone: IANA id (e.g. America/New_York — historical "
+                        "DST applied) or fixed +HH:MM (default: +05:30, IST)")
     p.add_argument("--lat", type=float, default=None,
                    help="birth latitude (optional; dasha is location-independent)")
     p.add_argument("--lon", type=float, default=None, help="birth longitude (optional)")
@@ -53,8 +67,8 @@ def _add_common(p: argparse.ArgumentParser) -> None:
 
 def cmd_dasha(args: argparse.Namespace) -> int:
     birth = _parse_birth(args.dob, args.time)
-    moon = positions_from_ist(
-        birth, lat=args.lat, lon=args.lon,
+    moon = positions_from_local(
+        birth, _zone(args.zone), lat=args.lat, lon=args.lon,
         ayanamsa=args.ayanamsa, true_node=args.true_node,
     )["Moon"].longitude
     result = compute_dasha(moon, birth, year_mode=args.year_mode, levels=2, cycles=2)
@@ -72,11 +86,11 @@ def cmd_dasha(args: argparse.Namespace) -> int:
 
 def cmd_positions(args: argparse.Namespace) -> int:
     birth = _parse_birth(args.dob, args.time)
-    pos = positions_from_ist(
-        birth, lat=args.lat, lon=args.lon,
+    pos = positions_from_local(
+        birth, _zone(args.zone), lat=args.lat, lon=args.lon,
         ayanamsa=args.ayanamsa, true_node=args.true_node,
     )
-    print(f"Sidereal positions ({args.ayanamsa}) for {args.dob} {args.time} IST")
+    print(f"Sidereal positions ({args.ayanamsa}) for {args.dob} {args.time} {args.zone}")
     print("-" * 40)
     for name in ("Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus",
                  "Saturn", "Rahu", "Ketu"):

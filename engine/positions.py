@@ -22,6 +22,7 @@ from .ephemeris import (
     julday_utc,
     set_ayanamsa,
 )
+from .timezones import local_to_utc
 
 # Grahas in traditional order. Ketu is derived (Rahu + 180°), not a swe body.
 _SWE_BODY = {
@@ -104,9 +105,38 @@ def positions_from_ist(
     ayanamsa: str = DEFAULT_AYANAMSA,
     true_node: bool = False,
 ) -> dict[str, Position]:
-    """Convenience wrapper: interpret `local_birth` as IST, then compute."""
+    """Convenience wrapper: interpret `local_birth` as IST, then compute.
+
+    IST-only by design (the legacy goldens). For a birth anywhere else use
+    `positions_from_local` with the birth place's zone.
+    """
     return sidereal_positions(
         ist_to_utc(local_birth),
+        lat=lat,
+        lon=lon,
+        ayanamsa=ayanamsa,
+        true_node=true_node,
+    )
+
+
+def positions_from_local(
+    local_birth: datetime,
+    zone: str,
+    *,
+    lat: float | None = None,
+    lon: float | None = None,
+    ayanamsa: str = DEFAULT_AYANAMSA,
+    true_node: bool = False,
+) -> dict[str, Position]:
+    """Interpret `local_birth` as wall-clock time in `zone`, then compute.
+
+    `zone` is an IANA id (offset resolved AT the birth instant, so historical
+    DST and offset changes apply) or a fixed "+HH:MM" offset — see
+    engine.timezones. This is what a birth outside India needs: reading a New
+    York wall clock as IST samples the Moon 9½ hours early.
+    """
+    return sidereal_positions(
+        local_to_utc(local_birth, zone),
         lat=lat,
         lon=lon,
         ayanamsa=ayanamsa,

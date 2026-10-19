@@ -31,6 +31,7 @@ from .positions import (
     Position,
     ayanamsa_at,
     positions_from_ist,
+    positions_from_local,
     sidereal_positions,
 )
 from .scoring import (
@@ -79,6 +80,7 @@ __all__ = [
     "Position",
     "ayanamsa_at",
     "positions_from_ist",
+    "positions_from_local",
     "sidereal_positions",
     "Balance",
     "DashaResult",
