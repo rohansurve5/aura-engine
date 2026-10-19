@@ -11,9 +11,10 @@ value the file states:
           exact; sunrise ≤ 90 s
   dasha   identity, balance ±1 day, every maha / antar row ±1 day with the
           same lords, the running maha/antar/pratyantar, both pratyantar
-          tables ±1 day
-          Mangal dosha (houses from lagna and Moon, cancellations, verdict) —
-          exact
+          tables ±1 day — days on AstroSage's dasha calendar (calendar_gap: a
+          printed 1/2 March may be a rolled 29/30 February)
+          Mangal dosha (houses from lagna and Moon, cancellations, both
+          verdicts) — exact
   sky     today's 9 grahas as natal; every Saturn/Jupiter/Rahu ingress in
           365 days — same body, signs, direction, order; instant within the
           time it takes the body to move 40″ (≥ 30 min); Saturn's sign changes
@@ -76,6 +77,7 @@ from engine.chart_file import (  # noqa: E402
     sky_facts,
 )
 from engine.positions import sidereal_positions  # noqa: E402
+from engine.vimshottari import calendar_gap  # noqa: E402
 
 AURA_API = ENGINE_ROOT.parent / "aura-api"
 GOLDEN_PATH = AURA_API / "test" / "golden" / "chart_file_crossval.json"
@@ -279,7 +281,7 @@ def compare_natal(t: Tally, tag: str, e: dict, w: dict) -> None:
 
 
 def _days(a: str, b: str) -> int:
-    return abs((date.fromisoformat(a) - date.fromisoformat(b)).days)
+    return calendar_gap(date.fromisoformat(a), date.fromisoformat(b))
 
 
 def compare_rows(t: Tally, tag: str, er: list[dict], wr: list[dict], contested: bool) -> None:
@@ -299,6 +301,8 @@ def compare_dasha(t: Tally, tag: str, e: dict, w: dict, moon_lon: float, dob: st
         t.check(f"{tag}.{k}", e[k] == w[k], edge, k)
     db = abs(e["balance"]["total_days"] - w["balance"]["total_days"])
     t.check(f"{tag}.balance", db <= 1, False, f"balance off by {db:.2f} days")
+    ymd = [b["years"] * 360 + b["months"] * 30 + b["days"] for b in (e["balance"], w["balance"])]
+    t.check(f"{tag}.balance_ymd", abs(ymd[0] - ymd[1]) <= 1, False, f"Y/M/D {ymd}")
     t.check(f"{tag}.mahas", len(e["mahas"]) == len(w["mahas"]) == 9, False, "maha count")
     for i, (a, b) in enumerate(zip(e["mahas"], w["mahas"], strict=False)):
         compare_rows(t, f"{tag}.maha[{i}]", [a], [b], False)

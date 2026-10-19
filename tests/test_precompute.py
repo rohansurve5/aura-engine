@@ -70,7 +70,7 @@ USER_FACING_AREAS = {"Love", "Money", "Career", "Mind", "Health", "Mood"}
 
 def test_guidance_payload_shape():
     sky = build_daily_sky(date(2026, 7, 18))
-    row = guidance_for_nakshatra(5, sky, RULES)      # Ardra — Rohan's natal star
+    row = guidance_for_nakshatra(5, sky, RULES)      # Ardra — the golden chart's natal star
     assert set(row) >= {
         "nakshatra_index", "nakshatra", "tara", "energy", "scores",
         "area_lines", "band_labels", "score_why", "narrative", "why",

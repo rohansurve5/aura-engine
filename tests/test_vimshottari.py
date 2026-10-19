@@ -18,8 +18,10 @@ AstroSage does not count dasha time in real days. It lays a 360-day year of
 twelve 30-day months onto the calendar as if every month had 30 days, so a
 date never reads 31, and a "29/30 February" rolls into March. One model with
 one free constant reproduces all 942 Lahiri dates AstroSage printed for this
-chart (432 of them to the hour) and all 434 of its KP dates. Adopting it is
-Rohan's decision; until then the engine keeps 365.25 real days.
+chart (432 of them to the hour) and all 434 of its KP dates. Adopted for the
+chart file (reshape B decisions, 2026-10-20) as `calendar_dasha`, whose own
+tests close this file; compute_dasha keeps 365.25 real days for /v1/dasha,
+the live app's route, unchanged.
 """
 
 from __future__ import annotations
@@ -27,14 +29,24 @@ from __future__ import annotations
 import json
 import math
 import os
-from datetime import timedelta
+from datetime import date, timedelta
 from fractions import Fraction
 
 import pytest
 
 from engine.ephemeris import ASTROSAGE_AYANAMSA
 from engine.positions import positions_from_ist
-from engine.vimshottari import compute_dasha, rounded_table
+from engine.vimshottari import (
+    ABBR,
+    calendar_children,
+    calendar_dasha,
+    calendar_date,
+    calendar_day,
+    calendar_gap,
+    calendar_mahas,
+    compute_dasha,
+    rounded_table,
+)
 
 from .conftest import BIRTH, antar_deltas, as_date
 
@@ -87,7 +99,8 @@ def test_antar_within_two_days_and_mostly_one(result, golden):
 @pytest.mark.xfail(
     reason="antar dates off by exactly 2 days remain (8 exact-float / 4 with "
     "cascading rounding): AstroSage counts dasha time on a 360-day calendar of "
-    "30-day months, this engine on 365.25 real days — see "
+    "30-day months, compute_dasha (/v1/dasha) on 365.25 real days — the chart "
+    "file uses that calendar (calendar_dasha; 76/76 exact, tests below) — see "
     "test_astrosage_dasha_is_a_360_day_calendar and README > Known deviations",
     strict=True,
 )
@@ -313,4 +326,82 @@ def test_astrosage_kp_dasha_follows_the_same_calendar():
         f = (_serial(23, 9, 1989) + 1 - epoch) / (18 * 360)
         moon = 66 + 2 / 3 + f * 40 / 3
         assert abs(moon - (77 + 12 / 60 + 6 / 3600)) * 3600 < 1.0
+
+
+# ── The production calendar: vimshottari.calendar_dasha ────────────────────
+# What the chart file prints, held to the model above and to AstroSage's dates.
+def _production_ends(moon: float) -> dict[tuple, tuple[int, int, int]]:
+    cal = calendar_dasha(moon, BIRTH.date())
+    ends = {}
+
+    def walk(p, path):
+        d = cal.date_at(p.end)
+        ends[path] = (d.day, d.month, d.year)
+        if len(path) < 4:
+            for c in calendar_children(p):
+                walk(c, (*path, ABBR[c.lord]))
+
+    for m in calendar_mahas(cal):
+        walk(m, (ABBR[m.lord],))
+    return ends
+
+
+def _astrosage_dates() -> list[tuple[tuple, tuple[int, int, int]]]:
+    t, cum = _tables(), _cumulative_years()
+    out = [((maha, lord), (v[0], v[1], _year4((maha, lord), v[2], cum)))
+           for maha, rows in t["antar"].items() for lord, v in rows if v is not None]
+    out += [((*b["label"], lord), tuple(v[:3])) for b in t["blocks"]
+            for lord, v in b["rows"] if v is not None]
+    return out
+
+
+def _implied_moon() -> float:
+    """The Moon AstroSage's 942 dates imply under the model (17-06-42.9)."""
+    t, cum = _tables(), _cumulative_years()
+    obs = [((maha, lord), v[0], v[1], _year4((maha, lord), v[2], cum), None)
+           for maha, rows in t["antar"].items() for lord, v in rows if v is not None]
+    obs += [(tuple(b["label"] + [lord]), v[0], v[1], v[2], v[3])
+            for b in t["blocks"] for lord, v in b["rows"] if v is not None]
+    lo, hi = _fit(obs, cum)
+    f = (_serial(23, 9, 1989) + 1 - (lo + hi) / 2) / (18 * 360)
+    return 66 + 2 / 3 + f * 40 / 3
+
+
+def test_calendar_rolls_february_and_never_prints_a_31st():
+    feb28 = calendar_day(date(2004, 2, 28))
+    assert [calendar_date(feb28 + i).isoformat() for i in range(4)] == [
+        "2004-02-28", "2004-03-01", "2004-03-02", "2004-03-01"]  # AstroSage: 29/2 → 1/3/04
+    assert calendar_day(date(1990, 1, 31)) == calendar_day(date(1990, 2, 1))
+    assert calendar_gap(date(2048, 2, 28), date(2048, 3, 1)) == 1   # 28 vs rolled 29 Feb
+    for n in range(360 * 1989, 360 * 2110):
+        d = calendar_date(n)
+        assert d.day <= 30
+        if not (d.month == 3 and d.day <= 2):
+            assert calendar_day(d) == n
+
+
+def test_production_calendar_reproduces_every_astrosage_date():
+    """Fed the Moon AstroSage's dates imply, calendar_dasha — the chart file's
+    code, not the model — gives all 942 printed dates (sookshma to the day)."""
+    ends = _production_ends(_implied_moon())
+    dates = _astrosage_dates()
+    assert len(dates) == 942
+    assert [(p, want, ends[p]) for p, want in dates if ends[p] != want] == []
+
+
+def test_production_calendar_with_our_moon():
+    """With the engine's own Moon (2.4″ past AstroSage's — its ephemeris, README)
+    every antar end is still exact; the shorter periods move by at most two
+    calendar days. Measured: pratyantar 298/434 exact, sookshma 293/432."""
+    from engine.chart_file import natal_facts
+    natal = natal_facts(BIRTH, "Asia/Kolkata", 19 + 11 / 60, 72 + 58 / 60)
+    moon = natal["planets"]["Moon"]["longitude"]
+    ends = _production_ends(moon)
+    exact = {2: 0, 3: 0, 4: 0}
+    for path, want in _astrosage_dates():
+        got = ends[path]
+        gap = calendar_gap(date(*got[::-1]), date(*want[::-1]))
+        assert gap <= 2, (path, want, got)
+        exact[len(path)] += gap == 0
+    assert exact == {2: 76, 3: 298, 4: 293}
 

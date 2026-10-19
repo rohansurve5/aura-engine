@@ -3,7 +3,8 @@
 Reshape Phase B. The product is a plain-text chart file that a user shares
 into an AI assistant, so every number in it must be right. This module owns
 the VALUES: Swiss Ephemeris, lahiri_vp285 (the Lahiri flavour AstroSage uses),
-mean lunar node, Whole Sign houses, Vimshottari on a 365.25-day year. The
+mean lunar node, Whole Sign houses, Vimshottari on AstroSage's dasha calendar
+(30-day months — vimshottari.calendar_dasha). The
 Worker never links Swiss Ephemeris (AGPL boundary): it ports these functions
 to astronomy-engine and is gated on scripts/crossval_chart_file.py →
 aura-api/test/golden/chart_file_crossval.json. The Worker renders the text;
@@ -19,13 +20,14 @@ What this module adds (everything else is reused, already golden-tested):
   * 12-month ingresses  ingresses()          — exact instants, root-found
   * Saturn cycles ..... saturn_changes() + saturn_cycles() — Sade Sati and
                                                Dhaiya from the natal Moon sign
-  * Mangal dosha ...... mangal_dosha()       — houses 1/2/4/7/8/12 from the
-                                               lagna and the Moon, exact
+  * Mangal dosha ...... mangal_dosha()       — houses 1/4/7/8/12 from the
+                                               lagna and the Moon (AstroSage's
+                                               rule; the 2nd noted), exact
                                                cancellations only
   * the assembly ...... chart_file_facts()
 
 plus panchang.panchang_at / panchang.vara_at (birth panchang) and
-vimshottari.rounded_pratyantar (pratyantar). Aspects and yogas are not
+vimshottari.calendar_dasha (every dasha date). Aspects and yogas are not
 computed: the file lets the assistant interpret them from these values,
 labelled as its own interpretation (reshape B review).
 
@@ -45,10 +47,12 @@ from .positions import BODIES, sidereal_longitude, sidereal_positions
 from .timezones import local_to_utc, offset_minutes_at
 from .vimshottari import (
     NAKSHATRA_ARC,
-    compute_dasha,
+    CalendarDasha,
+    CalendarPeriod,
+    calendar_children,
+    calendar_dasha,
+    calendar_mahas,
     nakshatra_of,
-    rounded_pratyantar,
-    rounded_table,
 )
 
 # Same refusal as aura-api's /v1/chart (ARCTIC_LIMIT) and chart.py's Placidus
@@ -167,13 +171,15 @@ def is_combust(body: str, longitude: float, sun_longitude: float, retrograde: bo
 
 
 # ── Mangal dosha ────────────────────────────────────────────────────────────
-# The rule Rohan set (reshape B review): Mars in the 1st, 2nd, 4th, 7th, 8th or
-# 12th Whole Sign house, counted separately from the lagna and from the Moon
-# sign — compatibility.py's INCLUSIVE set. Traditions differ on the 2nd house
-# (compatibility.py's STRICT set drops it, and so does AstroSage's report), so
-# the file says so whenever the 2nd decides. Like compatibility.py, this is a
-# description of a placement, never a verdict on anyone's marriage.
-MANGAL_DOSHA_HOUSES = (1, 2, 4, 7, 8, 12)
+# AstroSage's rule (adopted in the reshape B decisions, 2026-10-20): Mars in
+# the 1st, 4th, 7th, 8th or 12th Whole Sign house, counted separately from the
+# lagna and from the Moon sign — compatibility.py's STRICT set. Some traditions
+# also count the 2nd house (compatibility.py's INCLUSIVE set), so the facts
+# carry the verdict under that rule too and the file states what it would
+# change. Like compatibility.py, this describes a placement, never a verdict
+# on anyone's marriage.
+MANGAL_DOSHA_HOUSES = (1, 4, 7, 8, 12)
+MANGAL_OPTIONAL_HOUSE = 2
 
 # Only cancellations that are a pure fact of sign positions — nothing that
 # needs a judgement of strength, the partner's chart or the person's age:
@@ -198,11 +204,13 @@ def mangal_dosha(asc_sign: int, mars_sign: int, moon_sign: int, jupiter_sign: in
         cancelled_by.append("jupiter_aspect")
     lagna = from_lagna in MANGAL_DOSHA_HOUSES
     moon = from_moon in MANGAL_DOSHA_HOUSES
+    second = MANGAL_OPTIONAL_HOUSE in (from_lagna, from_moon)
     return {
         "from_lagna": {"house": from_lagna, "dosha": lagna},
         "from_moon": {"house": from_moon, "dosha": moon},
         "cancelled_by": cancelled_by,
         "present": (lagna or moon) and not cancelled_by,
+        "present_counting_2nd": (lagna or moon or second) and not cancelled_by,
     }
 
 
@@ -279,13 +287,14 @@ def natal_facts(local_birth: datetime, zone: str, lat: float, lon: float) -> dic
 MAHA_COUNT = 9  # one full cycle from the birth maha: every lord once
 
 
-def _rows(periods, birth_day: date) -> list[dict]:
-    """[start, end) rows with pre-birth rows dropped and the first clamped."""
+def _rows(cal: CalendarDasha, periods: list[CalendarPeriod], birth_day: date) -> list[dict]:
+    """[start, end) date rows with pre-birth rows dropped and the first clamped."""
     out = []
-    for lord, start, end in periods:
+    for p in periods:
+        start, end = cal.date_at(p.start), cal.date_at(p.end)
         if end <= birth_day:
             continue
-        out.append({"lord": lord, "start": max(start, birth_day).isoformat(),
+        out.append({"lord": p.lord, "start": max(start, birth_day).isoformat(),
                     "end": end.isoformat()})
     return out
 
@@ -299,26 +308,18 @@ def _running(rows: list[dict], on: str) -> int | None:
 
 def dasha_facts(moon_longitude: float, local_birth: datetime, as_of: date) -> dict:
     """All 9 mahas with antars, what runs on `as_of`, and the pratyantars of the
-    running antar and the next one. Dates are day-rounded on the AstroSage
-    cascade, in the birth place's calendar; every row is [start, end)."""
-    res = compute_dasha(moon_longitude, local_birth, levels=3, cycles=2)
+    running antar and the next one. Every date is on AstroSage's dasha calendar
+    (vimshottari.calendar_dasha), in the birth place's calendar; every row is
+    [start, end), and each level tiles its parent exactly."""
     birth_day = local_birth.date()
-    table = rounded_table(res, local_birth, blocks=MAHA_COUNT)
-
-    mahas = []
-    for m in table:
-        antar_spans, start = [], m.start
-        for lord, end in m.antar:
-            antar_spans.append((lord, start, end))
-            start = end
-        antar_spans[-1] = (*antar_spans[-1][:2], m.end)  # see _close
-        mahas.append({
-            "lord": m.lord,
-            "start": max(m.start, birth_day).isoformat(),
-            "end": m.end.isoformat(),
-            "antar": _rows(antar_spans, birth_day),
-            "_spans": antar_spans,
-        })
+    cal = calendar_dasha(moon_longitude, birth_day)
+    trees = [(m, calendar_children(m)) for m in calendar_mahas(cal, MAHA_COUNT)]
+    mahas = [{
+        "lord": m.lord,
+        "start": max(cal.date_at(m.start), birth_day).isoformat(),
+        "end": cal.date_at(m.end).isoformat(),
+        "antar": _rows(cal, antars, birth_day),
+    } for m, antars in trees]
 
     on = as_of.isoformat()
     running = None
@@ -327,55 +328,33 @@ def dasha_facts(moon_longitude: float, local_birth: datetime, as_of: date) -> di
     if mi is not None:
         ai = _running(mahas[mi]["antar"], on)
         if ai is not None:
-            # Index into the FULL antar list (pre-birth rows included) for the
-            # tree, since rounded_pratyantar addresses the unclamped table.
-            full_ai = [s[0] for s in mahas[mi]["_spans"]].index(mahas[mi]["antar"][ai]["lord"])
-            cur = _rows(_prat_spans(res, mi, full_ai, mahas[mi]["_spans"][full_ai][2]),
-                        birth_day)
+            # Index into the FULL antar list: only the birth maha drops
+            # pre-birth rows, so a shown index and a tree index differ only there.
+            antars = trees[mi][1]
+            full_ai = [a.lord for a in antars].index(mahas[mi]["antar"][ai]["lord"])
+            cur = _rows(cal, calendar_children(antars[full_ai]), birth_day)
             running = {"maha": mi, "antar": ai, "pratyantar": _running(cur, on)}
             prat["current"] = {"maha": mi, "antar": ai, "rows": cur}
-            # The next antar: the following row of this maha, else the first
-            # of the next maha (only the birth maha ever drops rows, so a
-            # displayed index and a tree index differ only there).
             if full_ai + 1 < 9:
                 nxt_tree, nxt_shown = (mi, full_ai + 1), (mi, ai + 1)
             else:
                 nxt_tree, nxt_shown = (mi + 1, 0), (mi + 1, 0)
             if nxt_tree[0] < MAHA_COUNT:
-                nxt_end = mahas[nxt_tree[0]]["_spans"][nxt_tree[1]][2]
+                nxt = trees[nxt_tree[0]][1][nxt_tree[1]]
                 prat["next"] = {"maha": nxt_shown[0], "antar": nxt_shown[1],
-                                "rows": _rows(_prat_spans(res, *nxt_tree, nxt_end), birth_day)}
-    for m in mahas:
-        del m["_spans"]
+                                "rows": _rows(cal, calendar_children(nxt), birth_day)}
 
-    b = res.balance
+    b = cal.balance
     return {
-        "nakshatra_index": res.nakshatra.index,
-        "pada": res.nakshatra.pada,
-        "lord": res.nakshatra.lord,
+        "nakshatra_index": cal.nakshatra.index,
+        "pada": cal.nakshatra.pada,
+        "lord": cal.nakshatra.lord,
         "balance": {"years": b.years, "months": b.months, "days": b.days,
                     "total_days": b.total_days},
         "mahas": mahas,
         "running": running,
         "pratyantar": prat,
     }
-
-
-def _prat_spans(res, maha_index: int, antar_index: int, antar_end: date):
-    rows = [(p.lord, p.start, p.end) for p in rounded_pratyantar(res, maha_index, antar_index)]
-    rows[-1] = (*rows[-1][:2], antar_end)  # see _close
-    return rows
-
-
-# _close: the LAST child row of a period ends on the parent's printed end.
-# Maha ends are rounded from their exact floats (that is what matches
-# AstroSage), but the antar chain is cascaded from the ROUNDED maha start, so
-# the two can land a day apart — measured: the golden chart's Moon maha ends
-# 2078-08-17 while its cascaded last antar ended 2078-08-18. A file that
-# contradicts itself invites the assistant to "correct" it, so the parent's
-# date wins and the last child absorbs the day. Pratyantars inherit the same
-# rule from their antar (their first row already starts on the antar's start:
-# rounded_pratyantar shares rounded_table's cascade root).
 
 
 # ── Transits ────────────────────────────────────────────────────────────────

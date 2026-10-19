@@ -669,7 +669,7 @@ def test_falsify_shippable_signed_off_by_a_non_astrologer(monkeypatch) -> None:
     honest non-astrologer sign-off must still not make the corpus shippable."""
     data = _corpus()
     data["_about"]["astrologer_review"]["checkpoint_b"] = {
-        "reviewer": "Rohan Surve — product owner",
+        "reviewer": "The product owner",
         "reviewer_is_astrologer": False,
         "date": "2026-07-26",
         "verdict": "approved",

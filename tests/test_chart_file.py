@@ -10,14 +10,16 @@ Strongest evidence first:
       - DrikPanchang's Pune day panchang for the golden birth date and nine
         other days (drik_panchang.json, already the panchang golden);
       - AstroSage's own Kundli for the golden chart at Thane — planets, D9,
-        houses, R/C marks, dignity, birth panchang, Manglik houses
-        (chart_file_rohan.json) — and its 45-row Sadesati report
-        (astrosage_sadesati_rohan.json), from Rohan's screenshots and PDF.
+        houses, R/C marks, dignity, birth panchang, Manglik verdicts
+        (chart_file_golden_1.json), its 45-row Sadesati report
+        (astrosage_sadesati_golden_1.json) and every dasha date it printed
+        (astrosage_dasha.json, astrosage_dasha_tables.json), from the chart
+        owner's screenshots, PDF and docx.
   * CLASSICAL RULES restated independently of the code under test: the D9
     movable/fixed/dual rule, the BPHS dignity table, the combustion orbs.
   * STRUCTURAL invariants: pratyantar rows tile their antar exactly; dasha
     rows are contiguous; an ingress really is a sign change.
-  * ENGINE-PINNED values for the golden chart (chart_file_rohan.json) — a
+  * ENGINE-PINNED values for the golden chart (chart_file_golden_1.json) — a
     regression guard for what AstroSage does not print (pratyantar rows, the
     running markers, the Saturn cycles as of a date).
 """
@@ -59,13 +61,20 @@ from engine.ephemeris import DRIKPANCHANG_AYANAMSA
 from engine.panchang import YOGA_NAMES, karana_name, panchang_at, tithi_name, vara_at
 from engine.positions import SIGNS, sidereal_longitude, sidereal_positions
 from engine.timezones import local_to_utc
-from engine.vimshottari import NAKSHATRAS, compute_dasha, nakshatra_of, rounded_pratyantar
+from engine.vimshottari import (
+    NAKSHATRAS,
+    calendar_children,
+    calendar_dasha,
+    calendar_gap,
+    calendar_mahas,
+    nakshatra_of,
+)
 
 GOLDEN_DIR = os.path.join(os.path.dirname(__file__), "golden")
 IST = "Asia/Kolkata"
 
 BIRTH = datetime(1989, 9, 23, 4, 47)
-THANE = (19 + 11 / 60, 72 + 58 / 60)   # Rohan's birthplace, as AstroSage prints it: 19:11 N 72:58 E
+THANE = (19 + 11 / 60, 72 + 58 / 60)   # Golden-1's birthplace; AstroSage: 19:11 N 72:58 E
 PUNE = (18.5204, 73.8567)              # DrikPanchang's place in drik_panchang.json
 AS_OF = date(2026, 10, 19)
 
@@ -381,30 +390,22 @@ def test_sky_is_always_india_time():
     assert all(sky["window_start_ms"] <= e["utc_ms"] for e in sky["ingresses"])
 
 
-# ── Pratyantar and the dasha section ────────────────────────────────────────
+# ── The dasha section: AstroSage's calendar ────────────────────────────────
 @pytest.fixture(scope="module")
-def dasha():
-    moon = natal_facts(BIRTH, IST, *THANE)["planets"]["Moon"]["longitude"]
-    return compute_dasha(moon, BIRTH, levels=3, cycles=2), moon
+def moon():
+    return natal_facts(BIRTH, IST, *THANE)["planets"]["Moon"]["longitude"]
 
 
-def test_pratyantars_tile_every_antar_exactly(dasha):
-    from engine.vimshottari import rounded_table
-    res, _ = dasha
-    for mi, maha in enumerate(rounded_table(res, BIRTH, blocks=9)):
-        start = maha.start
-        for ai, (lord, end) in enumerate(maha.antar):
-            rows = rounded_pratyantar(res, mi, ai)
-            assert rows[0].start == start and rows[-1].end == end
-            assert rows[0].lord == lord and len(rows) == 9
+def test_pratyantars_tile_every_antar_exactly(moon):
+    cal = calendar_dasha(moon, BIRTH.date())
+    for maha in calendar_mahas(cal):
+        antars = calendar_children(maha)
+        assert (antars[0].start, antars[-1].end) == (maha.start, maha.end)
+        for antar in antars:
+            rows = calendar_children(antar)
+            assert rows[0].lord == antar.lord and len(rows) == 9
+            assert (rows[0].start, rows[-1].end) == (antar.start, antar.end)
             assert all(a.end == b.start for a, b in zip(rows, rows[1:], strict=False))
-            start = end
-
-
-def test_pratyantar_needs_the_third_level(dasha):
-    _, moon = dasha
-    with pytest.raises(ValueError):
-        rounded_pratyantar(compute_dasha(moon, BIRTH, levels=2), 0, 0)
 
 
 def test_dasha_rows_are_contiguous_and_start_at_birth(facts):
@@ -417,20 +418,47 @@ def test_dasha_rows_are_contiguous_and_start_at_birth(facts):
     for m in mahas:
         assert m["antar"][-1]["end"] == m["end"]
         assert all(x["end"] == y["start"] for x, y in zip(m["antar"], m["antar"][1:], strict=False))
+    for which in ("current", "next"):
+        p = facts["dasha"]["pratyantar"][which]
+        antar = mahas[p["maha"]]["antar"][p["antar"]]
+        assert (p["rows"][0]["start"], p["rows"][-1]["end"]) == (antar["start"], antar["end"])
 
 
-def test_maha_ends_still_match_astrosage(facts):
-    """dasha_facts presents the AstroSage golden's own boundaries (±1 day, the
-    tolerance test_vimshottari.py holds)."""
+def test_golden_maha_and_antar_dates_are_astrosages(facts):
+    """Every maha and antar date the file prints is AstroSage's own — all 9
+    maha ends and all 76 antar ends exact (the 365.25-day year got 42/76;
+    test_vimshottari.py has why). Pre-birth antars AstroSage blanks are the
+    ones the file drops."""
     ref = _load("astrosage_dasha.json")["maha"]
     for got, want in zip(facts["dasha"]["mahas"], ref, strict=False):  # ref has 10 blocks
-        assert got["lord"] == want["lord"]
-        gap = abs(date.fromisoformat(got["end"]) - date.fromisoformat(want["end"]))
-        assert gap <= timedelta(days=1), (got, want)
+        assert (got["lord"], got["start"], got["end"]) == (
+            want["lord"], want["start"], want["end"])
+        shown = [(a["lord"], a["end"]) for a in want["antar"] if a["end"] is not None]
+        assert [(a["lord"], a["end"]) for a in got["antar"]] == shown
+    assert sum(len(m["antar"]) for m in facts["dasha"]["mahas"]) == 76
 
 
-def test_running_period_boundaries_are_start_inclusive(dasha):
-    res, moon = dasha
+def test_golden_pratyantars_sit_on_astrosages_calendar(facts):
+    """The two pratyantar tables vs AstroSage's docx: 13 of 18 ends exact, the
+    other 5 one calendar day early, because our Moon is 2.4″ further on than
+    AstroSage's (its own ephemeris — README). Fed AstroSage's Moon, the same
+    code gives every date: test_vimshottari.py."""
+    abbr = {"KET": "Ketu", "VEN": "Venus", "SUN": "Sun", "MON": "Moon", "MAR": "Mars",
+            "RAH": "Rahu", "JUP": "Jupiter", "SAT": "Saturn", "MER": "Mercury"}
+    blocks = _load("astrosage_dasha_tables.json")["blocks"]
+    exact = 0
+    for which, label in (("current", ["SAT", "JUP"]), ("next", ["MER", "MER"])):
+        want = next(b for b in blocks if b["label"] == label)["rows"]
+        got = facts["dasha"]["pratyantar"][which]["rows"]
+        assert [r["lord"] for r in got] == [abbr[lord] for lord, _ in want]
+        for r, (_, (d, m, y, *_)) in zip(got, want, strict=True):
+            gap = calendar_gap(date(y, m, d), date.fromisoformat(r["end"]))
+            assert gap <= 1 and r["end"] <= date(y, m, d).isoformat(), (r, (d, m, y))
+            exact += gap == 0
+    assert exact == 13
+
+
+def test_running_period_boundaries_are_start_inclusive(moon):
     cur = dasha_facts(moon, BIRTH, AS_OF)["pratyantar"]["current"]["rows"]
     switch = date.fromisoformat(cur[1]["end"])  # Saturn → Mercury pratyantar
     on_eve = dasha_facts(moon, BIRTH, switch - timedelta(days=1))["running"]
@@ -446,9 +474,18 @@ def test_next_antar_rolls_into_the_next_maha(facts):
     assert p["next"]["rows"][0]["start"] == facts["dasha"]["mahas"][3]["start"]
 
 
+def test_birth_maha_drops_only_the_antars_that_ended_before_birth(moon):
+    """The birth maha's virtual start is years before birth: rows that ended
+    by the birth date are dropped (AstroSage prints them blank), the first
+    kept row is clamped to the birth date."""
+    rows = dasha_facts(moon, BIRTH, AS_OF)["mahas"][0]["antar"]
+    assert [r["lord"] for r in rows] == ["Venus", "Sun", "Moon", "Mars"]
+    assert (rows[0]["start"], rows[0]["end"]) == ("1989-09-23", "1990-03-05")
+
+
 # ── The golden chart: AstroSage (external) + engine-pinned ─────────────────
-ROHAN = _load("chart_file_rohan.json")
-AS = ROHAN["astrosage"]
+GOLDEN_1 = _load("chart_file_golden_1.json")
+AS = GOLDEN_1["astrosage"]
 
 
 def _named(p: dict) -> dict:
@@ -457,13 +494,13 @@ def _named(p: dict) -> dict:
 
 
 def test_golden_birth_is_thane():
-    b = ROHAN["birth"]
+    b = GOLDEN_1["birth"]
     assert (b["place"], b["lat"], b["lon"]) == (
         "Thane, Maharashtra, India", *(round(x, 6) for x in THANE))
 
 
 def test_golden_chart_engine_pinned(facts):
-    pin = ROHAN["engine_pinned"]
+    pin = GOLDEN_1["engine_pinned"]
     n = facts["natal"]
     assert _named(n["ascendant"]) == pin["ascendant"]
     for body, want in pin["planets"].items():
@@ -545,21 +582,29 @@ def test_golden_dasha_balance_matches_astrosage(facts):
 
 # ── Mangal dosha ────────────────────────────────────────────────────────────
 @pytest.mark.parametrize("house", range(1, 13))
-def test_mangal_dosha_counts_the_six_houses_from_the_lagna(house):
+def test_mangal_dosha_counts_astrosages_five_houses_from_the_lagna(house):
     # Mars fixed in Gemini (no own sign, no exaltation), Moon and Jupiter
     # placed so neither the Moon rule nor a cancellation can fire.
     mars = 2
     asc = (mars - (house - 1)) % 12
     d = mangal_dosha(asc, mars, (mars + 2) % 12, (mars + 2) % 12)
-    assert d["from_lagna"] == {"house": house, "dosha": house in (1, 2, 4, 7, 8, 12)}
+    assert d["from_lagna"] == {"house": house, "dosha": house in (1, 4, 7, 8, 12)}
     assert d["from_moon"] == {"house": 11, "dosha": False}
     assert d["cancelled_by"] == [] and d["present"] == (house in MANGAL_DOSHA_HOUSES)
+    assert d["present_counting_2nd"] == (house in (1, 2, 4, 7, 8, 12))
 
 
 def test_mangal_dosha_counts_from_the_moon_separately():
     d = mangal_dosha(asc_sign=0, mars_sign=5, moon_sign=2, jupiter_sign=7)   # 6th / 4th
     assert d["from_lagna"]["dosha"] is False and d["from_moon"] == {"house": 4, "dosha": True}
     assert d["present"] is True
+
+
+def test_mangal_dosha_in_the_2nd_only_counts_under_the_other_rule():
+    d = mangal_dosha(asc_sign=1, mars_sign=2, moon_sign=0, jupiter_sign=4)   # 2nd / 3rd
+    assert (d["from_lagna"], d["from_moon"]) == (
+        {"house": 2, "dosha": False}, {"house": 3, "dosha": False})
+    assert d["present"] is False and d["present_counting_2nd"] is True
 
 
 @pytest.mark.parametrize(("mars", "jupiter", "reasons"), [
@@ -576,26 +621,25 @@ def test_mangal_dosha_cancellations_are_exact_sign_facts(mars, jupiter, reasons)
     asc = mars  # Mars in the 1st: the dosha is there unless cancelled
     d = mangal_dosha(asc, mars, mars, jupiter)
     assert d["cancelled_by"] == reasons
-    assert d["present"] is (not reasons)
+    assert d["present"] is d["present_counting_2nd"] is (not reasons)
 
 
-def test_golden_mangal_dosha_and_astrosages_report(facts):
-    """AstroSage: Mars 2nd from the lagna, 4th from the Moon; dosha in the Moon
-    chart only — because its rule omits the 2nd house. Same houses here; under
-    Rohan's 1/2/4/7/8/12 rule both count."""
+def test_golden_mangal_dosha_is_astrosages(facts):
+    """AstroSage's Manglik report: Mars 2nd from the lagna, 4th from the Moon;
+    dosha in the Moon chart, not in the lagna chart. Same houses, same
+    verdicts, same rule. Counting the 2nd as well would add the lagna
+    placement; the overall result would stay "present"."""
     d = facts["natal"]["mangal_dosha"]
     ref = AS["manglik"]
     assert (d["from_lagna"]["house"], d["from_moon"]["house"]) == (
         ref["from_lagna_house"], ref["from_moon_house"])
-    without_2nd = (1, 4, 7, 8, 12)
-    assert (d["from_lagna"]["house"] in without_2nd, d["from_moon"]["house"] in without_2nd) == (
+    assert (d["from_lagna"]["dosha"], d["from_moon"]["dosha"]) == (
         ref["lagna_chart"], ref["moon_chart"])
-    assert d["from_lagna"]["dosha"] and d["from_moon"]["dosha"] and d["present"]
-    assert d["cancelled_by"] == []
+    assert d["present"] and d["present_counting_2nd"] and d["cancelled_by"] == []
 
 
 # ── Saturn cycles: Sade Sati and Dhaiya ─────────────────────────────────────
-SADESATI = _load("astrosage_sadesati_rohan.json")
+SADESATI = _load("astrosage_sadesati_golden_1.json")
 IST_OFFSET = timedelta(hours=5, minutes=30)
 
 

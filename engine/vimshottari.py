@@ -8,9 +8,11 @@ Two year-length conventions are implemented (see `YearMode`) because which one
 a given software uses is only decidable against a known-good table:
 
 * ``solar`` — 1 dasha-year = 365.25 real days, added as actual calendar days.
-  This is what AstroSage's Vimshottari table matches (the "astrosage_compat"
-  mode) and is the default.
+  The default; it drives /v1/dasha and matches AstroSage's tables to ±2 days.
 * ``savana`` — the traditional 360-day year. Kept for comparison.
+
+AstroSage's own dates are neither: they are labels on a calendar of 30-day
+months (``calendar_dasha``, below), which the chart file uses.
 
 Date arithmetic uses a single *nominal timeline*: the birth maha-dasha is placed
 as if it had run from its virtual start (birth − elapsed), so every sub-period
@@ -20,6 +22,7 @@ that ended before birth falls out naturally as "elapsed" — exactly the
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 
@@ -218,7 +221,8 @@ def compute_dasha(
 # The cause of the remaining 2-day gaps was found in the reshape B review:
 # AstroSage places dasha time on a 360-day calendar of 30-day months (every
 # month treated as 30 days long), not on 365.25 real days — pinned by
-# tests/test_vimshottari.py::test_astrosage_dasha_is_a_360_day_calendar.
+# tests/test_vimshottari.py::test_astrosage_dasha_is_a_360_day_calendar —
+# and the chart file now uses that calendar (calendar_dasha, below).
 # See README > "Known deviations".
 
 
@@ -259,46 +263,114 @@ def rounded_table(result: DashaResult, birth: datetime, *, blocks: int = 10) -> 
     return out
 
 
+# ── AstroSage's dasha calendar (the chart file's dates) ────────────────────
+# AstroSage does not lay dasha time on real days. Its dates are LABELS on a
+# calendar of twelve 30-day months: day number = 360·year + 30·(month − 1) +
+# (day − 1), every boundary = epoch + (cumulative dasha years) × 360, and a
+# label is printed as the date it names — except that 29 and 30 February roll
+# into 1 and 2 March (February always counts 28 days, leap years included), so
+# no date is ever the 31st. The birth sits at the START OF THE DAY AFTER its
+# date label, its clock time dropped; the Moon still decides the balance.
+# Fitted to, and reproducing, all 942 Lahiri dates (76 antar, 434 pratyantar,
+# 432 sookshma to the hour) and 434 KP dates AstroSage printed for the golden
+# chart — tests/test_vimshottari.py — and adopted for the chart file in the
+# reshape B decisions (2026-10-20). compute_dasha (365.25 real days) still
+# drives /v1/dasha for the live app, unchanged.
+#
+# Lengths are whole numbers of 1/120³ year (maha 120³·L, antar 120²·L·L′, …),
+# so a parent's last child ends on exactly the parent's end, at every level.
+CALENDAR_UNITS_PER_YEAR = 120 ** 3
+CALENDAR_UNITS_PER_DAY = CALENDAR_UNITS_PER_YEAR // 360  # 4800
+
+
+def calendar_day(d: date) -> int:
+    """A real date's day number on the 30-day-month calendar (a 31st shares
+    the next month's 1st)."""
+    return d.year * 360 + (d.month - 1) * 30 + (d.day - 1)
+
+
+def calendar_date(day: int) -> date:
+    """The date AstroSage prints for a day number: 29/30 February → 1/2 March."""
+    year, rem = divmod(day, 360)
+    month, d = rem // 30 + 1, rem % 30 + 1
+    if month == 2 and d > 28:
+        month, d = 3, d - 28
+    return date(year, month, d)
+
+
+def calendar_labels(d: date) -> tuple[int, ...]:
+    """Every day number that prints as `d`: 1/2 March may be a rolled 29/30 Feb."""
+    n = calendar_day(d)
+    return (n, n - 2) if d.month == 3 and d.day <= 2 else (n,)
+
+
+def calendar_gap(a: date, b: date) -> int:
+    """Days apart on the dasha calendar (the closest reading of each)."""
+    return min(abs(x - y) for x in calendar_labels(a) for y in calendar_labels(b))
+
+
 @dataclass(frozen=True)
-class RoundedPeriod:
-    """One day-rounded sub-period: [start, end), end = the next one's start."""
+class CalendarDasha:
+    """The birth's dasha timeline on AstroSage's calendar. Positions on it are
+    integer UNITS (1/120³ dasha-year) from the virtual start of the birth maha."""
+
+    nakshatra: Nakshatra
+    balance: Balance       # birth date → the birth maha's printed end, as Y/M/D
+                           # of 360/30 days; total_days = the exact remainder
+    epoch: float           # calendar day number (fractional) of unit 0
+
+    def date_at(self, units: int) -> date:
+        return calendar_date(math.floor(self.epoch + units / CALENDAR_UNITS_PER_DAY))
+
+
+@dataclass(frozen=True)
+class CalendarPeriod:
+    """One period in units: [start, end) on the CalendarDasha timeline."""
 
     lord: str
-    start: date
-    end: date
+    start: int
+    end: int
 
 
-def rounded_pratyantar(
-    result: DashaResult, maha_index: int, antar_index: int
-) -> tuple[RoundedPeriod, ...]:
-    """Day-rounded pratyantar rows of one antar, on rounded_table's cascade.
+def calendar_dasha(moon_longitude: float, birth_day: date) -> CalendarDasha:
+    """Place the birth on AstroSage's dasha calendar (see the section note).
 
-    The cascade root is the SAME rounded maha start rounded_table uses, with
-    exact float durations accumulated from it — so the first pratyantar starts
-    on the antar's printed start and the last ends on its printed end, exactly.
-    Re-rooting at the rounded ANTAR start instead would let the two drift a day
-    apart, and a file that contradicts itself is worse than either date.
-    AstroSage's own pratyantar dates sit 0–2 days from these (194/434 exact
-    for the golden chart) for the same reason its antar dates do: its
-    360-day dasha calendar (README > Known deviations). Engine-pinned and
-    cross-validated against the Worker port (reshape B2).
-    """
-    maha = result.mahas[maha_index]
-    antar = maha.children[antar_index]
-    if not antar.children:
-        raise ValueError("pratyantar needs compute_dasha(levels=3)")
-    base = datetime.combine(_round_day(maha.start), datetime.min.time())
-    cum = 0.0
-    for sub in maha.children[:antar_index]:
-        cum += sub.years * result.year_days
-    start = _round_day(base + timedelta(days=cum))
-    rows: list[RoundedPeriod] = []
-    for prat in antar.children:
-        cum += prat.years * result.year_days
-        end = _round_day(base + timedelta(days=cum))
-        rows.append(RoundedPeriod(prat.lord, start, end))
-        start = end
-    return tuple(rows)
+    The balance is the whole label days from the birth date to the birth
+    maha's printed end, so birth date + balance = that end, always — the golden
+    chart's 3Y 10M 24D (AstroSage's own) is 23.3 days of remainder plus the
+    birth day. A balance rounded on its own could say a day less than the
+    table under it."""
+    nak = nakshatra_of(moon_longitude)
+    lord_days = DASHA_YEARS[nak.lord] * 360
+    epoch = calendar_day(birth_day) + 1 - nak.fraction_elapsed * lord_days
+    days = math.floor(epoch + lord_days) - calendar_day(birth_day)
+    by, rem = divmod(days, 360)
+    bm, bd = divmod(rem, 30)
+    balance = Balance(nak.lord, by, bm, bd, (1 - nak.fraction_elapsed) * lord_days)
+    return CalendarDasha(nak, balance, epoch)
+
+
+def calendar_mahas(cal: CalendarDasha, count: int = 9) -> list[CalendarPeriod]:
+    """`count` mahas from the birth maha's virtual start (unit 0)."""
+    out, at = [], 0
+    for i in range(count):
+        lord = LORD_SEQUENCE[(LORD_SEQUENCE.index(cal.nakshatra.lord) + i) % 9]
+        length = DASHA_YEARS[lord] * CALENDAR_UNITS_PER_YEAR
+        out.append(CalendarPeriod(lord, at, at + length))
+        at += length
+    return out
+
+
+def calendar_children(parent: CalendarPeriod) -> list[CalendarPeriod]:
+    """The 9 sub-periods of a period, from its own lord, tiling it exactly."""
+    length = parent.end - parent.start
+    out, at = [], parent.start
+    for lord in _order_from(parent.lord):
+        step = length * DASHA_YEARS[lord] // CYCLE_YEARS
+        out.append(CalendarPeriod(lord, at, at + step))
+        at += step
+    assert at == parent.end, "a sub-period length is not a whole number of units"
+    return out
 
 
 # ── AstroSage-style rendering (for eyeball comparison) ──────────────────────

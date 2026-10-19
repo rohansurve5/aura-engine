@@ -1,5 +1,5 @@
 {
- "_about": "The golden chart — Rohan's birth: 1989-09-23 04:47 Asia/Kolkata, THANE 19°11′N 72°58′E (corrected from Pune in the reshape B review) — as the chart file states it. 'astrosage' is the EXTERNAL reference (AstroSage Kundli, Lahiri, Thane), transcribed from Rohan's screenshots and Vedic-report PDF of 2026-10-20; tests/test_chart_file.py compares exactly where AstroSage is exact (signs, nakshatras, padas, D9, houses, R/C marks, BPHS dignity, birth panchang, dasha balance, Manglik houses) and within stated arc tolerances for degrees. 'engine_pinned' is the engine's own output (Swiss Ephemeris, lahiri_vp285, mean node, Whole Sign) pinned as a REGRESSION GUARD for what AstroSage does not print (pratyantars, the running markers, Saturn cycles as of 2026-10-19).",
+ "_about": "The golden chart, Golden-1: 1989-09-23 04:47 Asia/Kolkata, THANE 19°11′N 72°58′E (corrected from Pune in the reshape B review) — as the chart file states it. 'astrosage' is the EXTERNAL reference (AstroSage Kundli, Lahiri, Thane), transcribed from the chart owner's screenshots and Vedic-report PDF of 2026-10-20; tests/test_chart_file.py compares exactly where AstroSage is exact (signs, nakshatras, padas, D9, houses, R/C marks, BPHS dignity, birth panchang, dasha balance, Manglik verdicts) and within stated arc tolerances for degrees. 'engine_pinned' is the engine's own output (Swiss Ephemeris, lahiri_vp285, mean node, Whole Sign) pinned as a REGRESSION GUARD for what AstroSage does not print (pratyantars, the running markers, Saturn cycles as of 2026-10-19).",
  "birth": {
   "dob": "1989-09-23",
   "time": "04:47",
@@ -9,7 +9,7 @@
   "lon": 72.966667
  },
  "astrosage": {
-  "source": "AstroSage Kundli for Rohan (the golden chart), 23 Sep 1989 04:47, Thane (19:11 N, 72:58 E, time zone 5.5), Lahiri: ascloud.astrosage.com/cloud/planetposition.asp screenshots (2026-10-20 00:18-00:20) and the 56-page Vedic report PDF printed 2026-10-20 00:18:12 (pages 2-3 basic details + planets + Vimshottari, page 9 Manglik, page 39 Shodashvarga tables). Transcribed by hand, values verbatim; nakshatra/yoga/karana names mapped to engine spellings (AstroSage prints Uttaraphal, Purvashadha, Variyan, Tetil).",
+  "source": "AstroSage Kundli for Golden-1 (the golden chart), 23 Sep 1989 04:47, Thane (19:11 N, 72:58 E, time zone 5.5), Lahiri: ascloud.astrosage.com/cloud/planetposition.asp screenshots (2026-10-20 00:18-00:20) and the 56-page Vedic report PDF printed 2026-10-20 00:18:12 (pages 2-3 basic details + planets + Vimshottari, page 9 Manglik, page 39 Shodashvarga tables). Transcribed by hand, values verbatim; nakshatra/yoga/karana names mapped to engine spellings (AstroSage prints Uttaraphal, Purvashadha, Variyan, Tetil).",
   "ascendant": {
    "sign": "Leo",
    "dms": "11-48-42",
@@ -284,14 +284,15 @@
   "mangal_dosha": {
    "from_lagna": {
     "house": 2,
-    "dosha": true
+    "dosha": false
    },
    "from_moon": {
     "house": 4,
     "dosha": true
    },
    "cancelled_by": [],
-   "present": true
+   "present": true,
+   "present_counting_2nd": true
   },
   "as_of": "2026-10-19",
   "running": {
@@ -305,47 +306,47 @@
    "rows": [
     {
      "lord": "Jupiter",
-     "start": "2026-02-03",
-     "end": "2026-06-07"
+     "start": "2026-02-05",
+     "end": "2026-06-06"
     },
     {
      "lord": "Saturn",
-     "start": "2026-06-07",
-     "end": "2026-10-31"
+     "start": "2026-06-06",
+     "end": "2026-11-01"
     },
     {
      "lord": "Mercury",
-     "start": "2026-10-31",
-     "end": "2027-03-11"
+     "start": "2026-11-01",
+     "end": "2027-03-10"
     },
     {
      "lord": "Ketu",
-     "start": "2027-03-11",
-     "end": "2027-05-04"
+     "start": "2027-03-10",
+     "end": "2027-05-03"
     },
     {
      "lord": "Venus",
-     "start": "2027-05-04",
-     "end": "2027-10-06"
+     "start": "2027-05-03",
+     "end": "2027-10-05"
     },
     {
      "lord": "Sun",
-     "start": "2027-10-06",
+     "start": "2027-10-05",
      "end": "2027-11-21"
     },
     {
      "lord": "Moon",
      "start": "2027-11-21",
-     "end": "2028-02-06"
+     "end": "2028-02-07"
     },
     {
      "lord": "Mars",
-     "start": "2028-02-06",
-     "end": "2028-03-31"
+     "start": "2028-02-07",
+     "end": "2028-03-30"
     },
     {
      "lord": "Rahu",
-     "start": "2028-03-31",
+     "start": "2028-03-30",
      "end": "2028-08-17"
     }
    ]
@@ -362,36 +363,36 @@
     {
      "lord": "Ketu",
      "start": "2028-12-20",
-     "end": "2029-02-09"
+     "end": "2029-02-10"
     },
     {
      "lord": "Venus",
-     "start": "2029-02-09",
-     "end": "2029-07-06"
+     "start": "2029-02-10",
+     "end": "2029-07-05"
     },
     {
      "lord": "Sun",
-     "start": "2029-07-06",
-     "end": "2029-08-19"
+     "start": "2029-07-05",
+     "end": "2029-08-18"
     },
     {
      "lord": "Moon",
-     "start": "2029-08-19",
-     "end": "2029-10-31"
+     "start": "2029-08-18",
+     "end": "2029-10-30"
     },
     {
      "lord": "Mars",
-     "start": "2029-10-31",
+     "start": "2029-10-30",
      "end": "2029-12-21"
     },
     {
      "lord": "Rahu",
      "start": "2029-12-21",
-     "end": "2030-05-02"
+     "end": "2030-05-01"
     },
     {
      "lord": "Jupiter",
-     "start": "2030-05-02",
+     "start": "2030-05-01",
      "end": "2030-08-27"
     },
     {

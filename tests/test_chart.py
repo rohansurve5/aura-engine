@@ -223,7 +223,7 @@ THANE = (19 + 11 / 60, 72 + 58 / 60)
 
 
 def test_golden_chart_placements():
-    """1989-09-23 04:47 IST, Thane — Rohan's birth, the chart every other
+    """1989-09-23 04:47 IST, Thane — Golden-1, the chart every other
     golden pins. AstroSage (Kundli, Lahiri, Thane 19:11 N 72:58 E) prints the
     lagna Leo 11-48-42 and the 10th bhav madhya (the MC) Taurus 12-10-45;
     both held to 15″ (measured: 6.0″ and 3.5″)."""

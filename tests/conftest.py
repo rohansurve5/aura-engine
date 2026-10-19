@@ -14,7 +14,7 @@ from engine.vimshottari import DashaResult, compute_dasha
 
 GOLDEN = os.path.join(os.path.dirname(__file__), "golden", "astrosage_dasha.json")
 
-# Rohan's birth data (IST). Place/coordinates were not provided; Vimshottari
+# Golden-1's birth data (IST). Place/coordinates were not provided; Vimshottari
 # depends only on the geocentric Moon, which is location-independent.
 BIRTH = datetime(1989, 9, 23, 4, 47)
 
