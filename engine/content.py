@@ -82,7 +82,10 @@ ACTIVE_DASHA_CONTENT_VERSION = declared_version(DASHA_SEED_PATH)
 ACTIVE_IDENTITY_CONTENT_VERSION = declared_version(IDENTITY_SEED_PATH)
 
 #: The active period-report corpus version — derived, never typed. Written to
-#: `active_content` by migrate; served by /v1/report/content. ONE version spans
+#: `active_content` by migrate; read (via that marker) by aura-api's
+#: /v1/report/{weekly,monthly,transit}, which compose in-Worker — the raw
+#: corpus is no longer served on its own (/v1/report/content was removed in
+#: reshape A1, aura-api f467672; no app build ever called it). ONE version spans
 #: every report_kind in the seed file — weekly, monthly and transit — on
 #: identity_content's reasoning: separate markers per kind would make "weekly v2
 #: + monthly v1, gated against neither pairing" expressible. That argument got
