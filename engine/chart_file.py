@@ -568,6 +568,8 @@ def chart_file_facts(
     local_birth: datetime, zone: str, lat: float, lon: float, as_of: date
 ) -> dict:
     """Everything the chart file states, for one birth, as of one date (IST)."""
+    from .kp import kp_facts  # engine/kp.py builds on this module
+
     natal = natal_facts(local_birth, zone, lat, lon)
     moon = natal["planets"]["Moon"]["longitude"]
     sky = sky_facts(as_of)
@@ -576,6 +578,7 @@ def chart_file_facts(
         "dasha": dasha_facts(moon, local_birth, as_of),
         "sky": sky,
         "saturn_cycles": saturn_cycles(sign_index(moon), sky["saturn"], as_of),
+        "kp": kp_facts(local_birth, zone, lat, lon, as_of),
     }
 
 

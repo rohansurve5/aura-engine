@@ -1,0 +1,1045 @@
+{
+ "_about": "Golden-1's KP page as AstroSage printed it (KP System / Nakshatra Nadi \u2014 the 1-page VedicReport10-20-202612-07-31AM.pdf, identical to page 44 of the 56-page Vedic report of 2026-10-20), transcribed verbatim: ayanamsa 'K. P. New', Placidus cusps, planets (Sun\u2013Ketu; Uranus/Neptune/Pluto omitted), ruling planets, 'Significators of Houses' and 'Planet Signification', and the KP Vimshottari maha/antar END dates (d, m, yy; '00/00/00' = ended before birth \u2192 null). The header's 'Dasa Balance RAH 3 Y 10 M 24 D' is the LAHIRI balance (its maha ends 17/8/93); the KP table under it ends Rahu on 3/7/93. Pratyantar dates (pages 45\u201348) are in astrosage_dasha_tables.json under 'kp'. Used by tests/test_kp.py.",
+ "birth": {
+  "dob": "1989-09-23",
+  "time": "04:47",
+  "zone": "Asia/Kolkata",
+  "lat_dms": "19:11 N",
+  "lon_dms": "72:58 E"
+ },
+ "ayanamsa": {
+  "name": "K. P. New",
+  "value": "023-37-23"
+ },
+ "lahiri_ayanamsa_printed": "023-42-47",
+ "header_dasa_balance": "RAH 3 Y 10 M 24 D",
+ "cusps": [
+  {
+   "degree": "131-54-05",
+   "sign_lord": "SUN",
+   "star_lord": "KET",
+   "sub_lord": "MER",
+   "sub_sub_lord": "VEN"
+  },
+  {
+   "degree": "160-20-11",
+   "sign_lord": "MER",
+   "star_lord": "MON",
+   "sub_lord": "MON",
+   "sub_sub_lord": "JUP"
+  },
+  {
+   "degree": "191-05-56",
+   "sign_lord": "VEN",
+   "star_lord": "RAH",
+   "sub_lord": "SAT",
+   "sub_sub_lord": "KET"
+  },
+  {
+   "degree": "222-16-08",
+   "sign_lord": "MAR",
+   "star_lord": "SAT",
+   "sub_lord": "MAR",
+   "sub_sub_lord": "RAH"
+  },
+  {
+   "degree": "252-41-08",
+   "sign_lord": "JUP",
+   "star_lord": "KET",
+   "sub_lord": "MER",
+   "sub_sub_lord": "RAH"
+  },
+  {
+   "degree": "282-31-12",
+   "sign_lord": "SAT",
+   "star_lord": "MON",
+   "sub_lord": "RAH",
+   "sub_sub_lord": "SAT"
+  },
+  {
+   "degree": "311-54-05",
+   "sign_lord": "SAT",
+   "star_lord": "RAH",
+   "sub_lord": "SAT",
+   "sub_sub_lord": "MAR"
+  },
+  {
+   "degree": "340-20-11",
+   "sign_lord": "JUP",
+   "star_lord": "SAT",
+   "sub_lord": "SUN",
+   "sub_sub_lord": "SUN"
+  },
+  {
+   "degree": "011-05-56",
+   "sign_lord": "MAR",
+   "star_lord": "KET",
+   "sub_lord": "SAT",
+   "sub_sub_lord": "RAH"
+  },
+  {
+   "degree": "042-16-08",
+   "sign_lord": "VEN",
+   "star_lord": "MON",
+   "sub_lord": "RAH",
+   "sub_sub_lord": "JUP"
+  },
+  {
+   "degree": "072-41-08",
+   "sign_lord": "MER",
+   "star_lord": "RAH",
+   "sub_lord": "MER",
+   "sub_sub_lord": "MER"
+  },
+  {
+   "degree": "102-31-12",
+   "sign_lord": "MON",
+   "star_lord": "SAT",
+   "sub_lord": "MAR",
+   "sub_sub_lord": "MER"
+  }
+ ],
+ "planets": {
+  "Sun": {
+   "degree": "156-18-04",
+   "sign_lord": "MER",
+   "star_lord": "SUN",
+   "sub_lord": "MER",
+   "sub_sub_lord": "RAH"
+  },
+  "Moon": {
+   "degree": "077-12-06",
+   "sign_lord": "MER",
+   "star_lord": "RAH",
+   "sub_lord": "VEN",
+   "sub_sub_lord": "MER"
+  },
+  "Mars": {
+   "degree": "158-34-25",
+   "sign_lord": "MER",
+   "star_lord": "SUN",
+   "sub_lord": "VEN",
+   "sub_sub_lord": "MAR"
+  },
+  "Mercury": {
+   "degree": "160-20-30",
+   "sign_lord": "MER",
+   "star_lord": "MON",
+   "sub_lord": "MON",
+   "sub_sub_lord": "JUP"
+  },
+  "Jupiter": {
+   "degree": "075-10-39",
+   "sign_lord": "MER",
+   "star_lord": "RAH",
+   "sub_lord": "KET",
+   "sub_sub_lord": "MER"
+  },
+  "Venus": {
+   "degree": "198-30-13",
+   "sign_lord": "VEN",
+   "star_lord": "RAH",
+   "sub_lord": "MON",
+   "sub_sub_lord": "JUP"
+  },
+  "Saturn": {
+   "degree": "253-46-52",
+   "sign_lord": "JUP",
+   "star_lord": "VEN",
+   "sub_lord": "VEN",
+   "sub_sub_lord": "SUN"
+  },
+  "Rahu": {
+   "degree": "300-07-40",
+   "sign_lord": "SAT",
+   "star_lord": "MAR",
+   "sub_lord": "MER",
+   "sub_sub_lord": "MER"
+  },
+  "Ketu": {
+   "degree": "120-07-40",
+   "sign_lord": "SUN",
+   "star_lord": "KET",
+   "sub_lord": "KET",
+   "sub_sub_lord": "VEN"
+  }
+ },
+ "ruling_planets": {
+  "lagna": {
+   "sign_lord": "SUN",
+   "star_lord": "KET",
+   "sub_lord": "MER"
+  },
+  "moon": {
+   "sign_lord": "MER",
+   "star_lord": "RAH",
+   "sub_lord": "VEN"
+  },
+  "day_lord": "VEN"
+ },
+ "significators_of_houses": {
+  "1": [
+   "SU",
+   "MA",
+   "RA"
+  ],
+  "2": [
+   "ME"
+  ],
+  "3": [
+   "VE",
+   "SA"
+  ],
+  "4": [
+   "MA",
+   "RA"
+  ],
+  "5": [
+   "JU",
+   "SA"
+  ],
+  "6": [
+   "MO",
+   "JU",
+   "VE",
+   "SA",
+   "RA"
+  ],
+  "7": [
+   "SA"
+  ],
+  "8": [
+   "JU"
+  ],
+  "9": [
+   "MA",
+   "RA"
+  ],
+  "10": [
+   "VE",
+   "SA"
+  ],
+  "11": [
+   "MO",
+   "ME",
+   "JU"
+  ],
+  "12": [
+   "MO",
+   "ME",
+   "KE"
+  ]
+ },
+ "planet_signification": {
+  "Sun": [
+   1
+  ],
+  "Moon": [
+   6,
+   11,
+   12
+  ],
+  "Mars": [
+   1,
+   4,
+   9
+  ],
+  "Mercury": [
+   2,
+   11,
+   12
+  ],
+  "Jupiter": [
+   5,
+   6,
+   8,
+   11
+  ],
+  "Venus": [
+   3,
+   6,
+   10
+  ],
+  "Saturn": [
+   3,
+   5,
+   6,
+   7,
+   10
+  ],
+  "Rahu": [
+   1,
+   4,
+   6,
+   9
+  ],
+  "Ketu": [
+   12
+  ]
+ },
+ "kp_dasha": [
+  {
+   "lord": "RAH",
+   "start": [
+    23,
+    9,
+    89
+   ],
+   "end": [
+    3,
+    7,
+    93
+   ],
+   "antar": [
+    {
+     "lord": "RAH",
+     "end": null
+    },
+    {
+     "lord": "JUP",
+     "end": null
+    },
+    {
+     "lord": "SAT",
+     "end": null
+    },
+    {
+     "lord": "MER",
+     "end": null
+    },
+    {
+     "lord": "KET",
+     "end": null
+    },
+    {
+     "lord": "VEN",
+     "end": [
+      21,
+      1,
+      90
+     ]
+    },
+    {
+     "lord": "SUN",
+     "end": [
+      15,
+      12,
+      90
+     ]
+    },
+    {
+     "lord": "MON",
+     "end": [
+      15,
+      6,
+      92
+     ]
+    },
+    {
+     "lord": "MAR",
+     "end": [
+      3,
+      7,
+      93
+     ]
+    }
+   ]
+  },
+  {
+   "lord": "JUP",
+   "start": [
+    3,
+    7,
+    93
+   ],
+   "end": [
+    3,
+    7,
+    9
+   ],
+   "antar": [
+    {
+     "lord": "JUP",
+     "end": [
+      21,
+      8,
+      95
+     ]
+    },
+    {
+     "lord": "SAT",
+     "end": [
+      3,
+      3,
+      98
+     ]
+    },
+    {
+     "lord": "MER",
+     "end": [
+      9,
+      6,
+      0
+     ]
+    },
+    {
+     "lord": "KET",
+     "end": [
+      15,
+      5,
+      1
+     ]
+    },
+    {
+     "lord": "VEN",
+     "end": [
+      15,
+      1,
+      4
+     ]
+    },
+    {
+     "lord": "SUN",
+     "end": [
+      3,
+      11,
+      4
+     ]
+    },
+    {
+     "lord": "MON",
+     "end": [
+      3,
+      3,
+      6
+     ]
+    },
+    {
+     "lord": "MAR",
+     "end": [
+      9,
+      2,
+      7
+     ]
+    },
+    {
+     "lord": "RAH",
+     "end": [
+      3,
+      7,
+      9
+     ]
+    }
+   ]
+  },
+  {
+   "lord": "SAT",
+   "start": [
+    3,
+    7,
+    9
+   ],
+   "end": [
+    3,
+    7,
+    28
+   ],
+   "antar": [
+    {
+     "lord": "SAT",
+     "end": [
+      6,
+      7,
+      12
+     ]
+    },
+    {
+     "lord": "MER",
+     "end": [
+      15,
+      3,
+      15
+     ]
+    },
+    {
+     "lord": "KET",
+     "end": [
+      24,
+      4,
+      16
+     ]
+    },
+    {
+     "lord": "VEN",
+     "end": [
+      24,
+      6,
+      19
+     ]
+    },
+    {
+     "lord": "SUN",
+     "end": [
+      6,
+      6,
+      20
+     ]
+    },
+    {
+     "lord": "MON",
+     "end": [
+      6,
+      1,
+      22
+     ]
+    },
+    {
+     "lord": "MAR",
+     "end": [
+      15,
+      2,
+      23
+     ]
+    },
+    {
+     "lord": "RAH",
+     "end": [
+      21,
+      12,
+      25
+     ]
+    },
+    {
+     "lord": "JUP",
+     "end": [
+      3,
+      7,
+      28
+     ]
+    }
+   ]
+  },
+  {
+   "lord": "MER",
+   "start": [
+    3,
+    7,
+    28
+   ],
+   "end": [
+    3,
+    7,
+    45
+   ],
+   "antar": [
+    {
+     "lord": "MER",
+     "end": [
+      30,
+      11,
+      30
+     ]
+    },
+    {
+     "lord": "KET",
+     "end": [
+      27,
+      11,
+      31
+     ]
+    },
+    {
+     "lord": "VEN",
+     "end": [
+      27,
+      9,
+      34
+     ]
+    },
+    {
+     "lord": "SUN",
+     "end": [
+      3,
+      8,
+      35
+     ]
+    },
+    {
+     "lord": "MON",
+     "end": [
+      3,
+      1,
+      37
+     ]
+    },
+    {
+     "lord": "MAR",
+     "end": [
+      30,
+      12,
+      37
+     ]
+    },
+    {
+     "lord": "RAH",
+     "end": [
+      18,
+      7,
+      40
+     ]
+    },
+    {
+     "lord": "JUP",
+     "end": [
+      24,
+      10,
+      42
+     ]
+    },
+    {
+     "lord": "SAT",
+     "end": [
+      3,
+      7,
+      45
+     ]
+    }
+   ]
+  },
+  {
+   "lord": "KET",
+   "start": [
+    3,
+    7,
+    45
+   ],
+   "end": [
+    3,
+    7,
+    52
+   ],
+   "antar": [
+    {
+     "lord": "KET",
+     "end": [
+      30,
+      11,
+      45
+     ]
+    },
+    {
+     "lord": "VEN",
+     "end": [
+      30,
+      1,
+      47
+     ]
+    },
+    {
+     "lord": "SUN",
+     "end": [
+      6,
+      6,
+      47
+     ]
+    },
+    {
+     "lord": "MON",
+     "end": [
+      6,
+      1,
+      48
+     ]
+    },
+    {
+     "lord": "MAR",
+     "end": [
+      3,
+      6,
+      48
+     ]
+    },
+    {
+     "lord": "RAH",
+     "end": [
+      21,
+      6,
+      49
+     ]
+    },
+    {
+     "lord": "JUP",
+     "end": [
+      27,
+      5,
+      50
+     ]
+    },
+    {
+     "lord": "SAT",
+     "end": [
+      6,
+      7,
+      51
+     ]
+    },
+    {
+     "lord": "MER",
+     "end": [
+      3,
+      7,
+      52
+     ]
+    }
+   ]
+  },
+  {
+   "lord": "VEN",
+   "start": [
+    3,
+    7,
+    52
+   ],
+   "end": [
+    3,
+    7,
+    72
+   ],
+   "antar": [
+    {
+     "lord": "VEN",
+     "end": [
+      3,
+      11,
+      55
+     ]
+    },
+    {
+     "lord": "SUN",
+     "end": [
+      3,
+      11,
+      56
+     ]
+    },
+    {
+     "lord": "MON",
+     "end": [
+      3,
+      7,
+      58
+     ]
+    },
+    {
+     "lord": "MAR",
+     "end": [
+      3,
+      9,
+      59
+     ]
+    },
+    {
+     "lord": "RAH",
+     "end": [
+      3,
+      9,
+      62
+     ]
+    },
+    {
+     "lord": "JUP",
+     "end": [
+      3,
+      5,
+      65
+     ]
+    },
+    {
+     "lord": "SAT",
+     "end": [
+      3,
+      7,
+      68
+     ]
+    },
+    {
+     "lord": "MER",
+     "end": [
+      3,
+      5,
+      71
+     ]
+    },
+    {
+     "lord": "KET",
+     "end": [
+      3,
+      7,
+      72
+     ]
+    }
+   ]
+  },
+  {
+   "lord": "SUN",
+   "start": [
+    3,
+    7,
+    72
+   ],
+   "end": [
+    3,
+    7,
+    78
+   ],
+   "antar": [
+    {
+     "lord": "SUN",
+     "end": [
+      21,
+      10,
+      72
+     ]
+    },
+    {
+     "lord": "MON",
+     "end": [
+      21,
+      4,
+      73
+     ]
+    },
+    {
+     "lord": "MAR",
+     "end": [
+      27,
+      8,
+      73
+     ]
+    },
+    {
+     "lord": "RAH",
+     "end": [
+      21,
+      7,
+      74
+     ]
+    },
+    {
+     "lord": "JUP",
+     "end": [
+      9,
+      5,
+      75
+     ]
+    },
+    {
+     "lord": "SAT",
+     "end": [
+      21,
+      4,
+      76
+     ]
+    },
+    {
+     "lord": "MER",
+     "end": [
+      27,
+      2,
+      77
+     ]
+    },
+    {
+     "lord": "KET",
+     "end": [
+      3,
+      7,
+      77
+     ]
+    },
+    {
+     "lord": "VEN",
+     "end": [
+      3,
+      7,
+      78
+     ]
+    }
+   ]
+  },
+  {
+   "lord": "MON",
+   "start": [
+    3,
+    7,
+    78
+   ],
+   "end": [
+    3,
+    7,
+    88
+   ],
+   "antar": [
+    {
+     "lord": "MON",
+     "end": [
+      3,
+      5,
+      79
+     ]
+    },
+    {
+     "lord": "MAR",
+     "end": [
+      3,
+      12,
+      79
+     ]
+    },
+    {
+     "lord": "RAH",
+     "end": [
+      3,
+      6,
+      81
+     ]
+    },
+    {
+     "lord": "JUP",
+     "end": [
+      3,
+      10,
+      82
+     ]
+    },
+    {
+     "lord": "SAT",
+     "end": [
+      3,
+      5,
+      84
+     ]
+    },
+    {
+     "lord": "MER",
+     "end": [
+      3,
+      10,
+      85
+     ]
+    },
+    {
+     "lord": "KET",
+     "end": [
+      3,
+      5,
+      86
+     ]
+    },
+    {
+     "lord": "VEN",
+     "end": [
+      3,
+      1,
+      88
+     ]
+    },
+    {
+     "lord": "SUN",
+     "end": [
+      3,
+      7,
+      88
+     ]
+    }
+   ]
+  },
+  {
+   "lord": "MAR",
+   "start": [
+    3,
+    7,
+    88
+   ],
+   "end": [
+    3,
+    7,
+    95
+   ],
+   "antar": [
+    {
+     "lord": "MAR",
+     "end": [
+      30,
+      11,
+      88
+     ]
+    },
+    {
+     "lord": "RAH",
+     "end": [
+      18,
+      12,
+      89
+     ]
+    },
+    {
+     "lord": "JUP",
+     "end": [
+      24,
+      11,
+      90
+     ]
+    },
+    {
+     "lord": "SAT",
+     "end": [
+      3,
+      1,
+      92
+     ]
+    },
+    {
+     "lord": "MER",
+     "end": [
+      30,
+      12,
+      92
+     ]
+    },
+    {
+     "lord": "KET",
+     "end": [
+      27,
+      5,
+      93
+     ]
+    },
+    {
+     "lord": "VEN",
+     "end": [
+      27,
+      7,
+      94
+     ]
+    },
+    {
+     "lord": "SUN",
+     "end": [
+      3,
+      12,
+      94
+     ]
+    },
+    {
+     "lord": "MON",
+     "end": [
+      3,
+      7,
+      95
+     ]
+    }
+   ]
+  }
+ ]
+}

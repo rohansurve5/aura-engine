@@ -398,6 +398,34 @@ Conventions proven by the golden set:
   two tables it prints for the golden chart are 13/18 exact, the other 5 one
   calendar day early — our Moon, 2.4″ further on (Known deviations 4).
 
+### KP section vs AstroSage (reshape E.3, `engine/kp.py`)
+
+Golden: AstroSage's KP page for Golden-1 (`tests/golden/astrosage_kp_golden_1.json`,
+`tests/test_kp.py`). The KP zodiac is **KP New** (Balachandran: 22°22′12.54″ at
+1900.0 + Newcomb's 5025.64″T + 1.11″T² — reproduces AstroSage's printed KP New on
+three dates within 0.8″) **plus the constant 23.0″ VP285 − plain-Lahiri gap**:
+AstroSage prints plain-Lahiri and KP New values, but its positions follow VP285
+and its KP page is its Lahiri page moved by their printed gap (5′23″ on all 10
+points). Houses: Placidus (Swiss), moved onto the KP zodiac like the planets.
+
+* **Exact:** all 12 cusps' sign, star, sub **and sub-sub** lords; all 9 grahas'
+  sign, star, sub and sub-sub lords; the ruling planets (day lord Venus — the
+  birth is before sunrise, Friday's vara); the KP dasha balance (3 Y 9 M 10 D;
+  the page's header "3 Y 10 M 24 D" is the Lahiri balance) and all 9 maha + 76
+  antar dates. KP pratyantars (not printed in the file): 228/434 exact, all
+  within a calendar day.
+* **Degrees:** lagna 2.9″, MC 0.4″, intermediate cusps ≤ 15.4″ (AstroSage's
+  Placidus); Moon 5.5″, Rahu/Ketu 7.3″, Saturn 3.7″; the other planets as on the
+  Lahiri page (AstroSage's ephemeris, up to 109″ for Mars).
+* **One deviation — Mercury's house.** Swiss puts Mercury 13″ before cusp 2
+  (house 1); AstroSage's Mercury, 30″ further on, sits 19″ past it (house 2). So
+  Mercury signifies 1, 2, 11, 12 here (AstroSage 2, 11, 12) and house 1 lists
+  Mercury. With Mercury in AstroSage's house, the same code gives all 21 of its
+  significator rows. Reported, not tuned.
+* **Engine vs Worker** (`scripts/crossval_chart_file.py`, 300 births): cusps
+  agree to 0.09″ (the Worker solves Placidus itself), planets to 18″; 3 planet
+  sub/sub-sub lords within that arc of an edge are recorded as contested.
+
 ### Historical timezones and India's war-time DST (1941–45)
 
 **Births before 1955 in Bombay, before 1948 in Calcutta.** Those cities kept

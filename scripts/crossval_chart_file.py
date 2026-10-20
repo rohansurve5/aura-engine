@@ -15,6 +15,12 @@ value the file states:
           printed 1/2 March may be a rolled 29/30 February)
           Mangal dosha (houses from lagna and Moon, cancellations, both
           verdicts) — exact
+  kp      the KP section (engine/kp.py): the ayanamsa to 0.01″; the 12
+          Placidus cusps ≤ 1″ (the Worker solves Placidus itself) with sign,
+          star, sub and sub-sub lords exact; the 9 KP grahas ≤ 1′ with sign,
+          star, sub lord and Placidus house exact; both significator tables,
+          the ruling planets and the KP dasha (maha + antar, as above) — exact
+          unless an input sits within the tolerance of the edge deciding it
   sky     today's 9 grahas as natal; every Saturn/Jupiter/Rahu ingress in
           365 days — same body, signs, direction, order; instant within the
           time it takes the body to move 40″ (≥ 30 min); Saturn's sign changes
@@ -76,6 +82,7 @@ from engine.chart_file import (  # noqa: E402
     separation,
     sky_facts,
 )
+from engine.kp import kp_facts  # noqa: E402
 from engine.positions import sidereal_positions  # noqa: E402
 from engine.vimshottari import calendar_gap  # noqa: E402
 
@@ -84,6 +91,7 @@ GOLDEN_PATH = AURA_API / "test" / "golden" / "chart_file_crossval.json"
 
 SEED = 20261019
 ARC = 1 / 60                      # 1′ in degrees
+CUSP_ARC_S = 1.0                  # KP cusps, arc-seconds (measured: 0.09″)
 PADA = 30 / 9                     # every sign/nakshatra/navamsa edge is a pada edge
 DAY_MS = 86_400_000
 SUNRISE_TOL_S = 90
@@ -164,9 +172,10 @@ def generate_skies() -> list[dict]:
 def engine_birth(b: dict) -> dict:
     local = datetime.strptime(f"{b['dob']} {b['time']}", "%Y-%m-%d %H:%M")
     natal = natal_facts(local, b["zone"], b["lat"], b["lon"])
-    dasha = dasha_facts(natal["planets"]["Moon"]["longitude"], local,
-                        date.fromisoformat(b["as_of"]))
-    return {"natal": natal, "dasha": dasha}
+    as_of = date.fromisoformat(b["as_of"])
+    dasha = dasha_facts(natal["planets"]["Moon"]["longitude"], local, as_of)
+    kp = kp_facts(local, b["zone"], b["lat"], b["lon"], as_of)
+    return {"natal": natal, "dasha": dasha, "kp": kp}
 
 
 def engine_sky(s: dict) -> dict:
@@ -206,7 +215,8 @@ class Tally:
         self.fails: list[str] = []
         self.contested: list[str] = []
         self.checked = 0
-        self.worst = {"lon_arcsec": 0.0, "sunrise_s": 0.0, "dasha_days": 0, "ingress_arcsec": 0.0}
+        self.worst = {"lon_arcsec": 0.0, "sunrise_s": 0.0, "dasha_days": 0, "ingress_arcsec": 0.0,
+                      "kp_cusp_arcsec": 0.0, "kp_lon_arcsec": 0.0}
 
     def check(self, tag: str, ok: bool, contested: bool, detail: str) -> None:
         self.checked += 1
@@ -311,14 +321,15 @@ def compare_dasha(t: Tally, tag: str, e: dict, w: dict, moon_lon: float, dob: st
         clip = i == 0 and any(_days(r["end"], dob) <= 1 for r in a["antar"])
         compare_rows(t, f"{tag}.maha[{i}].antar", a["antar"], b["antar"], clip)
     bounds = [r[k] for m in e["mahas"] for r in (m, *m["antar"]) for k in ("start", "end")]
-    for which in ("current", "next"):
-        ep, wp = e["pratyantar"][which], w["pratyantar"][which]
+    prat = e.get("pratyantar")              # the KP dasha carries maha + antar only
+    for which in ("current", "next") if prat else ():
+        ep = e["pratyantar"][which]
         if ep is not None:
             bounds += [r[k] for r in ep["rows"] for k in ("start", "end")]
     near_edge = any(_days(as_of, b) <= 1 for b in bounds)
     t.check(f"{tag}.running", e["running"] == w["running"], near_edge,
             f"{e['running']} vs {w['running']}")
-    for which in ("current", "next"):
+    for which in ("current", "next") if prat else ():
         ep, wp = e["pratyantar"][which], w["pratyantar"][which]
         if ep is None or wp is None:
             t.check(f"{tag}.prat.{which}", ep is None and wp is None, near_edge, "presence")
@@ -327,6 +338,55 @@ def compare_dasha(t: Tally, tag: str, e: dict, w: dict, moon_lon: float, dob: st
         t.check(f"{tag}.prat.{which}.which", same, near_edge, "which antar")
         if same:
             compare_rows(t, f"{tag}.prat.{which}", ep["rows"], wp["rows"], False)
+
+
+LORDS = ("sign_lord", "star_lord", "sub_lord", "sub_sub_lord")
+
+
+def compare_kp_point(t: Tally, tag: str, e: dict, w: dict, tol_s: float, worst: str) -> dict:
+    """Longitude within tol_s″; each lord exact unless the engine's point sits
+    within tol_s″ of the edge deciding it (a sub edge includes the star's, a
+    sub-sub edge the sub's). Returns those contested flags."""
+    d = separation(e["longitude"], w["longitude"]) * 3600
+    t.worst[worst] = max(t.worst[worst], d)
+    t.check(tag, d <= tol_s, False, f"longitude off by {d:.2f}″")
+    edge = {k: e["edge_arcsec"][k.removesuffix("_lord")] < tol_s for k in LORDS}
+    for k in LORDS:
+        t.check(f"{tag}.{k}", e[k] == w[k], edge[k], f"engine {e[k]} worker {w[k]}")
+    t.check(f"{tag}.sign_index", e["sign_index"] == w["sign_index"], edge["sign_lord"], "sign")
+    return edge
+
+
+def compare_kp(t: Tally, tag: str, e: dict, w: dict, natal: dict, b: dict) -> None:
+    t.check(f"{tag}.ayanamsa", abs(e["ayanamsa"] - w["ayanamsa"]) * 3600 < 0.01, False,
+            f"{e['ayanamsa']} vs {w['ayanamsa']}")
+    t.check(f"{tag}.kp_new", abs(e["kp_new"] - w["kp_new"]) * 3600 < 0.01, False, "kp new")
+    cusp_edge = [compare_kp_point(t, f"{tag}.cusp{i + 1}", a, c, CUSP_ARC_S, "kp_cusp_arcsec")
+                 for i, (a, c) in enumerate(zip(e["cusps"], w["cusps"], strict=True))]
+    planet_edge, house_edge = {}, {}
+    for body, ep in e["planets"].items():
+        wp = w["planets"][body]
+        planet_edge[body] = compare_kp_point(t, f"{tag}.{body}", ep, wp, ARC * 3600,
+                                             "kp_lon_arcsec")
+        house_edge[body] = ep["cusp_edge_arcsec"] < ARC * 3600 + CUSP_ARC_S
+        t.check(f"{tag}.{body}.house", ep["house"] == wp["house"], house_edge[body], "house")
+    # Significators are built from houses, star lords and cusp sign lords.
+    shaky = (any(house_edge.values()) or any(p["star_lord"] for p in planet_edge.values())
+             or any(c["sign_lord"] for c in cusp_edge))
+    t.check(f"{tag}.significators", e["significators"] == w["significators"], shaky,
+            "significator tables differ")
+    v = natal["vara"]
+    near_rise = (v["sunrise_ms"] is not None
+                 and abs(natal["utc_ms"] - v["sunrise_ms"]) < VARA_CONTEST_S * 1000)
+    r, q = e["ruling"], w["ruling"]
+    t.check(f"{tag}.ruling.day", (r["day_lord"], r["vara"]) == (q["day_lord"], q["vara"]),
+            near_rise, f"{r['day_lord']} vs {q['day_lord']}")
+    t.check(f"{tag}.ruling.lagna", r["lagna"] == q["lagna"], cusp_edge[0]["sub_lord"],
+            f"{r['lagna']} vs {q['lagna']}")
+    t.check(f"{tag}.ruling.moon", r["moon"] == q["moon"], planet_edge["Moon"]["sub_lord"],
+            f"{r['moon']} vs {q['moon']}")
+    compare_dasha(t, f"{tag}.dasha", e["dasha"], w["dasha"], e["planets"]["Moon"]["longitude"],
+                  b["dob"], b["as_of"])
 
 
 def compare_sky(t: Tally, tag: str, e: dict, w: dict) -> None:
@@ -415,6 +475,7 @@ def main() -> int:
         compare_natal(t, tag, e["natal"], wb["natal"])
         compare_dasha(t, f"{tag}.dasha", e["dasha"], wb["dasha"],
                       e["natal"]["planets"]["Moon"]["longitude"], b["dob"], b["as_of"])
+        compare_kp(t, f"{tag}.kp", e["kp"], wb["kp"], e["natal"], b)
     for i, (s, e, ws) in enumerate(zip(skies, es, w["skies"], strict=True)):
         compare_sky(t, f"sky[{i}] {s['as_of']}", e, ws)
 
