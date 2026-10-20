@@ -6,7 +6,8 @@ script runs BOTH over the same inputs and requires them to agree on every
 value the file states:
 
   natal   ascendant + 9 grahas: longitude ≤ 1′; sign, nakshatra, pada, D9 sign,
-          house, D9 house, retrograde, combust, dignity — exact;
+          D7 sign, D10 sign, house, D9 / D7 / D10 house, retrograde, combust,
+          dignity — exact;
           birth panchang (tithi, karana, yoga, nakshatra, pada) and vara —
           exact; sunrise ≤ 90 s
   dasha   identity, balance ±1 day, every maha / antar row ±1 day with the
@@ -19,7 +20,8 @@ value the file states:
           Placidus cusps ≤ 1″ (the Worker solves Placidus itself) with sign,
           star, sub and sub-sub lords exact; the 9 KP grahas ≤ 1′ with sign,
           star, sub lord and Placidus house exact; both significator tables,
-          the ruling planets and the KP dasha (maha + antar, as above) — exact
+          the ruling planets and the KP dasha (maha, antar, the running
+          pratyantar and both pratyantar tables, as above) — exact
           unless an input sits within the tolerance of the edge deciding it
   sky     today's 9 grahas as natal; every Saturn/Jupiter/Rahu ingress in
           365 days — same body, signs, direction, order; instant within the
@@ -32,9 +34,9 @@ value the file states:
 "Exact" admits ONE exception, the same boundary-honesty policy every crossval
 in this repo uses (crossval_chart.py, crossval_ascendant.py): a value whose
 engine input sits within 1′ of the boundary that decides it (a pada edge, a
-combustion orb, a dignity degree, a tithi edge, a station, a sunrise, a dasha
-day) is a CONTESTED case — recorded and counted, never adjudicated, never a
-failure. The Worker test (test/chartFile.crossval.test.ts) applies the
+combustion orb, a dignity degree, a D7 or D10 part edge, a tithi edge, a
+station, a sunrise, a dasha day) is a CONTESTED case — recorded and counted,
+never adjudicated, never a failure. The Worker test (test/chartFile.crossval.test.ts) applies the
 identical rules to the golden this writes.
 
 Inputs: 240 Indian births (population-weighted) + 50 world births + 5 seeded
@@ -72,8 +74,10 @@ from crossval_chart import (  # noqa: E402
 )
 
 from engine.chart_file import (  # noqa: E402
+    DASAMSA_ARC,
     EXALTATION,
     MOOLATRIKONA,
+    SAPTAMSA_ARC,
     _utc_from_ms,
     combust_orb,
     dasha_facts,
@@ -225,6 +229,9 @@ class Tally:
         (self.contested if contested else self.fails).append(f"{tag}: {detail}")
 
 
+VARGAS = (("d7", SAPTAMSA_ARC), ("d10", DASAMSA_ARC))   # a part edge decides each
+
+
 def compare_point(t: Tally, tag: str, e: dict, w: dict) -> bool:
     """Longitude ≤ 1′ always; discrete fields exact unless within 1′ of a pada edge."""
     d = separation(e["longitude"], w["longitude"])
@@ -233,6 +240,10 @@ def compare_point(t: Tally, tag: str, e: dict, w: dict) -> bool:
     edge = near_multiple(e["longitude"], PADA, ARC)
     for k in ("sign_index", "nakshatra_index", "pada", "navamsa_sign_index"):
         t.check(f"{tag}.{k}", e[k] == w[k], edge, f"engine {e[k]} worker {w[k]}")
+    for k, arc in VARGAS:
+        a, b = e[f"{k}_sign_index"], w[f"{k}_sign_index"]
+        t.check(f"{tag}.{k}_sign_index", a == b, near_multiple(e["longitude"], arc, ARC),
+                f"engine {a} worker {b}")
     return edge
 
 
@@ -252,6 +263,10 @@ def compare_natal(t: Tally, tag: str, e: dict, w: dict) -> None:
         t.check(f"{bt}.house", ep["house"] == wp["house"], edge or asc_edge, "house")
         t.check(f"{bt}.navamsa_house", ep["navamsa_house"] == wp["navamsa_house"],
                 edge or asc_edge, "D9 house")
+        for k, arc in VARGAS:
+            t.check(f"{bt}.{k}_house", ep[f"{k}_house"] == wp[f"{k}_house"],
+                    any(near_multiple(x["longitude"], arc, ARC) for x in (ep, e["ascendant"])),
+                    f"{k} house")
         stat = station(ep, wp)
         t.check(f"{bt}.retrograde", ep["retrograde"] == wp["retrograde"], stat, "direction")
         orbs = {combust_orb(body, r) for r in ((True, False) if stat else (ep["retrograde"],))}
@@ -321,7 +336,7 @@ def compare_dasha(t: Tally, tag: str, e: dict, w: dict, moon_lon: float, dob: st
         clip = i == 0 and any(_days(r["end"], dob) <= 1 for r in a["antar"])
         compare_rows(t, f"{tag}.maha[{i}].antar", a["antar"], b["antar"], clip)
     bounds = [r[k] for m in e["mahas"] for r in (m, *m["antar"]) for k in ("start", "end")]
-    prat = e.get("pratyantar")              # the KP dasha carries maha + antar only
+    prat = e.get("pratyantar")              # both profiles carry them (owner review, 2026-10-21)
     for which in ("current", "next") if prat else ():
         ep = e["pratyantar"][which]
         if ep is not None:

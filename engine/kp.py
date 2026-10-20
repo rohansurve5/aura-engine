@@ -4,7 +4,8 @@ Data only, like the rest of the chart file: the KP zodiac, the 12 Placidus
 cusps and the nine grahas with their sign / star / sub lords, each graha's
 Placidus house, the four standard significator levels (planet-wise and
 house-wise), the ruling planets at birth and the Vimshottari dasha on the KP
-Moon. The Worker ports this module (aura-api/src/kp.ts) and is gated on
+Moon (maha, antar, and the pratyantars of the running and next antar). The
+Worker ports this module (aura-api/src/kp.ts) and is gated on
 scripts/crossval_chart_file.py, which now carries these facts for all 300
 births; AstroSage's own KP page for Golden-1 is the external reference
 (tests/golden/astrosage_kp_golden_1.json, tests/test_kp.py).
@@ -192,10 +193,9 @@ def kp_facts(local_birth: datetime, zone: str, lat: float, lon: float, as_of: da
 
     vara = vara_at(local_birth, zone, lat, lon)
     lagna, moon = cusp_rows[0], planets["Moon"]
+    # Maha, antar and the pratyantars of the running and next antar, as the
+    # Vedic table (owner review, 2026-10-21).
     dasha = dasha_facts(moon["longitude"], local_birth, as_of)
-    dasha.pop("pratyantar")                      # the KP section prints maha + antar only
-    if dasha["running"] is not None:
-        dasha["running"].pop("pratyantar")
     return {
         "ayanamsa": kp,
         "kp_new": kp_new_ayanamsa(jd),

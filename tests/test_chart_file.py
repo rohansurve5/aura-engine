@@ -16,7 +16,8 @@ Strongest evidence first:
         (astrosage_dasha.json, astrosage_dasha_tables.json), from the chart
         owner's screenshots, PDF and docx.
   * CLASSICAL RULES restated independently of the code under test: the D9
-    movable/fixed/dual rule, the BPHS dignity table, the combustion orbs.
+    movable/fixed/dual rule, the D7 and D10 odd/even rules, the BPHS dignity
+    table, the combustion orbs.
   * STRUCTURAL invariants: pratyantar rows tile their antar exactly; dasha
     rows are contiguous; an ingress really is a sign change.
   * ENGINE-PINNED values for the golden chart (chart_file_golden_1.json) — a
@@ -43,6 +44,7 @@ from engine.chart_file import (
     SIGN_LORDS,
     _utc_from_ms,
     chart_file_facts,
+    dasamsa_sign,
     dasha_facts,
     dignity,
     house_from,
@@ -51,6 +53,7 @@ from engine.chart_file import (
     mangal_dosha,
     natal_facts,
     navamsa_sign,
+    saptamsa_sign,
     saturn_changes,
     saturn_cycles,
     separation,
@@ -127,6 +130,43 @@ def test_vargottama_parts_fall_where_the_texts_put_them():
     assert navamsa_sign(0 * 30 + 1) == 0
     assert navamsa_sign(1 * 30 + 15) == 1
     assert navamsa_sign(2 * 30 + 29) == 2
+
+
+# ── D7 saptamsa and D10 dasamsa vs the classical rule ───────────────────────
+def _varga_by_rule(lon: float, parts: int, even_from: int) -> int:
+    """BPHS as written: an odd sign (Aries is the 1st) counts its parts from
+    itself, an even sign from its `even_from`-th sign, counted inclusively."""
+    sign = int(lon // 30)
+    part = int((lon % 30) // (30 / parts))
+    first = sign if sign % 2 == 0 else (sign + even_from - 1) % 12
+    return (first + part) % 12
+
+
+def test_d7_and_d10_match_the_classical_rule_in_every_part():
+    for parts, fn, even_from in ((7, saptamsa_sign, 7), (10, dasamsa_sign, 9)):
+        for k in range(12 * parts):
+            for f in (0.001, 0.5, 0.999):
+                lon = (k + f) * 30 / parts
+                assert fn(lon) == _varga_by_rule(lon, parts, even_from), (parts, lon)
+
+
+def test_d7_is_the_continuous_count_from_aries():
+    # 84 parts dealt onto the signs in order from Aries: the same rule, since
+    # 7 × an odd sign index ≡ that index + 6 (mod 12).
+    for k in range(84):
+        assert saptamsa_sign((k + 0.5) * 30 / 7) == k % 12
+
+
+@pytest.mark.parametrize(("lon", "d7", "d10"), [
+    (0.5, "Aries", "Aries"),           # odd sign, 1st part: the sign itself
+    (29.5, "Libra", "Capricorn"),      # Aries, last part
+    (30.5, "Scorpio", "Capricorn"),    # Taurus (even), 1st part: its 7th / its 9th
+    (59.5, "Taurus", "Libra"),         # Taurus, last part
+    (60.5, "Gemini", "Gemini"),        # Gemini (odd), 1st part
+    (359.5, "Pisces", "Leo"),          # Pisces (even), last part
+])
+def test_d7_and_d10_hand_examples(lon, d7, d10):
+    assert (SIGNS[saptamsa_sign(lon)], SIGNS[dasamsa_sign(lon)]) == (d7, d10)
 
 
 # ── Dignity (BPHS) and sign lords ───────────────────────────────────────────
@@ -540,6 +580,20 @@ def test_golden_chart_matches_astrosage_exactly(facts):
         # AstroSage's relation column is friendship-based; the file states BPHS
         # dignity only, so the comparable words must agree and the rest be none.
         assert p["dignity"] == dignity_word.get(ref["relation"]), body
+
+
+def test_golden_d7_d9_d10_match_astrosages_shodashvarga(facts):
+    """AstroSage's Shodashvarga table (page 40): the sign and house of the
+    lagna and all nine grahas in D7, D9 and D10 — exact. AstroSage prints
+    sign 12 as 0 (Saturn's D7; its house table confirms Pisces)."""
+    sv = AS["shodashvarga"]
+    n = facts["natal"]
+    pts = [n["ascendant"], *(n["planets"][b] for b in sv["columns"][1:])]
+    keys = {"D7": ("d7_sign_index", "d7_house"), "D9": ("navamsa_sign_index", "navamsa_house"),
+            "D10": ("d10_sign_index", "d10_house")}
+    for varga, (sign_key, house_key) in keys.items():
+        assert [p[sign_key] + 1 for p in pts] == [x or 12 for x in sv["sign"][varga]], varga
+        assert [1, *(p[house_key] for p in pts[1:])] == sv["house"][varga], varga
 
 
 # Degrees: the Moon (0.5″/s of time), the mean node and the lagna pin the

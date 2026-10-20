@@ -59,12 +59,14 @@ product API can be closed without ever touching AGPL-covered code.
   naturally — plus vaar, paksha and moon phase.
 - **`engine/chart_file.py`** (reshape B) — the **chart file's facts**, the
   source of truth behind aura-api `POST /v1/chart-file`: every graha's
-  nakshatra/pada, **D9 navamsa** (sign + house + vargottama), **dignity**
+  nakshatra/pada, **D9 navamsa** (sign + house + vargottama), **D7
+  saptamsa and D10 dasamsa** (sign + house, BPHS odd/even rule), **dignity**
   (BPHS exaltation / moolatrikona / own / debilitated), **combustion**
   (classical orbs), the **birth panchang** (`panchang.panchang_at` +
   `panchang.vara_at`, sunrise-to-sunrise vara), every **dasha date on
   AstroSage's dasha calendar** (`vimshottari.calendar_dasha`) with
-  pratyantar for the running and next antar, today's **transit snapshot**,
+  pratyantar for the running and next antar (Lahiri and KP), today's
+  **transit snapshot**,
   the next 365 days of exact **Saturn/Jupiter/Rahu ingresses**, the **Saturn
   cycles** and **Mangal dosha**.
   Golden-tested against AstroSage (planets at sunrise, panchang boundaries)
@@ -171,10 +173,13 @@ and 51 India-time skies (incl. the real 8–27-day sign stays an over-stepping
 ingress search would miss), compares every value the file states — now also
 Mangal dosha, Saturn's 42-year sign-change list and the Saturn cycles for all
 12 Moon signs on every sky — and writes the golden that gates every aura-api
-deploy. Measured (2026-10-20): **108,903 values, 0 disagreements, 4 contested
-boundary cases** (a value within 1′ of the edge that decides it — recorded,
-never adjudicated); worst longitude 20″, sunrise 26 s, dasha dates ±1 day on
-the dasha calendar, ingress and Saturn-change instants 10.6″ of motion. The endpoint itself takes
+deploy. Measured (2026-10-21, with D7, D10 and the KP pratyantars): **234,545
+values, 0 disagreements, 30 contested boundary cases** (a value within 1′ of
+the edge that decides it — recorded, never adjudicated; 20 of them are two
+births whose Ascendant sits within 1′ of a D10 part edge, contesting its D10
+sign and all nine D10 houses); worst longitude 20″, sunrise 26 s, dasha dates
+±1 day on the dasha calendar, ingress and Saturn-change instants 10.6″ of
+motion. The endpoint itself takes
 births in India only (reshape B review); the world and abroad births exercise
 the same shared functions.
 
@@ -356,7 +361,9 @@ Conventions proven by the golden set:
 
 * **The golden chart at Thane (AstroSage Kundli + 56-page report, Lahiri,
   19:11 N 72:58 E — `tests/golden/chart_file_golden_1.json`):** every sign,
-  nakshatra, pada, D9 sign, D1 and D9 house, R/C mark, BPHS dignity AstroSage
+  nakshatra, pada, D9 sign, D1 and D9 house, the D7 and D10 sign and house of
+  the lagna and all nine grahas (its Shodashvarga table, page 40 — AstroSage
+  prints Saturn's D7 sign, Pisces, as "0"), R/C mark, BPHS dignity AstroSage
   states, the birth panchang (Krishna Navami, Variyana, Taitila, Friday
   before the 06:27 sunrise — ours 06:26:55), the dasha balance, all 9 maha
   and all 76 antar dates and the Manglik verdicts agree exactly. Degrees: lagna 6.0″, Moon 2.3″, Rahu/Ketu 10.4″, the MC 3.5″.
@@ -412,8 +419,11 @@ points). Houses: Placidus (Swiss), moved onto the KP zodiac like the planets.
   sign, star, sub and sub-sub lords; the ruling planets (day lord Venus — the
   birth is before sunrise, Friday's vara); the KP dasha balance (3 Y 9 M 10 D;
   the page's header "3 Y 10 M 24 D" is the Lahiri balance) and all 9 maha + 76
-  antar dates. KP pratyantars (not printed in the file): 228/434 exact, all
-  within a calendar day.
+  antar dates. KP pratyantars: 228/434 exact, all within a calendar day. The
+  two blocks the file prints for Golden-1 (the running KP antar, Saturn /
+  Jupiter, and the next) have AstroSage's antar edges exactly; inside, 8 of
+  18 ends are AstroSage's and 10 one day early — the 5.5″ KP Moon gap.
+  Reported, not tuned.
 * **Degrees:** lagna 2.9″, MC 0.4″, intermediate cusps ≤ 15.4″ (AstroSage's
   Placidus); Moon 5.5″, Rahu/Ketu 7.3″, Saturn 3.7″; the other planets as on the
   Lahiri page (AstroSage's ephemeris, up to 109″ for Mars).
@@ -535,7 +545,7 @@ engine/
   positions.py     sidereal longitudes Sun..Ketu
   vimshottari.py   nakshatra, balance, maha/antar/pratyantar, rendering
   panchang.py      sunrise/sunset, tithi/nakshatra/yoga/karana solvers, panchang/vara at an instant
-  chart_file.py    the chart file's facts: D9, dignity, combustion, transits, ingresses
+  chart_file.py    the chart file's facts: D9, D7, D10, dignity, combustion, transits, ingresses
   choghadiya.py    choghadiya windows + rahu/gulika/yamaganda kaals
   daily.py         deterministic daily_sky payload builder
   scoring.py       v1 heuristic guidance (Tarabala + weekday/paksha), rules-driven

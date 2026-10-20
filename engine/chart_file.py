@@ -13,6 +13,7 @@ the facts are decided here.
 What this module adds (everything else is reused, already golden-tested):
 
   * D9 navamsa ........ navamsa_sign()
+  * D7 / D10 .......... saptamsa_sign(), dasamsa_sign() — BPHS Shodasavarga
   * dignity ........... dignity()            — BPHS exaltation / moolatrikona /
                                                own sign / debilitation
   * combustion ........ is_combust()         — classical orbs, see COMBUST_ORB
@@ -91,6 +92,31 @@ def navamsa_sign(longitude: float) -> int:
     boundary IS a pada boundary, so D9 is exactly as robust as the pada.
     """
     return math.floor(longitude / NAVAMSA_ARC) % 12
+
+
+# ── D7 saptamsa and D10 dasamsa ─────────────────────────────────────────────
+# BPHS, Shodasavarga chapter: a sign splits into 7 (D7) or 10 (D10) equal
+# parts; an odd sign's parts are dealt from the sign itself, an even sign's
+# from its 7th (D7) or 9th (D10) sign. AstroSage's Shodashvarga table for
+# Golden-1 agrees on every body (tests/test_chart_file.py).
+SAPTAMSA_ARC = 30 / 7  # 4°17′08.57″
+DASAMSA_ARC = 3.0
+
+
+def _varga_sign(longitude: float, arc: float, even_start: int) -> int:
+    s = sign_index(longitude)
+    part = math.floor(longitude % 30 / arc)
+    return (s + (even_start if s % 2 else 0) + part) % 12
+
+
+def saptamsa_sign(longitude: float) -> int:
+    """D7 sign index (0 = Aries): odd signs count from themselves, even from their 7th."""
+    return _varga_sign(longitude, SAPTAMSA_ARC, 6)
+
+
+def dasamsa_sign(longitude: float) -> int:
+    """D10 sign index (0 = Aries): odd signs count from themselves, even from their 9th."""
+    return _varga_sign(longitude, DASAMSA_ARC, 8)
 
 
 # ── Dignity (BPHS) ──────────────────────────────────────────────────────────
@@ -227,6 +253,8 @@ def _point(longitude: float) -> dict:
         "nakshatra_index": nak.index,
         "pada": nak.pada,
         "navamsa_sign_index": navamsa_sign(longitude),
+        "d7_sign_index": saptamsa_sign(longitude),
+        "d10_sign_index": dasamsa_sign(longitude),
     }
 
 
@@ -239,6 +267,7 @@ def natal_facts(local_birth: datetime, zone: str, lat: float, lon: float) -> dic
     asc = chart.ascendant.longitude
     asc_sign = sign_index(asc)
     d9_asc = navamsa_sign(asc)
+    d7_asc, d10_asc = saptamsa_sign(asc), dasamsa_sign(asc)
     sun = chart.placements["Sun"].position.longitude
 
     planets: dict[str, dict] = {}
@@ -253,6 +282,8 @@ def natal_facts(local_birth: datetime, zone: str, lat: float, lon: float) -> dic
             "combust": is_combust(body, pos.longitude, sun, pos.retrograde),
             "dignity": dignity(body, pos.longitude),
             "navamsa_house": house_from(d9, d9_asc),
+            "d7_house": house_from(saptamsa_sign(pos.longitude), d7_asc),
+            "d10_house": house_from(dasamsa_sign(pos.longitude), d10_asc),
         }
 
     p = panchang_at(utc, ayanamsa=DEFAULT_AYANAMSA)
@@ -589,9 +620,9 @@ def _utc_from_ms(ms: int) -> datetime:  # test/debug helper
 __all__ = [
     "ARCTIC_LIMIT", "COMBUST_ORB", "COMBUST_ORB_RETROGRADE", "DEBILITATION",
     "EXALTATION", "INGRESS_BODIES", "INGRESS_WINDOW_DAYS", "MANGAL_CANCELLATIONS",
-    "MANGAL_DOSHA_HOUSES", "MOOLATRIKONA", "NAKSHATRA_ARC", "NAVAMSA_ARC",
-    "OWN_SIGNS", "SATURN_CYCLES", "SIGN_LORDS", "TRANSIT_ZONE",
-    "chart_file_facts", "combust_orb", "dasha_facts", "dignity", "house_from",
+    "DASAMSA_ARC", "MANGAL_DOSHA_HOUSES", "MOOLATRIKONA", "NAKSHATRA_ARC", "NAVAMSA_ARC",
+    "OWN_SIGNS", "SAPTAMSA_ARC", "SATURN_CYCLES", "SIGN_LORDS", "TRANSIT_ZONE",
+    "chart_file_facts", "combust_orb", "dasamsa_sign", "dasha_facts", "dignity", "house_from",
     "ingresses", "is_combust", "mangal_dosha", "natal_facts", "navamsa_sign",
-    "saturn_changes", "saturn_cycles", "separation", "sign_index", "sky_facts",
+    "saptamsa_sign", "saturn_changes", "saturn_cycles", "separation", "sign_index", "sky_facts",
 ]

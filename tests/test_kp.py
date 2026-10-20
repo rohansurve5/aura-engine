@@ -286,6 +286,29 @@ def test_golden_kp_pratyantars_within_a_day(kp):
     assert (len(rows), exact) == (434, 228)
 
 
+def test_golden_kp_pratyantar_blocks_against_astrosage(kp):
+    """The two KP pratyantar blocks the chart file prints (the running KP
+    antar and the next). Their edges are AstroSage's KP antar dates exactly;
+    inside, 8 of the 18 ends are AstroSage's printed dates and 10 fall one
+    day earlier — the 5.5″ KP Moon gap above. Reported, not tuned."""
+    d = kp["dasha"]
+    printed = {tuple(r["path"]): r["date"] for r in _load("astrosage_dasha_tables.json")["kp"]}
+    gaps = []
+    for which, lords in (("current", ("Saturn", "Jupiter")), ("next", ("Mercury", "Mercury"))):
+        b = d["pratyantar"][which]
+        m = d["mahas"][b["maha"]]
+        a = m["antar"][b["antar"]]
+        assert (m["lord"], a["lord"]) == lords
+        assert (b["rows"][0]["start"], b["rows"][-1]["end"]) == (a["start"], a["end"])
+        for r in b["rows"]:
+            got = date.fromisoformat(r["end"])
+            t = printed[(ABBR[m["lord"]], ABBR[a["lord"]], ABBR[r["lord"]])]
+            gaps.append((got - date(_year(t[2], got.year), t[1], t[0])).days)
+    assert (gaps.count(0), gaps.count(-1), len(gaps)) == (8, 10, 18)
+    cur = d["pratyantar"]["current"]["rows"][d["running"]["pratyantar"]]
+    assert (cur["lord"], cur["start"], cur["end"]) == ("Mercury", "2026-09-17", "2027-01-26")
+
+
 def test_running_kp_period_on_the_as_of_date(kp):
     """Engine-pinned: on 2026-10-20 Golden-1 runs Saturn / Jupiter (KP)."""
     d = kp["dasha"]
